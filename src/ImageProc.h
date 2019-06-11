@@ -16,9 +16,13 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
+#ifndef __Blot__ImageProc__
+#define __Blot__ImageProc__
+
 #include <cstdlib>
 #include <QImage>
 #include <vector>
+#include <QtGui/qopengl.h>
 
 typedef struct
 {
@@ -26,11 +30,15 @@ typedef struct
 	int level;
 } ImageVal;
 
+
+class BlotObject;
+
 class ImageProc
 {
 public:
 	ImageProc(QImage *image);
 	void process();
+	void bindToTexture(BlotObject *sender);
 
 private:
 	void collapseToActiveCoordinate();
@@ -39,3 +47,5 @@ private:
 	std::vector<ImageVal> _values;
 
 };
+
+#endif

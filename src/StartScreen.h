@@ -26,7 +26,8 @@
 #include <QtWidgets/qfiledialog.h>
 #include <QtWidgets/qcheckbox.h>
 
-#include "Presentation.h"
+class Presentation;
+class ImageProc;
 
 class StartScreen : public QMainWindow
 {
@@ -44,6 +45,7 @@ private slots:
 	
 private:
 	Presentation *_pres;
+	ImageProc *_tmp;
 	void paste();
 	char **_argv;
 	int _argc;

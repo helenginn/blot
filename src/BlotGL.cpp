@@ -17,14 +17,12 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "BlotGL.h"
+#include "BlotObject.h"
 #include <iostream>
 
 void BlotGL::initializeGL()
 {
 	update();
-
-	BlotObject *obj = new BlotObject();
-	_objects.push_back(obj);
 	
 	initialisePrograms();
 }
@@ -34,15 +32,36 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 
 }
 
+void BlotGL::addObject(BlotObject *obj)
+{
+	obj->initialisePrograms();
+	_objects.push_back(obj);
+}
+
+void BlotGL::resizeGL()
+{
+
+}
+
+void BlotGL::paintGL()
+{
+	update();
+}
+
 void BlotGL::update()
 {
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
+	for (size_t i = 0; i < _objects.size(); i++)
+	{
+		_objects[i]->render();
+	}
 }
 
 void BlotGL::initialisePrograms()

@@ -22,12 +22,15 @@
 #include <QtWidgets/qmainwindow.h>
 #include "BlotGL.h"
 
+class ImageProc;
+
 class Presentation : public QMainWindow
 {
 	Q_OBJECT
 
 public:
 	Presentation();
+	void addImage(ImageProc *proc);
 	
 protected:
 	void resizeEvent(QResizeEvent *);

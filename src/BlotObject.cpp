@@ -18,11 +18,46 @@
 
 #include "BlotObject.h"
 #include <iostream>
+#include <string>
 #include <QImage>
+#include "shaders/vImage.h"
+#include "shaders/fImage.h"
 
-BlotObject::BlotObject()
+void BlotObject::makeDummy()
 {
+	Vertex v; 
+	memset(&v, 0, sizeof(Vertex));
+	v.color[0] = 0.8;
+	v.color[1] = 0.0;
+	v.color[2] = 0.0;
+	v.color[3] = 0.5;
+	v.pos[0] = -0.5; v.pos[1] = -0.5;
+	v.tex[0] = 0; v.tex[1] = 0;
+	_vertices.push_back(v);
+	v.pos[0] = -0.5; v.pos[1] = +0.5;
+	v.tex[0] = 0; v.tex[1] = 1;
+	 _vertices.push_back(v);
+	v.pos[0] = +0.5; v.pos[1] = -0.5;
+	v.tex[0] = 1; v.tex[1] = 0;
+	_vertices.push_back(v);
+	v.pos[0] = +0.5; v.pos[1] = +0.5;
+	v.tex[0] = 1; v.tex[1] = 1;
+	_vertices.push_back(v);
+	
+	_indices.push_back(0);
+	_indices.push_back(1);
+	_indices.push_back(2);
+	_indices.push_back(2);
+	_indices.push_back(1);
+	_indices.push_back(3);
+}
+
+BlotObject::BlotObject(ImageProc *proc)
+{
+	_renderType = GL_TRIANGLES;
+	_image = proc;
 	initializeOpenGLFunctions();
+	makeDummy();
 	_extra = true;
 }
 
@@ -57,19 +92,22 @@ GLuint BlotObject::addShaderFromString(GLuint program, GLenum type,
 		glDeleteShader(shader);
 		return 0;
 	}
-
+    
+	glAttachShader(_program, shader);
 	return shader;
 }
 
 void BlotObject::initialisePrograms()
 {
+	bindTextures();
+
 	GLint result;
 
 	/* create program object and attach shaders */
 	_program = glCreateProgram();
-	
-	addShaderFromString(_program, GL_FRAGMENT_SHADER, std::string());
-	addShaderFromString(_program, GL_VERTEX_SHADER, std::string());
+
+	addShaderFromString(_program, GL_VERTEX_SHADER, vImage);
+	addShaderFromString(_program, GL_FRAGMENT_SHADER, fImage);
 
 	glBindAttribLocation(_program, 0, "position");
 	glBindAttribLocation(_program, 1, "normal");
@@ -83,32 +121,33 @@ void BlotObject::initialisePrograms()
 	{
 		glBindAttribLocation(_program, 3, "extra");
 	}
-	
+
 	if (_textures.size())
 	{
 		glBindAttribLocation(_program, 4, "tex");
 	}
 
-    /* link the program and make sure that there were no errors */
-    glLinkProgram(_program);
-    glGetProgramiv(_program, GL_LINK_STATUS, &result);
-    if (result == GL_FALSE)
-    {
-        std::cout << "sceneInit(): Program linking failed." << std::endl;
+	/* link the program and make sure that there were no errors */
+	glLinkProgram(_program);
+	glGetProgramiv(_program, GL_LINK_STATUS, &result);
+	checkErrors();
 
-        /* delete the program */
-        glDeleteProgram(_program);
-        _program = 0;
-    }
+	if (result == GL_FALSE)
+	{
+		std::cout << "sceneInit(): Program linking failed." << std::endl;
 
-    glGenBuffers(1, &_bufferID);
-    glGenBuffers(1, &_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vbo);
-    
-	bindTextures();
-	
-    rebindProgram();
+		/* delete the program */
+		glDeleteProgram(_program);
+		_program = 0;
+	}
+
+	glGenBuffers(1, &_bufferID);
+	glGenBuffers(1, &_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vbo);
+
+	rebindProgram();
+	std::cout << "bound" << std::endl;
 }
 
 void BlotObject::bindTextures()
@@ -121,25 +160,15 @@ void BlotObject::bindTextures()
 	_textures.resize(1);
 
 	glGenTextures(1, &_textures[0]);
-	glBindTexture(GL_TEXTURE_2D, _textures[0]);
-	
-	QImage *image = getImage();
-	QImage rgba = image->convertToFormat(QImage::Format_RGBA8888);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width(), image->height(), 
-	             0, GL_RGBA, GL_UNSIGNED_BYTE, rgba.bits());
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
+	getImage()->bindToTexture(this);
 }
 
 void BlotObject::rebindProgram()
 {
-    glBufferData(GL_ARRAY_BUFFER, vSize(), vPointer(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vSize(), vPointer(), GL_STATIC_DRAW);
 
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize(), iPointer(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize(), iPointer(), GL_STATIC_DRAW);
 
 	/* Vertices */
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
@@ -163,9 +192,9 @@ void BlotObject::rebindProgram()
 		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(14 * sizeof(float)));
 	}
 
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
 	if (_extra)
 	{
@@ -178,3 +207,27 @@ void BlotObject::rebindProgram()
 	}
 }
 
+void BlotObject::checkErrors()
+{
+	GLenum err = glGetError();
+
+	if (err != 0)
+	{
+		std::cout << "OUCH" << std::endl;
+	}
+}
+
+void BlotObject::render()
+{
+	glUseProgram(_program);
+
+	if (_textures.size())
+	{
+		glBindTexture(GL_TEXTURE_2D, _textures[0]);
+	}
+
+	glDrawElements(_renderType, indexCount(), GL_UNSIGNED_INT, 0);
+	checkErrors();
+
+	glUseProgram(0);
+}

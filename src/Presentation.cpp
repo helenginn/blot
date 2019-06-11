@@ -17,6 +17,8 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "Presentation.h"
+#include "ImageProc.h"
+#include "BlotObject.h"
 #include <QTimer>
 #include <QKeyEvent>
 
@@ -28,6 +30,12 @@ Presentation::Presentation()
 	_timer->setInterval(30);
 	connect(_timer, SIGNAL(timeout()), _display, SLOT(update()));
 	_timer->start();
+}
+
+void Presentation::addImage(ImageProc *proc)
+{
+	BlotObject *obj = new BlotObject(proc);
+	_display->addObject(obj);
 }
 
 void Presentation::resizeEvent(QResizeEvent *)

@@ -26,6 +26,8 @@
 #include <QApplication>
 #include <QMimeData>
 #include "StartScreen.h"
+#include "Presentation.h"
+#include "ImageProc.h"
 
 StartScreen::StartScreen(QWidget *parent,
                          int argc, char *argv[]) : QMainWindow(parent)
@@ -34,6 +36,7 @@ StartScreen::StartScreen(QWidget *parent,
 
 	this->setWindowTitle("Blot");
 
+	_tmp = NULL;
 	_argc = argc;
 	_argv = argv;
 	
@@ -45,9 +48,15 @@ void StartScreen::keyPressEvent(QKeyEvent *event)
 	{
 		QList<QScreen *> screens = qApp->screens();
 		_pres = new Presentation();
+
 		_pres->show();
 		_pres->windowHandle()->setScreen(screens.last());
 		_pres->showFullScreen();
+		
+		if (_tmp)
+		{
+			_pres->addImage(_tmp);
+		}
 	}
 }
 
@@ -70,10 +79,16 @@ void StartScreen::paste()
 
 	QImage image = clip->image();
 	std::cout << image.width() << " " << image.height() << std::endl;
+	
+	_tmp = new ImageProc(&image);
+	_tmp->process();
 }
 
 StartScreen::~StartScreen()
 {
-
+	if (_tmp != NULL)
+	{
+		delete _tmp; _tmp = NULL;
+	}
 }
 

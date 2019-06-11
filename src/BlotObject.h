@@ -21,6 +21,7 @@
 
 #include <QtGui/qopengl.h>
 #include <QtGui/qopenglfunctions.h>
+#include "ImageProc.h"
 
 typedef struct
 {
@@ -31,12 +32,15 @@ typedef struct
 	GLfloat tex[2];
 } Vertex;
 
+class ImageProc;
+
 class BlotObject : public QOpenGLFunctions
 {
 public:
-	BlotObject();
+	BlotObject(ImageProc *proc = NULL);
 	virtual ~BlotObject() {};
 	void initialisePrograms();
+	void render();
 	
 	Vertex *vPointer()
 	{
@@ -57,6 +61,16 @@ public:
 	{
 		return sizeof(GLuint) * _indices.size();
 	}
+	
+	GLuint texture(size_t i)
+	{
+		return _textures[i];
+	}
+
+	size_t indexCount()
+	{
+		return _indices.size();
+	}
 protected:
 	std::vector<Vertex> _vertices;
 	std::vector<GLuint> _indices;
@@ -66,18 +80,22 @@ protected:
 		return (getImage() != NULL);
 	}
 	
-	QImage *getImage()
+	ImageProc *getImage()
 	{
-		return NULL;
+		return _image;
 	}
 
 private:
 	GLuint addShaderFromString(GLuint program, GLenum type, std::string str);
+	void checkErrors();
 	void rebindProgram();
 	void bindTextures();
+	void makeDummy();
 	GLuint _program;
 	GLuint _bufferID;
 	GLuint _vbo;
+	GLuint _renderType;
+	ImageProc *_image;
 	std::vector<GLuint> _textures;
 	
 	bool _extra;

@@ -21,7 +21,8 @@
 
 #include <QtWidgets/qopenglwidget.h>
 #include <vector>
-#include "BlotObject.h"
+
+class BlotObject;
 
 class BlotGL : public QOpenGLWidget
 {
@@ -30,13 +31,16 @@ class BlotGL : public QOpenGLWidget
 public:
 	BlotGL(QWidget *parent = NULL);
 	
-protected:
-
-private slots:
+	void addObject(BlotObject *obj);
+public slots:
 	void update();
+	
+protected:
 
 private:
 	virtual void initializeGL();
+	virtual void paintGL();
+	virtual void resizeGL();
 	void initialisePrograms();
 	
 	std::vector<BlotObject *> _objects;

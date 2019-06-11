@@ -17,10 +17,13 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "ImageProc.h"
+#include "BlotObject.h"
+#include <iostream>
 
 ImageProc::ImageProc(QImage *image)
 {
-	_image = *image;
+	QImage rgba = image->convertToFormat(QImage::Format_RGBA8888);
+	_image = rgba;
 }
 
 void ImageProc::collapseToActiveCoordinate()
@@ -56,5 +59,29 @@ void ImageProc::collapseToActiveCoordinate()
 void ImageProc::process()
 {
 	collapseToActiveCoordinate();
+}
 
+void ImageProc::bindToTexture(BlotObject *sender)
+{
+	std::cout << "Binding" << std::endl;
+	glBindTexture(GL_TEXTURE_2D, sender->texture(0));
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _image.width(), _image.height(), 
+	             0, GL_RGBA, GL_UNSIGNED_BYTE, _image.bits());
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	sender->glGenerateMipmap(GL_TEXTURE_2D);
+
+	/*
+	glBindTexture(GL_TEXTURE_2D, sender->texture(1));
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _image.width(), _image.height(), 
+	             0, GL_RGBA, GL_UNSIGNED_BYTE, _image.bits());
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	sender->glGenerateMipmap(GL_TEXTURE_2D);
+	*/
 }
