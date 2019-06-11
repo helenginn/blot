@@ -17,18 +17,22 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "ImageProc.h"
+#include <QBuffer>
 #include "BlotObject.h"
+#include "charmanip.h"
 #include <iostream>
 
 ImageProc::ImageProc(QImage *image)
 {
 	QImage rgba = image->convertToFormat(QImage::Format_RGBA8888);
 	_image = new QImage(rgba);
+	_randomID = i_to_str(rand());
 }
 
 ImageProc::ImageProc()
 {
 	_image = NULL;
+	_randomID = i_to_str(rand());
 }
 
 /*
@@ -100,6 +104,18 @@ void ImageProc::bindToTexture(BlotObject *sender)
 }
 
 void ImageProc::addProperties()
+{
+	QByteArray byteArray;
+	QBuffer buffer(&byteArray);
+	_image->save(&buffer, "PNG");
+	_base64 = QString::fromLatin1(byteArray.toBase64().data()).toStdString();
+
+	addStringProperty("id", &_randomID);
+	addStringProperty("title", &_text);
+	addStringProperty("base64", &_base64);
+}
+
+void ImageProc::postParseTidy()
 {
 
 }

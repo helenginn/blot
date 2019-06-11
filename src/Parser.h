@@ -16,8 +16,8 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __vagabond__BaseParser_h__
-#define __vagabond__BaseParser_h__
+#ifndef __vagabond__Parser_h__
+#define __vagabond__Parser_h__
 
 #include "BaseParser.h"
 

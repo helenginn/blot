@@ -3,8 +3,8 @@
 // Created by Helen Ginn
 // Copyright (c) 2018 Helen Ginn. All rights reserved.
 
-#ifndef __vagabond__Parser__
-#define __vagabond__Parser__
+#ifndef __vagabond__BaseParser__
+#define __vagabond__BaseParser__
 
 #include "ParserTypes.h"
 #include <map>

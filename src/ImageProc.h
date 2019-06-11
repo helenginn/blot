@@ -50,7 +50,7 @@ public:
 	
 	virtual std::string getParserIdentifier()
 	{
-		return "ImageProccc";
+		return "image_" + _randomID;
 	}
 	
 	virtual void addProperties();
@@ -60,9 +60,27 @@ public:
 		return _image;
 	}
 
+	void setText(std::string text)
+	{
+		_text = text;
+	}
+
+	QString qText()
+	{
+		return QString::fromStdString(_text);
+	}
+	
+	std::string text()
+	{
+		return _text;
+	}
 private:
 	void collapseToActiveCoordinate();
+	void postParseTidy();
 
+	std::string _text;
+	std::string _randomID;
+	std::string _base64;
 	QImage *_image;
 	std::vector<ImageVal> _values;
 

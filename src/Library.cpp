@@ -77,10 +77,11 @@ void Library::paste()
 	
 	ImageProc *tmp = new ImageProc(&image);
 	tmp->process();
+	tmp->setText("New image");
 	QListWidgetItem *item = new QListWidgetItem();
 	QVariant var = QVariant::fromValue<ImageProc *>(tmp);
 	item->setData(Qt::UserRole, var);
-	item->setText("New image");
+	item->setText(tmp->qText());
 
 	_list->addItem(item);
 	elaborateItem(item);
@@ -158,7 +159,7 @@ void Library::elaborateItem(QListWidgetItem *item)
 
 	_edit->setGeometry(LIST_WIDTH + 10, MENU_HEIGHT + 10,
 	                   ELABORATION_WIDTH, IMAGE_TITLE_HEIGHT);
-	_edit->setText(item->text());
+	_edit->setText(proc->qText());
 	_edit->show();
 	
 	connect(_edit, &QLineEdit::editingFinished, this, &Library::updateTitle);
@@ -174,7 +175,9 @@ ImageProc *Library::imageProcForItem(QListWidgetItem *item)
 
 void Library::updateTitle()
 {
-	_list->currentItem()->setText(_edit->text());
+	ImageProc *proc = imageProcForItem(_list->currentItem());
+	proc->setText(_edit->text().toStdString());
+	_list->currentItem()->setText(proc->qText());
 	_list->setFocus();
 
 	std::ofstream file;

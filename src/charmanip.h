@@ -3,14 +3,15 @@
 // Created by Helen Ginn
 // Copyright (c) 2018 Helen Ginn. All rights reserved.
 
-#ifndef __vagabond__charmanip__
-#define __vagabond__charmanip__
+#ifndef __blot__charmanip__
+#define __blot__charmanip__
 
 #include <sstream>
 #include <cstring>
 #include <iostream>
+#include <iomanip>
 
-std::string f_to_str(double val, int precision)
+inline std::string f_to_str(double val, int precision)
 {
 	std::ostringstream ss;
 	if (precision > 0)
@@ -27,6 +28,16 @@ std::string f_to_str(double val, int precision)
 
 	return temp;
 }
+
+inline std::string i_to_str(int val)
+{
+	std::ostringstream ss;
+	ss << val;
+	std::string temp = ss.str();
+
+	return temp;
+}
+
 
 inline std::string indent(int num)
 {
