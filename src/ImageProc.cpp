@@ -98,3 +98,8 @@ void ImageProc::bindToTexture(BlotObject *sender)
 	sender->glGenerateMipmap(GL_TEXTURE_2D);
 	*/
 }
+
+void ImageProc::addProperties()
+{
+
+}

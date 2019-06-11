@@ -57,7 +57,7 @@ class BaseParser
 public:
 	friend class StateValue;
 	BaseParser();
-	BaseParser(const BaseParser &other);
+//	BaseParser(const BaseParser &other);
 	virtual ~BaseParser() {};
 
 	std::string getAbsolutePath()

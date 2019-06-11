@@ -172,12 +172,11 @@ void Library::updateTitle()
 
 void Library::addProperties()
 {
-	for (unsigned long i = 0; i < _list->count(); i++)
+	for (int i = 0; i < _list->count(); i++)
 	{
 		QListWidgetItem *item = _list->item(i);
 		QVariant var = item->data(Qt::UserRole);
 		ImageProc proc_copy = qvariant_cast<ImageProc>(var);
-
 	}
 }
 

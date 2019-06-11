@@ -33,7 +33,7 @@ typedef struct
 
 class BlotObject;
 
-class ImageProc 
+class ImageProc : public Parser
 {
 public:
 	ImageProc();
@@ -42,6 +42,18 @@ public:
 	~ImageProc() {};
 	void process();
 	void bindToTexture(BlotObject *sender);
+
+	virtual std::string getClassName()
+	{
+		return "ImageProc";
+	}
+	
+	virtual std::string getParserIdentifier()
+	{
+		return "ImageProccc";
+	}
+	
+	virtual void addProperties();
 	
 	QImage *getImage()
 	{
