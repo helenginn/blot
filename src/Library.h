@@ -47,9 +47,17 @@ public:
 		return "MainLibrary";
 	}
 	
+	void setFilename(std::string file)
+	{
+		_filename = file;
+	}
+	
 	virtual void addProperties();
+	virtual void addObject(Parser *child, std::string name);
 	
 public slots:
+	void save();
+	void saveAs();
 	void paste();
 	void elaborate();
 	void updateTitle();
@@ -61,6 +69,7 @@ private:
 	QListWidget *_list;	
 	QLabel *_imageLabel;
 	QLineEdit *_edit;
+	std::string _filename;
 
 	static Library *_lib;
 };

@@ -8,6 +8,7 @@
 #include <iomanip>
 #include "charmanip.h"
 #include "Library.h"
+#include "ImageProc.h"
 
 ParserMap BaseParser::_allParsers;
 ClassMap BaseParser::_allClasses;
@@ -1221,12 +1222,10 @@ Parser *BaseParser::objectOfType(char *className)
 		object = static_cast<Parser *>(new Library());
 		Library::setCurrentLibrary(static_cast<Library *>(&*object));
 	}
-	/*
-	else if (strcmp(className, "Polymer") == 0)
+	else if (strcmp(className, "ImageProc") == 0)
 	{
-		object = ParserPtr(static_cast<Polymer *>(new Polymer()));
+		object = static_cast<Parser *>(new ImageProc());
 	}
-	*/
 	else
 	{
 		std::cout << "Do not understand class name " << className << std::endl;
@@ -1275,7 +1274,7 @@ BaseParser * BaseParser::processBlock(char *block)
 	// Parse the entirety of the structure.
 	char *success = object->parse(block);
 
-	std::cout << "Vagabond file parsing complete..." << std::endl;
+	std::cout << "Blot file parsing complete..." << std::endl;
 	// Resolve dangling references.
 	object->resolveReferences();
 

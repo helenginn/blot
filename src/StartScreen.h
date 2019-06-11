@@ -36,6 +36,8 @@ protected:
 	virtual void keyPressEvent(QKeyEvent *event);
 
 private slots:
+	void newLibrary();
+	void openLibrary();
 	
 private:
 	Presentation *_pres;

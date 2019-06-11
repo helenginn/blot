@@ -105,10 +105,14 @@ void ImageProc::bindToTexture(BlotObject *sender)
 
 void ImageProc::addProperties()
 {
-	QByteArray byteArray;
-	QBuffer buffer(&byteArray);
-	_image->save(&buffer, "PNG");
-	_base64 = QString::fromLatin1(byteArray.toBase64().data()).toStdString();
+	if (_image != NULL && !_image->isNull())
+	{
+		QByteArray byteArray;
+		QBuffer buffer(&byteArray);
+		_image->save(&buffer, "PNG");
+		_base64 = QString::fromLatin1(byteArray.toBase64().data()).toStdString();
+	}
+
 
 	addStringProperty("id", &_randomID);
 	addStringProperty("title", &_text);
@@ -117,5 +121,15 @@ void ImageProc::addProperties()
 
 void ImageProc::postParseTidy()
 {
+	QString str = QString::fromStdString(_base64);
+	QByteArray b64 = str.toLatin1();
+	
+	if (_image != NULL)
+	{
+		delete _image;
+	}
+	
+	_image = new QImage();
+	_image->loadFromData(QByteArray::fromBase64(b64), "PNG");
 
 }

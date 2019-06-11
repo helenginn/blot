@@ -21,8 +21,12 @@
 
 #include <QMouseEvent>
 #include <QWindow>
-#include "StartScreen.h"
+#include <QMenuBar>
 #include <QApplication>
+#include <QFileDialog>
+#include "charmanip.h"
+#include "StartScreen.h"
+#include "Library.h"
 #include "Presentation.h"
 
 StartScreen::StartScreen(QWidget *parent,
@@ -34,7 +38,58 @@ StartScreen::StartScreen(QWidget *parent,
 
 	_argc = argc;
 	_argv = argv;
+
+	QMenu *edit = menuBar()->addMenu(tr("&File"));
+	QAction *action = edit->addAction(tr("New library"));
+	action->setShortcut(QKeySequence::New);
+	connect(action, &QAction::triggered, this, &StartScreen::newLibrary);
+
+	action = edit->addAction(tr("Open library"));
+	action->setShortcut(QKeySequence::Open);
+	connect(action, &QAction::triggered, this, &StartScreen::openLibrary);
+} 
+
+void StartScreen::openLibrary()
+{
+	QString types = "Blot files (*.blot)";
+	QFileDialog *fileDialogue = new QFileDialog(this, "Choose library", 
+	                                            types);
 	
+	fileDialogue->setNameFilter(types);
+	fileDialogue->setFileMode(QFileDialog::AnyFile);
+	fileDialogue->show();
+
+	QStringList fileNames;
+	if (fileDialogue->exec())
+	{
+		fileNames = fileDialogue->selectedFiles();
+	}
+
+	if (fileNames.size() <= 0)
+	{
+		return;
+	}
+
+	std::string contents = get_file_contents(fileNames[0].toStdString());
+	const char *block = contents.c_str();
+	char *dup = strdup(block);
+	Parser *p = Parser::processBlock(dup);
+	free(dup);
+	
+	if (p == NULL)
+	{
+		return;
+	}
+
+	Library *l = static_cast<Library *>(p);
+	l->setFilename(fileNames[0].toStdString());
+	l->show();
+}
+
+void StartScreen::newLibrary()
+{
+	Library *lib = new Library();
+	lib->show();
 }
 
 void StartScreen::keyPressEvent(QKeyEvent *event)
@@ -47,12 +102,6 @@ void StartScreen::keyPressEvent(QKeyEvent *event)
 		_pres->show();
 		_pres->windowHandle()->setScreen(screens.last());
 		_pres->showFullScreen();
-/*		
-		if (_tmp)
-		{
-			_pres->addImage(_tmp);
-		}
-		*/
 	}
 }
 

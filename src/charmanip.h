@@ -10,6 +10,7 @@
 #include <cstring>
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
 inline std::string f_to_str(double val, int precision)
 {
@@ -108,5 +109,29 @@ inline char *keywordValue(char *block, char **keyword, char **value)
 
 	return block;
 }
+
+inline std::string get_file_contents(std::string filename)
+{
+	std::ifstream in(filename, std::ios::in | std::ios::binary);
+
+	if (in)
+	{
+		std::string contents;
+		in.seekg(0, std::ios::end);
+		contents.resize((unsigned long)in.tellg());
+		in.seekg(0, std::ios::beg);
+		in.read(&contents[0], contents.size());
+		in.close();
+		return(contents);
+	}
+
+
+	std::string errString = "Could not get file contents for file " + std::string(filename);
+	std::cout << errString << std::endl;
+
+	throw(errno);
+}
+
+
 
 #endif

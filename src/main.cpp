@@ -12,8 +12,13 @@ int main(int argc, char * argv[])
 	QApplication app(argc, argv);
 	setlocale(LC_NUMERIC, "C");
 
+	/*
 	Library library;
 	library.show();
+	*/
+	
+	StartScreen start;
+	start.show();
 	
 	std::cout << "Blot version: " << BLOT_VERSION_COMMIT_ID << std::endl;
 

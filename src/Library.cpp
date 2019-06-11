@@ -22,6 +22,7 @@
 #include <QApplication>
 #include <iostream>
 #include <fstream>
+#include <QFileDialog>
 
 #include "Library.h"
 #include "ImageProc.h"
@@ -53,13 +54,49 @@ Library::Library()
 	_list = new QListWidget(this);
 	_list->setGeometry(0, MENU_HEIGHT, LIST_WIDTH, DEFAULT_LIBRARY_HEIGHT);
 	_list->show();
-
-	QMenu *edit = menuBar()->addMenu(tr("&Edit"));
-	QAction *action = edit->addAction(tr("Paste image"));
-	action->setShortcut(QKeySequence::Paste);
-	connect(action, &QAction::triggered, this, &Library::paste);
 	connect(_list, &QListWidget::itemSelectionChanged, 
 	        this, &Library::elaborate);
+
+	QMenu *file = menuBar()->addMenu(tr("&File"));
+	QAction *action = file->addAction(tr("Save library"));
+	action->setShortcut(QKeySequence::Save);
+	connect(action, &QAction::triggered, this, &Library::save);
+
+	action = file->addAction(tr("Save library as..."));
+	action->setShortcut(QKeySequence::SaveAs);
+	connect(action, &QAction::triggered, this, &Library::saveAs);
+
+	QMenu *edit = menuBar()->addMenu(tr("&Edit"));
+	action = edit->addAction(tr("Paste image"));
+	action->setShortcut(QKeySequence::Paste);
+	connect(action, &QAction::triggered, this, &Library::paste);
+
+}
+
+void Library::saveAs()
+{
+	QString types = "Blot files (*.blot)";
+	QString filename = QFileDialog::getSaveFileName(this, "Save library as");
+	_filename = filename.toStdString();
+	
+	if (_filename.length())
+	{
+		save();
+	}
+}
+
+void Library::save()
+{
+	if (_filename.length() == 0)
+	{
+		saveAs();
+		return;
+	}
+
+	std::ofstream file;
+	file.open(_filename);
+	writeToFile(file, 0);
+	file.close();
 }
 
 void Library::paste()
@@ -179,11 +216,6 @@ void Library::updateTitle()
 	proc->setText(_edit->text().toStdString());
 	_list->currentItem()->setText(proc->qText());
 	_list->setFocus();
-
-	std::ofstream file;
-	file.open("library.blot");
-	writeToFile(file, 0);
-	file.close();
 }
 
 void Library::addProperties()
@@ -198,8 +230,32 @@ void Library::addProperties()
 	}
 }
 
+void Library::addObject(Parser *child, std::string name)
+{
+	if (name == "image_proc")
+	{
+		QListWidgetItem *item = new QListWidgetItem();
+		ImageProc *proc = static_cast<ImageProc *>(child);
+		QVariant var = QVariant::fromValue<ImageProc *>(proc);
+
+		item->setData(Qt::UserRole, var);
+		item->setText(proc->qText());
+		
+		_list->addItem(item);
+	}
+}
+
 Library::~Library()
 {
 	clearElaboration();
-
+	
+	for (int i = 0; i < _list->count(); i++)
+	{
+		QListWidgetItem *item = _list->item(i);
+		ImageProc *proc = imageProcForItem(item);
+		delete proc;
+	}
+	
+	delete _list;
+	_lib = NULL;
 }

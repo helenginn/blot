@@ -22,8 +22,38 @@
 
 Parser *Parser::processBlock(char *block)
 {
-	BaseParser *base = BaseParser::processBlock(block);
+	char *start = &block[0];
+	char header[] = "blot data structure";
+	int headLength = strlen(header);
+	start[headLength] = '\0';
+
+	if (strcmp(start, header) != 0)
+	{
+		std::cout << "Aborting: does not look like "
+		"a blot data structure." << std::endl;
+		return NULL;
+	}
+
+	start = &start[headLength + 1];
+
+	char *endline = strchr(start, '\n');
+	*endline = '\0'; endline++;
+	std::cout << "Blot data structure file is version " << 
+	start << std::endl;
+
+	start = endline;
+	char *space = strchr(start, ' ');
+	*space = '\0';   
+
+	if (strcmp(start, "object") == 0)
+	{
+		start = space + 1;
+
+		BaseParser *base = BaseParser::processBlock(start);
+
+		return static_cast<Parser *>(base);
+	}
 	
-	return static_cast<Parser *>(base);
+	return NULL;
 }
 
