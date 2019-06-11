@@ -16,14 +16,16 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#define DEFAULT_WIDTH 600
-#define DEFAULT_HEIGHT 400
+#define INSTRUCTION_WIDTH 200
+#define DEFAULT_WIDTH 1000
+#define DEFAULT_HEIGHT 600
 
 #include <QMouseEvent>
 #include <QWindow>
 #include <QMenuBar>
 #include <QApplication>
 #include <QFileDialog>
+#include <QScreen>
 #include "charmanip.h"
 #include "StartScreen.h"
 #include "Library.h"
@@ -38,6 +40,8 @@ StartScreen::StartScreen(QWidget *parent,
 
 	_argc = argc;
 	_argv = argv;
+	
+	_lib = NULL;
 
 	QMenu *edit = menuBar()->addMenu(tr("&File"));
 	QAction *action = edit->addAction(tr("New library"));
@@ -81,24 +85,57 @@ void StartScreen::openLibrary()
 		return;
 	}
 
-	Library *l = static_cast<Library *>(p);
-	l->setFilename(fileNames[0].toStdString());
-	l->show();
+	if (_lib)
+	{
+		delete _lib;
+		_lib = NULL;
+	}
+
+	_lib = static_cast<Library *>(p);
+	_lib->setFilename(fileNames[0].toStdString());
+	_lib->show();
+
+	drawEditMode();
+}
+
+void StartScreen::drawEditMode()
+{
+	if (_lib == NULL)
+	{
+		return;
+	}
+
+	_pres = _lib->presentation();
+	_pres->QWidget::setParent(this);
+	_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
+	                   DEFAULT_WIDTH - INSTRUCTION_WIDTH, DEFAULT_HEIGHT);
+	_pres->show();
 }
 
 void StartScreen::newLibrary()
 {
-	Library *lib = new Library();
-	lib->show();
+	if (_lib)
+	{
+		delete _lib;
+		_lib = NULL;
+	}
+
+	_lib = new Library();
+	_lib->show();
+	drawEditMode();
 }
 
 void StartScreen::keyPressEvent(QKeyEvent *event)
 {
-	if (event->key() == Qt::Key_V)
+	if (event->key() == Qt::Key_V && _lib != NULL)
 	{
 		QList<QScreen *> screens = qApp->screens();
-		_pres = new Presentation();
+		QSize resol = screens.last()->size();
+		_pres = _lib->presentation();
 
+		_pres->hide();
+		_pres->QWidget::setParent(NULL);
+		_pres->resize(resol.width(), resol.height());
 		_pres->show();
 		_pres->windowHandle()->setScreen(screens.last());
 		_pres->showFullScreen();

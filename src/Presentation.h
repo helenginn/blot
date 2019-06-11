@@ -21,22 +21,46 @@
 
 #include <QtWidgets/qmainwindow.h>
 #include "BlotGL.h"
+#include "Parser.h"
 
 class ImageProc;
+class Instruction;
 
-class Presentation : public QMainWindow
+class Presentation : public QMainWindow, public Parser
 {
 	Q_OBJECT
 
 public:
 	Presentation();
 	void addImage(ImageProc *proc);
+	void addInstruction(Instruction *inst);
+	void advancePresentation(bool clicked = false);
 	
+	void setEditMode(bool edit)
+	{
+		_editMode = edit;
+	}
+	
+	virtual std::string getClassName()
+	{
+		return "Presentation";
+	}
+	
+	virtual std::string getParserIdentifier()
+	{
+		return "MainPresentation";
+	}
+	
+	virtual void addProperties();
 protected:
 	void resizeEvent(QResizeEvent *);
 	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void mousePressEvent(QMouseEvent *event);
 	
 private:
+	bool _editMode;
+	std::vector<Instruction *> _instructions;
+	int _currPos;
 	BlotGL *_display;
 	QTimer *_timer;
 };

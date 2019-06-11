@@ -1,5 +1,5 @@
-// BLot
-// Copyright (C) 2019- Helen Ginn
+// Blot
+// Copyright (C) 2017-2018 Helen Ginn
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,37 +16,40 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __Blot__StartScreen__
-#define __Blot__StartScreen__
+#ifndef __Blot__Instruction__
+#define __Blot__Instruction__
 
-#include <QMainWindow>
+#include "Presentation.h"
 
-class Presentation;
-class Library;
-
-class StartScreen : public QMainWindow
+class Instruction
 {
-	Q_OBJECT
-	
 public:
-	StartScreen(QWidget *parent = 0, int argc = 0, char *argv[] = NULL);
-	~StartScreen();
+	Instruction(Presentation *pres);
+	virtual ~Instruction() {};
 	
-protected:
-	virtual void mousePressEvent(QMouseEvent *e);
-	virtual void keyPressEvent(QKeyEvent *event);
-	void drawEditMode();
+	void setOnClick(bool click)
+	{
+		_onClick = click;
+	}
+	
+	bool waitForClick()
+	{
+		return _onClick;
+	}
 
-private slots:
-	void newLibrary();
-	void openLibrary();
-	
+	virtual BlotObject *object()
+	{
+		return NULL;
+	}
+
+	virtual void makeEffect() = 0;
+protected:
+	Presentation *_presentation;
+
 private:
-	Presentation *_pres;
-	Library *_lib;
-	char **_argv;
-	int _argc;
+	bool _onClick;
 
 };
+
 
 #endif

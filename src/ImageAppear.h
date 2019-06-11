@@ -1,5 +1,5 @@
-// BLot
-// Copyright (C) 2019- Helen Ginn
+// Blot
+// Copyright (C) 2017-2018 Helen Ginn
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,37 +16,51 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __Blot__StartScreen__
-#define __Blot__StartScreen__
+#ifndef __Blot__ImageAppear__
+#define __Blot__ImageAppear__
 
-#include <QMainWindow>
+#include "Instruction.h"
+#include "BlotObject.h"
 
 class Presentation;
-class Library;
 
-class StartScreen : public QMainWindow
+class ImageAppear : public Instruction
 {
-	Q_OBJECT
-	
 public:
-	StartScreen(QWidget *parent = 0, int argc = 0, char *argv[] = NULL);
-	~StartScreen();
+	ImageAppear(Presentation *pres);
+	virtual ~ImageAppear() {};
 	
-protected:
-	virtual void mousePressEvent(QMouseEvent *e);
-	virtual void keyPressEvent(QKeyEvent *event);
-	void drawEditMode();
+	void setNewImage(ImageProc *proc);
 
-private slots:
-	void newLibrary();
-	void openLibrary();
+	void setBlotObject(BlotObject *obj)
+	{
+		_obj = obj;
+	}
 	
+	void setPosition(float t, float b, float l, float r)
+	{
+		_left = l;
+		_top = t;
+		_bottom = b;
+		_right = r;
+	}
+
+	virtual void makeEffect();
+	
+	virtual BlotObject *object()
+	{
+		return _obj;
+	}
 private:
-	Presentation *_pres;
-	Library *_lib;
-	char **_argv;
-	int _argc;
+	BlotObject *_obj;
+	
+	float _left;
+	float _right;
+	float _bottom;
+	float _top;
 
+	int _advance;
 };
+
 
 #endif

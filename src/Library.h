@@ -19,14 +19,22 @@
 #ifndef __Blot__Library__
 #define __Blot__Library__
 
+#ifdef __APPLE__
+#define MENU_HEIGHT 0
+#else
+#define MENU_HEIGHT 25
+#endif
+
 #include <QMainWindow>
 #include <QListWidget>
+#include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
 #include "Parser.h"
 
 class ImageProc;
 class QListWidgetItem;
+class Presentation;
 
 class Library : public QMainWindow, public Parser
 {
@@ -52,6 +60,11 @@ public:
 		_filename = file;
 	}
 	
+	Presentation *presentation()
+	{
+		return _pres;
+	}
+	
 	virtual void addProperties();
 	virtual void addObject(Parser *child, std::string name);
 	
@@ -61,6 +74,7 @@ public slots:
 	void paste();
 	void elaborate();
 	void updateTitle();
+	void addToPresentation();
 
 private:
 	ImageProc *imageProcForItem(QListWidgetItem *item);
@@ -68,8 +82,10 @@ private:
 	void clearElaboration();
 	QListWidget *_list;	
 	QLabel *_imageLabel;
+	QPushButton *_addToPres;
 	QLineEdit *_edit;
 	std::string _filename;
+	Presentation *_pres;
 
 	static Library *_lib;
 };

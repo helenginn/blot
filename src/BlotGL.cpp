@@ -34,6 +34,11 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 
 void BlotGL::addObject(BlotObject *obj)
 {
+	if (obj == NULL)
+	{
+		return;
+	}
+
 	obj->initialisePrograms();
 	_objects.push_back(obj);
 }

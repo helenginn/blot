@@ -23,25 +23,45 @@
 #include "shaders/vImage.h"
 #include "shaders/fImage.h"
 
+void BlotObject::setVertices(float t, float b, float l, float r)
+{
+	if (vSize() == 0)
+	{
+		makeDummy();
+	}
+	
+	_vertices[0].pos[0] = t;
+	_vertices[0].pos[1] = l;
+	
+	_vertices[1].pos[0] = t;
+	_vertices[1].pos[1] = r;
+	
+	_vertices[2].pos[0] = b;
+	_vertices[2].pos[1] = l;
+	
+	_vertices[1].pos[0] = b;
+	_vertices[1].pos[1] = r;
+}
+
 void BlotObject::makeDummy()
 {
 	Vertex v; 
 	memset(&v, 0, sizeof(Vertex));
-	v.color[0] = 0.8;
+	v.color[0] = 0.0;
 	v.color[1] = 0.0;
 	v.color[2] = 0.0;
-	v.color[3] = 0.5;
+	v.color[3] = 1.0;
 	v.pos[0] = -0.5; v.pos[1] = -0.5;
-	v.tex[0] = 0; v.tex[1] = 0;
+	v.tex[0] = 0; v.tex[1] = 1;
 	_vertices.push_back(v);
 	v.pos[0] = -0.5; v.pos[1] = +0.5;
-	v.tex[0] = 0; v.tex[1] = 1;
+	v.tex[0] = 0; v.tex[1] = 0;
 	 _vertices.push_back(v);
 	v.pos[0] = +0.5; v.pos[1] = -0.5;
-	v.tex[0] = 1; v.tex[1] = 0;
+	v.tex[0] = 1; v.tex[1] = 1;
 	_vertices.push_back(v);
 	v.pos[0] = +0.5; v.pos[1] = +0.5;
-	v.tex[0] = 1; v.tex[1] = 1;
+	v.tex[0] = 1; v.tex[1] = 0;
 	_vertices.push_back(v);
 	
 	_indices.push_back(0);
@@ -58,6 +78,7 @@ BlotObject::BlotObject(ImageProc *proc)
 	_image = proc;
 	initializeOpenGLFunctions();
 	makeDummy();
+	_disabled = false;
 	_extra = true;
 }
 
@@ -219,6 +240,11 @@ void BlotObject::checkErrors()
 
 void BlotObject::render()
 {
+	if (_disabled)
+	{
+		return;
+	}
+
 	glUseProgram(_program);
 
 	if (_textures.size())

@@ -71,13 +71,20 @@ public:
 	{
 		return _indices.size();
 	}
+	
+	void setDisabled(bool dis)
+	{
+		_disabled = dis;
+	}
+
+	void setVertices(float t, float b, float l, float r);
 protected:
 	std::vector<Vertex> _vertices;
 	std::vector<GLuint> _indices;
 	
 	bool hasImage()
 	{
-		return (getImage() != NULL);
+		return (_image != NULL);
 	}
 	
 	ImageProc *getImage()
@@ -99,6 +106,7 @@ private:
 	std::vector<GLuint> _textures;
 	
 	bool _extra;
+	bool _disabled;
 };
 
 #endif

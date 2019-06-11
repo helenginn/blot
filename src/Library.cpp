@@ -25,19 +25,18 @@
 #include <QFileDialog>
 
 #include "Library.h"
+#include "Presentation.h"
 #include "ImageProc.h"
+#include "ImageAppear.h"
 
 Library *Library::_lib = NULL;
 
-#ifdef __APPLE__
-#define MENU_HEIGHT 0
-#else
-#define MENU_HEIGHT 25
-#endif
-
 #define DEFAULT_LIBRARY_HEIGHT 800
-#define DEFAULT_LIBRARY_WIDTH 1000
+#define DEFAULT_LIBRARY_WIDTH 600
 #define IMAGE_TITLE_HEIGHT 30
+#define IMAGE_HEIGHT 300
+#define BUTTON_WIDTH 200
+#define BUTTON_HEIGHT 40
 
 #define ELABORATION_MIDPOINT ((DEFAULT_LIBRARY_WIDTH + LIST_WIDTH) / 2)
 #define ELABORATION_WIDTH (DEFAULT_LIBRARY_WIDTH - LIST_WIDTH)
@@ -48,6 +47,8 @@ Library::Library()
 {
 	_imageLabel = NULL;
 	_edit = NULL;
+	_addToPres = NULL;
+	_pres = new Presentation();
 
 	this->resize(DEFAULT_LIBRARY_WIDTH, DEFAULT_LIBRARY_HEIGHT);
 	this->setWindowTitle("Blot Library");
@@ -149,11 +150,26 @@ void Library::clearElaboration()
 		delete _imageLabel; _imageLabel = NULL;
 	}
 
+	if (_addToPres != NULL)
+	{
+		_addToPres->hide();
+		delete _addToPres; _addToPres = NULL;
+	}
+
 	if (_edit != NULL)
 	{
 		_edit->hide();
 		delete _edit; _edit = NULL;
 	}
+}
+
+void Library::addToPresentation()
+{
+	ImageProc *proc = imageProcForItem(_list->currentItem());
+	ImageAppear *appear = new ImageAppear(_pres);
+	appear->setNewImage(proc);
+	_pres->addInstruction(appear);
+	appear->makeEffect();
 }
 
 void Library::elaborateItem(QListWidgetItem *item)
@@ -199,6 +215,19 @@ void Library::elaborateItem(QListWidgetItem *item)
 	_edit->setText(proc->qText());
 	_edit->show();
 	
+	if (_addToPres == NULL)
+	{
+		_addToPres  = new QPushButton(this);
+	}
+	
+	_addToPres->setGeometry(ELABORATION_MIDPOINT - BUTTON_WIDTH / 2,
+	                        MENU_HEIGHT + IMAGE_TITLE_HEIGHT + IMAGE_HEIGHT,
+							BUTTON_WIDTH, BUTTON_HEIGHT);
+	_addToPres->setText("Add to presentation");
+	_addToPres->show();
+	connect(_addToPres, &QPushButton::clicked, 
+	        this, &Library::addToPresentation);
+	
 	connect(_edit, &QLineEdit::editingFinished, this, &Library::updateTitle);
 }
 
@@ -224,10 +253,10 @@ void Library::addProperties()
 	{
 		QListWidgetItem *item = _list->item(i);
 		ImageProc *proc = imageProcForItem(item);
-		Parser *p = static_cast<Parser *>(proc);
-		
-		addChild("image_proc", p);
+		addChild("image_proc", proc);
 	}
+	
+	addChild("presentation", _pres);
 }
 
 void Library::addObject(Parser *child, std::string name)
@@ -242,6 +271,11 @@ void Library::addObject(Parser *child, std::string name)
 		item->setText(proc->qText());
 		
 		_list->addItem(item);
+	}
+	
+	if (name == "presentation")
+	{
+		_pres = static_cast<Presentation *>(child);
 	}
 }
 

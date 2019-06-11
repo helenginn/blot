@@ -1,5 +1,5 @@
-// BLot
-// Copyright (C) 2019- Helen Ginn
+// Bond
+// Copyright (C) 2017-2018 Helen Ginn
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,37 +16,26 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __Blot__StartScreen__
-#define __Blot__StartScreen__
+#include "ImageAppear.h"
 
-#include <QMainWindow>
-
-class Presentation;
-class Library;
-
-class StartScreen : public QMainWindow
+ImageAppear::ImageAppear(Presentation *pres) : Instruction(pres)
 {
-	Q_OBJECT
-	
-public:
-	StartScreen(QWidget *parent = 0, int argc = 0, char *argv[] = NULL);
-	~StartScreen();
-	
-protected:
-	virtual void mousePressEvent(QMouseEvent *e);
-	virtual void keyPressEvent(QKeyEvent *event);
-	void drawEditMode();
+	_advance = 10;
+	_left = -0.5;
+	_right = 0.5;
+	_top = 0.5;
+	_bottom = -0.5;
+}
 
-private slots:
-	void newLibrary();
-	void openLibrary();
-	
-private:
-	Presentation *_pres;
-	Library *_lib;
-	char **_argv;
-	int _argc;
+void ImageAppear::makeEffect()
+{
+//	_obj->setVertices(_top, _bottom, _left, _right);
+	_obj->setDisabled(false);
+}
 
-};
+void ImageAppear::setNewImage(ImageProc *proc)
+{
+	_obj = new BlotObject(proc);
+	_presentation->addInstruction(this);
+}
 
-#endif

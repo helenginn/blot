@@ -17,6 +17,7 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "Presentation.h"
+#include "Instruction.h"
 #include "ImageProc.h"
 #include "BlotObject.h"
 #include <QTimer>
@@ -26,16 +27,46 @@ Presentation::Presentation()
 {
 	_display = new BlotGL(this);
 
+	_currPos = 0;
 	_timer = new QTimer();
 	_timer->setInterval(30);
 	connect(_timer, SIGNAL(timeout()), _display, SLOT(update()));
 	_timer->start();
+	
+	resizeEvent(NULL);
+	advancePresentation();
+}
+
+void Presentation::advancePresentation(bool clicked)
+{
+	while (true)
+	{
+		if ((int)_instructions.size() <= _currPos)
+		{
+			break;
+		}
+		
+		if (_instructions[_currPos]->waitForClick() && !clicked)
+		{
+			break;
+		}
+		
+		Instruction *inst = _instructions[_currPos];
+		inst->makeEffect();
+		_currPos++;
+	}
 }
 
 void Presentation::addImage(ImageProc *proc)
 {
 	BlotObject *obj = new BlotObject(proc);
 	_display->addObject(obj);
+}
+
+void Presentation::addInstruction(Instruction *inst)
+{
+	_instructions.push_back(inst);
+	_display->addObject(inst->object());
 }
 
 void Presentation::resizeEvent(QResizeEvent *)
@@ -50,7 +81,17 @@ void Presentation::keyPressEvent(QKeyEvent *event)
 		hide();
 		deleteLater();
 	}
-
 }
 
+void Presentation::mousePressEvent(QMouseEvent *event)
+{
+	if (true || !_editMode)
+	{
+		advancePresentation(true);
+	}
+}
 
+void Presentation::addProperties()
+{
+
+}

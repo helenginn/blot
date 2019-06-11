@@ -9,6 +9,7 @@
 #include "charmanip.h"
 #include "Library.h"
 #include "ImageProc.h"
+#include "Presentation.h"
 
 ParserMap BaseParser::_allParsers;
 ClassMap BaseParser::_allClasses;
@@ -1225,6 +1226,10 @@ Parser *BaseParser::objectOfType(char *className)
 	else if (strcmp(className, "ImageProc") == 0)
 	{
 		object = static_cast<Parser *>(new ImageProc());
+	}
+	else if (strcmp(className, "Presentation") == 0)
+	{
+		object = static_cast<Parser *>(new Presentation());
 	}
 	else
 	{
