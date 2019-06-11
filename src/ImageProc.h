@@ -68,7 +68,7 @@ private:
 
 };
 
-Q_DECLARE_METATYPE(ImageProc)
+Q_DECLARE_METATYPE(ImageProc *)
 
 
 #endif

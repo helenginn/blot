@@ -608,7 +608,7 @@ void BaseParser::writeToFile(std::ofstream &stream, int in)
 	
 	setup();
 
-	stream << "vagabond data structure v0.0" << std::endl;
+	stream << "blot data structure v0.0" << std::endl;
 
 	outputContents(stream, in);
 

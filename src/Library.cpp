@@ -21,6 +21,7 @@
 #include <QMenuBar>
 #include <QApplication>
 #include <iostream>
+#include <fstream>
 
 #include "Library.h"
 #include "ImageProc.h"
@@ -74,10 +75,10 @@ void Library::paste()
 
 	QImage image = clip->image();
 	
-	ImageProc tmp = ImageProc(&image);
-	tmp.process();
+	ImageProc *tmp = new ImageProc(&image);
+	tmp->process();
 	QListWidgetItem *item = new QListWidgetItem();
-	QVariant var = QVariant::fromValue<ImageProc>(tmp);
+	QVariant var = QVariant::fromValue<ImageProc *>(tmp);
 	item->setData(Qt::UserRole, var);
 	item->setText("New image");
 
@@ -125,9 +126,8 @@ void Library::elaborateItem(QListWidgetItem *item)
 	}
 
 	_list->setCurrentItem(item);
-	QVariant var = item->data(Qt::UserRole);
-	ImageProc proc_copy = qvariant_cast<ImageProc>(var);
-	QImage *im = proc_copy.getImage();
+	ImageProc *proc = imageProcForItem(item);
+	QImage *im = proc->getImage();
 	
 	float width = im->width();
 	float height = 300;
@@ -164,10 +164,23 @@ void Library::elaborateItem(QListWidgetItem *item)
 	connect(_edit, &QLineEdit::editingFinished, this, &Library::updateTitle);
 }
 
+ImageProc *Library::imageProcForItem(QListWidgetItem *item)
+{
+	QVariant var = item->data(Qt::UserRole);
+	ImageProc *proc = qvariant_cast<ImageProc *>(var);
+	
+	return proc;
+}
+
 void Library::updateTitle()
 {
 	_list->currentItem()->setText(_edit->text());
 	_list->setFocus();
+
+	std::ofstream file;
+	file.open("library.blot");
+	writeToFile(file, 0);
+	file.close();
 }
 
 void Library::addProperties()
@@ -175,8 +188,10 @@ void Library::addProperties()
 	for (int i = 0; i < _list->count(); i++)
 	{
 		QListWidgetItem *item = _list->item(i);
-		QVariant var = item->data(Qt::UserRole);
-		ImageProc proc_copy = qvariant_cast<ImageProc>(var);
+		ImageProc *proc = imageProcForItem(item);
+		Parser *p = static_cast<Parser *>(proc);
+		
+		addChild("image_proc", p);
 	}
 }
 

@@ -55,6 +55,7 @@ public slots:
 	void updateTitle();
 
 private:
+	ImageProc *imageProcForItem(QListWidgetItem *item);
 	void elaborateItem(QListWidgetItem *item);
 	void clearElaboration();
 	QListWidget *_list;	
