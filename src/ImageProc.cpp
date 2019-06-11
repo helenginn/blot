@@ -23,23 +23,36 @@
 ImageProc::ImageProc(QImage *image)
 {
 	QImage rgba = image->convertToFormat(QImage::Format_RGBA8888);
-	_image = rgba;
+	_image = new QImage(rgba);
 }
+
+ImageProc::ImageProc()
+{
+	_image = NULL;
+}
+
+/*
+ImageProc::ImageProc(const ImageProc &other)
+{
+	_image = other._image;
+	_values = other._values;
+}
+*/
 
 void ImageProc::collapseToActiveCoordinate()
 {
-	size_t tot_pix = _image.height() * _image.width();
+	size_t tot_pix = _image->height() * _image->width();
 	_values.resize(tot_pix);
 	size_t count = 0;
 
-	for (int y = 0; y < _image.height(); y++)
+	for (int y = 0; y < _image->height(); y++)
 	{
-		for (int x = 0; x < _image.width(); x++)
+		for (int x = 0; x < _image->width(); x++)
 		{
-			QColor colour = _image.pixel(x, y);
+			QColor colour = _image->pixel(x, y);
 
 			int coord = 0;
-			if (_image.hasAlphaChannel())
+			if (_image->hasAlphaChannel())
 			{
 				coord = colour.alpha();
 			}
@@ -66,8 +79,8 @@ void ImageProc::bindToTexture(BlotObject *sender)
 	std::cout << "Binding" << std::endl;
 	glBindTexture(GL_TEXTURE_2D, sender->texture(0));
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _image.width(), _image.height(), 
-	             0, GL_RGBA, GL_UNSIGNED_BYTE, _image.bits());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _image->width(), _image->height(), 
+	             0, GL_RGBA, GL_UNSIGNED_BYTE, _image->bits());
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

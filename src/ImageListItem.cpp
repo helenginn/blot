@@ -16,47 +16,9 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __Blot__ImageProc__
-#define __Blot__ImageProc__
+#include "ImageListItem.h"
 
-#include <cstdlib>
-#include <QImage>
-#include <vector>
-#include <QtGui/qopengl.h>
-#include "Parser.h"
-
-typedef struct
+ImageListItem::ImageListItem(ImageProc *proc) : QListWidgetItem(parent, type)
 {
-	int data;
-	int level;
-} ImageVal;
 
-class BlotObject;
-
-class ImageProc 
-{
-public:
-	ImageProc();
-	ImageProc(QImage *image);
-//	ImageProc(const ImageProc &other);
-	~ImageProc() {};
-	void process();
-	void bindToTexture(BlotObject *sender);
-	
-	QImage *getImage()
-	{
-		return _image;
-	}
-
-private:
-	void collapseToActiveCoordinate();
-
-	QImage *_image;
-	std::vector<ImageVal> _values;
-
-};
-
-Q_DECLARE_METATYPE(ImageProc)
-
-
-#endif
+}

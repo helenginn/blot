@@ -25,18 +25,40 @@
 #include "Library.h"
 #include "ImageProc.h"
 
+Library *Library::_lib = NULL;
+
+#ifdef __APPLE__
+#define MENU_HEIGHT 0
+#else
+#define MENU_HEIGHT 25
+#endif
+
 #define DEFAULT_LIBRARY_HEIGHT 800
 #define DEFAULT_LIBRARY_WIDTH 1000
+#define IMAGE_TITLE_HEIGHT 30
+
+#define ELABORATION_MIDPOINT ((DEFAULT_LIBRARY_WIDTH + LIST_WIDTH) / 2)
+#define ELABORATION_WIDTH (DEFAULT_LIBRARY_WIDTH - LIST_WIDTH)
+
+#define LIST_WIDTH 200
 
 Library::Library()
 {
-	_tmp = NULL;
+	_imageLabel = NULL;
+	_edit = NULL;
+
 	this->resize(DEFAULT_LIBRARY_WIDTH, DEFAULT_LIBRARY_HEIGHT);
 	this->setWindowTitle("Blot Library");
+	_list = new QListWidget(this);
+	_list->setGeometry(0, MENU_HEIGHT, LIST_WIDTH, DEFAULT_LIBRARY_HEIGHT);
+	_list->show();
 
 	QMenu *edit = menuBar()->addMenu(tr("&Edit"));
 	QAction *action = edit->addAction(tr("Paste image"));
+	action->setShortcut(QKeySequence::Paste);
 	connect(action, &QAction::triggered, this, &Library::paste);
+	connect(_list, &QListWidget::itemSelectionChanged, 
+	        this, &Library::elaborate);
 }
 
 void Library::paste()
@@ -51,16 +73,116 @@ void Library::paste()
 	} 
 
 	QImage image = clip->image();
-	std::cout << image.width() << " " << image.height() << std::endl;
 	
-	_tmp = new ImageProc(&image);
-	_tmp->process();
+	ImageProc tmp = ImageProc(&image);
+	tmp.process();
+	QListWidgetItem *item = new QListWidgetItem();
+	QVariant var = QVariant::fromValue<ImageProc>(tmp);
+	item->setData(Qt::UserRole, var);
+	item->setText("New image");
+
+	_list->addItem(item);
+	elaborateItem(item);
+
+	if (_edit)
+	{
+		_edit->selectAll();
+		_edit->setFocus();
+		_edit->setFocusPolicy(Qt::StrongFocus);
+	}
+}
+
+void Library::setCurrentLibrary(Library *lib)
+{
+	_lib = lib;
+}
+
+void Library::elaborate()
+{
+	elaborateItem(_list->currentItem());
+}
+
+void Library::clearElaboration()
+{
+	if (_imageLabel != NULL)
+	{
+		_imageLabel->hide();
+		delete _imageLabel; _imageLabel = NULL;
+	}
+
+	if (_edit != NULL)
+	{
+		_edit->hide();
+		delete _edit; _edit = NULL;
+	}
+}
+
+void Library::elaborateItem(QListWidgetItem *item)
+{
+	if (item == NULL)
+	{
+		return;
+	}
+
+	_list->setCurrentItem(item);
+	QVariant var = item->data(Qt::UserRole);
+	ImageProc proc_copy = qvariant_cast<ImageProc>(var);
+	QImage *im = proc_copy.getImage();
+	
+	float width = im->width();
+	float height = 300;
+	if (im->height() > height)
+	{
+		width = im->width() * 300 / im->height();
+	}
+	else
+	{
+		height = im->height();
+	}
+
+	if (_imageLabel == NULL)
+	{
+		_imageLabel = new QLabel(this);
+	}
+
+	_imageLabel->setPixmap(QPixmap::fromImage(im->scaled(width, height)));
+	_imageLabel->setGeometry(ELABORATION_MIDPOINT - width / 2, 
+	                    MENU_HEIGHT + IMAGE_TITLE_HEIGHT,
+	                    width, height);
+	_imageLabel->show();
+	
+	if (_edit == NULL)
+	{
+		_edit = new QLineEdit(this);
+	}
+
+	_edit->setGeometry(LIST_WIDTH + 10, MENU_HEIGHT + 10,
+	                   ELABORATION_WIDTH, IMAGE_TITLE_HEIGHT);
+	_edit->setText(item->text());
+	_edit->show();
+	
+	connect(_edit, &QLineEdit::editingFinished, this, &Library::updateTitle);
+}
+
+void Library::updateTitle()
+{
+	_list->currentItem()->setText(_edit->text());
+	_list->setFocus();
+}
+
+void Library::addProperties()
+{
+	for (unsigned long i = 0; i < _list->count(); i++)
+	{
+		QListWidgetItem *item = _list->item(i);
+		QVariant var = item->data(Qt::UserRole);
+		ImageProc proc_copy = qvariant_cast<ImageProc>(var);
+
+	}
 }
 
 Library::~Library()
 {
-	if (_tmp != NULL)
-	{
-		delete _tmp; _tmp = NULL;
-	}
+	clearElaboration();
+
 }

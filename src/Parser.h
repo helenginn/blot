@@ -1,4 +1,4 @@
-// Blot
+// Vagabond
 // Copyright (C) 2017-2018 Helen Ginn
 // 
 // This program is free software: you can redistribute it and/or modify
@@ -16,52 +16,20 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __Blot__Library__
-#define __Blot__Library__
+#ifndef __vagabond__BaseParser_h__
+#define __vagabond__BaseParser_h__
 
-#include <QMainWindow>
-#include <QListWidget>
-#include <QLabel>
-#include <QLineEdit>
-#include "Parser.h"
+#include "BaseParser.h"
 
-class ImageProc;
-class QListWidgetItem;
-
-class Library : public QMainWindow, public Parser
+class Parser : public BaseParser
 {
-	Q_OBJECT
-public:
-	Library();
-	virtual ~Library();
-	
-	static void setCurrentLibrary(Library *lib);
-	
-	virtual std::string getClassName()
-	{
-		return "Library";
-	}
-	
-	virtual std::string getParserIdentifier()
-	{
-		return "MainLibrary";
-	}
-	
-	virtual void addProperties();
-	
-public slots:
-	void paste();
-	void elaborate();
-	void updateTitle();
+public:	
+	Parser() : BaseParser() {};
+	virtual ~Parser() {};
 
-private:
-	void elaborateItem(QListWidgetItem *item);
-	void clearElaboration();
-	QListWidget *_list;	
-	QLabel *_imageLabel;
-	QLineEdit *_edit;
-
-	static Library *_lib;
+	static Parser *processBlock(char *block);
 };
+
+
 
 #endif

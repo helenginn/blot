@@ -16,52 +16,22 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __Blot__Library__
-#define __Blot__Library__
+#ifndef __Blot__ImageListItem__
+#define __Blot__ImageListItem__
 
-#include <QMainWindow>
-#include <QListWidget>
-#include <QLabel>
-#include <QLineEdit>
-#include "Parser.h"
+#include <QListWidgetItem>
 
 class ImageProc;
-class QListWidgetItem;
 
-class Library : public QMainWindow, public Parser
+class ImageListItem : public QListWidgetItem
 {
 	Q_OBJECT
 public:
-	Library();
-	virtual ~Library();
+	ImageListItem(ImageProc *proc, QListWidget *parent = NULL,
+	              int type = 1000);
 	
-	static void setCurrentLibrary(Library *lib);
-	
-	virtual std::string getClassName()
-	{
-		return "Library";
-	}
-	
-	virtual std::string getParserIdentifier()
-	{
-		return "MainLibrary";
-	}
-	
-	virtual void addProperties();
-	
-public slots:
-	void paste();
-	void elaborate();
-	void updateTitle();
-
 private:
-	void elaborateItem(QListWidgetItem *item);
-	void clearElaboration();
-	QListWidget *_list;	
-	QLabel *_imageLabel;
-	QLineEdit *_edit;
 
-	static Library *_lib;
 };
 
 #endif
