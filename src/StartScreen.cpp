@@ -19,15 +19,11 @@
 #define DEFAULT_WIDTH 600
 #define DEFAULT_HEIGHT 400
 
-#include <iostream>
 #include <QMouseEvent>
 #include <QWindow>
-#include <QClipboard>
-#include <QApplication>
-#include <QMimeData>
 #include "StartScreen.h"
+#include <QApplication>
 #include "Presentation.h"
-#include "ImageProc.h"
 
 StartScreen::StartScreen(QWidget *parent,
                          int argc, char *argv[]) : QMainWindow(parent)
@@ -36,7 +32,6 @@ StartScreen::StartScreen(QWidget *parent,
 
 	this->setWindowTitle("Blot");
 
-	_tmp = NULL;
 	_argc = argc;
 	_argv = argv;
 	
@@ -52,43 +47,21 @@ void StartScreen::keyPressEvent(QKeyEvent *event)
 		_pres->show();
 		_pres->windowHandle()->setScreen(screens.last());
 		_pres->showFullScreen();
-		
+/*		
 		if (_tmp)
 		{
 			_pres->addImage(_tmp);
 		}
+		*/
 	}
 }
 
 void StartScreen::mousePressEvent(QMouseEvent *e)
 {
-	paste();
 	
-}
-
-void StartScreen::paste()
-{
-	const QClipboard *clip = QApplication::clipboard();
-	const QMimeData *mimeData = clip->mimeData();
-
-	if (!mimeData->hasImage())
-	{
-		std::cout << "No image" << std::endl;
-		return;
-	} 
-
-	QImage image = clip->image();
-	std::cout << image.width() << " " << image.height() << std::endl;
-	
-	_tmp = new ImageProc(&image);
-	_tmp->process();
 }
 
 StartScreen::~StartScreen()
 {
-	if (_tmp != NULL)
-	{
-		delete _tmp; _tmp = NULL;
-	}
 }
 

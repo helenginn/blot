@@ -3,6 +3,7 @@
 #include <QtWidgets/qapplication.h>
 #include "commit.h"
 #include "StartScreen.h"
+#include "Library.h"
 
 int main(int argc, char * argv[])
 {
@@ -11,8 +12,8 @@ int main(int argc, char * argv[])
 	QApplication app(argc, argv);
 	setlocale(LC_NUMERIC, "C");
 
-	StartScreen startScreen(NULL, argc, argv);
-	startScreen.show();
+	Library library;
+	library.show();
 	
 	std::cout << "Blot version: " << BLOT_VERSION_COMMIT_ID << std::endl;
 
