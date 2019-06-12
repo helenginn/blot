@@ -84,7 +84,7 @@ void ImageProc::bindToTexture(BlotObject *sender)
 	<< _image->height() << std::endl;
 	glBindTexture(GL_TEXTURE_2D, sender->texture(0));
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _image->width(), _image->height(), 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _image->width(), _image->height(), 
 	             0, GL_RGBA, GL_UNSIGNED_BYTE, _image->bits());
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

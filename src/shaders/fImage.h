@@ -12,7 +12,7 @@ std::string fImage =
 "{\n"\
 "	vec2 tex = vec2(vTex[0], vTex[1]);\n"\
 "	vec4 temp = texture2D(pic_tex, tex);\n"\
-"	gl_FragColor = temp;\n"\
+"	gl_FragColor = vec4(temp[2], temp[1], temp[0], temp[3]);\n"\
 "\n"\
 "\n"\
 "\n"\

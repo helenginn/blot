@@ -30,25 +30,25 @@ void BlotObject::setVertices(float t, float b, float l, float r)
 		makeDummy();
 	}
 	
-	_vertices[0].pos[0] = t;
+	_vertices[0].pos[0] = b;
 	_vertices[0].pos[1] = l;
-	
-	_vertices[1].pos[0] = t;
-	_vertices[1].pos[1] = r;
-	
-	_vertices[2].pos[0] = b;
-	_vertices[2].pos[1] = l;
 	
 	_vertices[1].pos[0] = b;
 	_vertices[1].pos[1] = r;
+	
+	_vertices[2].pos[0] = t;
+	_vertices[2].pos[1] = l;
+	
+	_vertices[3].pos[0] = t;
+	_vertices[3].pos[1] = r;
 }
 
 void BlotObject::makeDummy()
 {
 	Vertex v; 
 	memset(&v, 0, sizeof(Vertex));
-	v.color[0] = 0.0;
-	v.color[1] = 0.0;
+	v.color[0] = 1.0;
+	v.color[1] = 1.0;
 	v.color[2] = 1.0;
 	v.color[3] = 1.0;
 	v.pos[0] = -0.5; v.pos[1] = -0.5;
