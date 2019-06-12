@@ -39,7 +39,6 @@ public:
 	
 	void drawEditMode();
 protected:
-	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void keyPressEvent(QKeyEvent *event);
 
 private slots:

@@ -185,7 +185,6 @@ void BlotGL::keyPressEvent(QKeyEvent *event)
 	}
 }
 
-/*
 void BlotGL::mousePressEvent(QMouseEvent *event)
 {
 	if (true || !_editMode)
@@ -194,7 +193,6 @@ void BlotGL::mousePressEvent(QMouseEvent *event)
 		advancePresentation(true);
 	}
 }
-*/
 
 void BlotGL::addProperties()
 {

@@ -131,12 +131,6 @@ void StartScreen::keyPressEvent(QKeyEvent *event)
 	}
 }
 
-void StartScreen::mousePressEvent(QMouseEvent *e)
-{
-	std::cout << "Pressing here" << std::endl;
-	_pres->advancePresentation(true);
-}
-
 StartScreen::~StartScreen()
 {
 }
