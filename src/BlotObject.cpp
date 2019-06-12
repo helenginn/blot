@@ -277,16 +277,12 @@ void BlotObject::render()
 	
 	glUseProgram(_program);
 	rebindProgram();
-	std::cout << "Rendering with " << _program ;
 
 	if (_textures.size())
 	{
 		glBindTexture(GL_TEXTURE_2D, _textures[0]);
-		std::cout << " and " << _textures[0];
 	}
 	
-	std::cout << std::endl;
-
 	glDrawElements(_renderType, indexCount(), GL_UNSIGNED_INT, 0);
 	checkErrors();
 

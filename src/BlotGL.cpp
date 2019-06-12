@@ -82,7 +82,6 @@ void BlotGL::resizeGL(int w, int h)
 
 void BlotGL::paintGL()
 {
-	std::cout << "Repainting, validity " << isValid() << std::endl;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
