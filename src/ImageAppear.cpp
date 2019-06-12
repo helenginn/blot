@@ -21,10 +21,10 @@
 ImageAppear::ImageAppear(BlotGL *pres) : Instruction(pres)
 {
 	_advance = 10;
-	_left = -0.5;
-	_right = 0.5;
-	_top = 0.5;
-	_bottom = -0.5;
+	_left = -0.3;
+	_right = 0.3;
+	_top = 0.3;
+	_bottom = -0.3;
 }
 
 void ImageAppear::makeEffect()
@@ -32,15 +32,21 @@ void ImageAppear::makeEffect()
 	std::string text = _obj->getImage()->text();
 	std::cout << "Make effect for " << text << std::endl;
 	_obj->setDisabled(false);
+	_obj->setVertices(_top, _bottom, _left, _right);
 
-	_presentation->dodgyRefresh();
-	
 	_presentation->update();
 }
 
 void ImageAppear::setNewImage(ImageProc *proc)
 {
-	std::cout << "Setting new image" << std::endl;
 	_obj = new BlotObject(proc);
+	
+	QImage *im = proc->getImage();
+	int width = im->width();
+	int height = im->height();
+
+	double ratio = height / (double)width;
+	_left = _bottom * ratio;
+	_right = _top * ratio;
 }
 
