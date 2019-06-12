@@ -72,6 +72,11 @@ public:
 		return _indices.size();
 	}
 	
+	bool isDisabled()
+	{
+		return _disabled;
+	}
+	
 	void setDisabled(bool dis)
 	{
 		_disabled = dis;
@@ -87,7 +92,6 @@ public:
 		return _image;
 	}
 
-	bool isCovered(double x, double y);
 	void setVertices(float t, float b, float l, float r);
 	
 	void select(bool sel);

@@ -32,6 +32,8 @@ public:
 		return false;
 	}
 	
+	
+	virtual bool isCovered(double x, double y) { return false; }
 	virtual void moveFractional(double fx, double fy) {};
 	
 	void setOnClick(bool click)
@@ -60,5 +62,6 @@ private:
 
 };
 
+Q_DECLARE_METATYPE(Instruction *)
 
 #endif

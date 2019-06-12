@@ -119,10 +119,14 @@ void StartScreen::drawEditMode()
 	}
 
 	_pres->QOpenGLWidget::setParent(this);
+	_pres->makeList(this);
 	_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
 	                   DEFAULT_WIDTH - INSTRUCTION_WIDTH, DEFAULT_HEIGHT);
 	_pres->setEditMode(true);
 	_pres->show();
+
+	setFocus();
+	setFocusPolicy(Qt::StrongFocus);
 }
 
 void StartScreen::newLibrary()

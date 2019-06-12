@@ -22,6 +22,7 @@
 #include <QtWidgets/qopenglwidget.h>
 #include <QtGui/qopengl.h>
 #include <QtGui/qopenglfunctions.h>
+#include <QListWidget>
 #include <vector>
 #include "Parser.h"
 
@@ -36,10 +37,12 @@ class BlotGL : public QOpenGLWidget, QOpenGLFunctions, public Parser
 public:
 	BlotGL(QWidget *parent = NULL);
 	
+	void makeList(QWidget *p);
 	void addObject(BlotObject *obj);
 	void addImage(ImageProc *proc);
 	void addInstruction(Instruction *inst);
 	void advancePresentation(bool clicked = false);
+	Instruction *instructionForItem(QListWidgetItem *item);
 	
 	void setEditMode(bool edit)
 	{
@@ -77,6 +80,7 @@ private:
 	void initialisePrograms();
 	void findSelectedInstruction(double x, double y);
 	
+	QListWidget *_list;
 	Instruction *_currInstruct;
 	std::vector<BlotObject *> _objects;
 	QObject *_parent;

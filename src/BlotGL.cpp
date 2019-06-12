@@ -45,11 +45,22 @@ void BlotGL::initializeGL()
 	initialisePrograms();
 }
 
+void BlotGL::makeList(QWidget *p)
+{
+	_list = new QListWidget(p);
+	_list->setGeometry(0, MENU_HEIGHT, INSTRUCTION_WIDTH, 
+	                   p->height() - MENU_HEIGHT);
+	_list->show();
+
+}
+
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p, 0)
 {
+	_list = NULL;
 	_currPos = 0;
 	_editMode = true;
 	_currInstruct = NULL;
+
 	advancePresentation();
 }
 
@@ -90,19 +101,25 @@ void BlotGL::initialisePrograms()
 
 void BlotGL::advancePresentation(bool clicked)
 {
+	if (_list == NULL)
+	{
+		return;
+	}
+
 	while (true)
 	{
-		if ((int)_instructions.size() <= _currPos)
+		if ((int)_list->count() <= _currPos)
 		{
 			break;
 		}
 		
-		if (_instructions[_currPos]->waitForClick() && !clicked)
+		Instruction *inst = instructionForItem(_list->item(_currPos));
+		
+		if (inst->waitForClick() && !clicked)
 		{
 			break;
 		}
 		
-		Instruction *inst = _instructions[_currPos];
 		inst->makeEffect();
 		update();
 		clicked = false;
@@ -144,6 +161,12 @@ void BlotGL::addImage(ImageProc *proc)
 
 void BlotGL::addInstruction(Instruction *inst)
 {
+	QListWidgetItem *item = new QListWidgetItem();
+	QVariant var = QVariant::fromValue<Instruction *>(inst);
+	item->setData(Qt::UserRole, var);
+	item->setText("Show " + inst->object()->getImage()->qText());
+
+	_list->addItem(item);
 	_instructions.push_back(inst);
 	addObject(inst->object());
 }
@@ -165,6 +188,15 @@ void BlotGL::mousePressEvent(QMouseEvent *e)
 
 }
 
+Instruction *BlotGL::instructionForItem(QListWidgetItem *item)
+{
+	QVariant var = item->data(Qt::UserRole);
+	Instruction *inst = qvariant_cast<Instruction *>(var);
+	
+	return inst;
+}
+
+
 void BlotGL::findSelectedInstruction(double x, double y)
 {
 	if (_currInstruct != NULL)
@@ -175,24 +207,26 @@ void BlotGL::findSelectedInstruction(double x, double y)
 	Instruction *old = _currInstruct;
 	_currInstruct = NULL;
 
-	for (int i = _instructions.size() - 1; i >= 0; i--)
+	for (int i = _list->count() - 1; i >= 0; i--)
 	{
-		if (!_instructions[i]->canMove())
+		Instruction *option = instructionForItem(_list->item(i));
+
+		if (!option->canMove())
 		{
 			continue;
 		}
 		
-		if (_instructions[i] == old)
+		if (option == old)
 		{
 			continue;
 		}
 
-		BlotObject *option = _instructions[i]->object();
-		bool cover = option->isCovered(x, y);
+		bool cover = option->isCovered(-y, x);
 
 		if (cover)
 		{
-			_currInstruct = _instructions[i];
+			_currInstruct = option;
+			_list->setCurrentItem(_list->item(i));
 			break;
 		}
 	}
@@ -217,6 +251,13 @@ void BlotGL::mouseMoveEvent(QMouseEvent *e)
 	{
 		return;
 	}
+
+	/*
+	if (e->button() != Qt::RightButton)
+	{
+		return;
+	}
+	*/
 
 	int newX = e->x();
 	int newY = e->y();

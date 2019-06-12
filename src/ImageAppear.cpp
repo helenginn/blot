@@ -59,7 +59,26 @@ void ImageAppear::moveFractional(double fx, double fy)
 
 	_obj->setVertices(_top, _bottom, _left, _right);
 }
-	
+
+bool ImageAppear::isCovered(double x, double y)
+{
+	if (_obj->isDisabled())
+	{
+		return false;
+	}
+
+	if (y < _bottom || y > _top)
+	{
+		return false;
+	}
+
+	if (x < _left || x > _right)
+	{
+		return false;
+	}
+
+	return true;
+}
 
 void ImageAppear::select(bool sel)
 {

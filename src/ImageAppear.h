@@ -38,6 +38,7 @@ public:
 	void setNewImage(ImageProc *proc);
 	virtual void select(bool sel);
 	virtual void moveFractional(double fx, double fy);;
+	virtual bool isCovered(double x, double y);
 
 	void setBlotObject(BlotObject *obj)
 	{

@@ -23,21 +23,6 @@
 #include "shaders/vImage.h"
 #include "shaders/fImage.h"
 
-bool BlotObject::isCovered(double x, double y)
-{
-	if (y < _vertices[0].pos[0] || y > _vertices[2].pos[0])
-	{
-		return false;
-	}
-
-	if (x < _vertices[0].pos[1] || x > _vertices[1].pos[1])
-	{
-		return false;
-	}
-
-	return !_disabled;
-}
-
 void BlotObject::setVertices(float t, float b, float l, float r)
 {
 	if (vSize() == 0)
