@@ -29,16 +29,6 @@
 #include <QWindow>
 #include <iostream>
 
-BlotGL::BlotGL(BlotGL &other)
-{
-	_objects = other._objects;
-	_parent = other._parent;
-	_editMode = other._editMode;
-	_instructions = other._instructions;
-	_currPos = other._currPos;
-	_timer = other._timer;
-}
-
 void BlotGL::initializeGL()
 {
 	initializeOpenGLFunctions();

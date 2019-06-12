@@ -35,7 +35,6 @@ class BlotGL : public QOpenGLWidget, QOpenGLFunctions, public Parser
 	
 public:
 	BlotGL(QWidget *parent = NULL);
-	BlotGL(BlotGL &other);
 	
 	void addObject(BlotObject *obj);
 	void addImage(ImageProc *proc);
