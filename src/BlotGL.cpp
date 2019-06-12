@@ -166,17 +166,17 @@ void BlotGL::keyPressEvent(QKeyEvent *event)
 	}
 }
 
-void BlotGL::mouseReleaseEvent(QMouseEvent *e)
+void BlotGL::mousePressEvent(QMouseEvent *e)
 {
-	if (!_editMode)
-	{
-		advancePresentation(true);
-		return;
-	}
-	
-	double x = (e->x() / (double)width()  * 2) - 1;
-	double y = (e->y() / (double)height() * 2) - 1;
-	
+	_startX = e->x();
+	_startY = e->y();
+	_lastX = _startX;
+	_lastY = _startY;
+
+}
+
+void BlotGL::findSelectedInstruction(double x, double y)
+{
 	if (_currInstruct != NULL)
 	{
 		_currInstruct->select(false);
@@ -218,6 +218,43 @@ void BlotGL::mouseReleaseEvent(QMouseEvent *e)
 		std::cout << "Selected " << obj->getImage()->text() << std::endl;
 		_currInstruct->select(true);
 
+	}
+}
+
+void BlotGL::mouseMoveEvent(QMouseEvent *e)
+{
+	if (_currInstruct == NULL)
+	{
+		return;
+	}
+
+	int newX = e->x();
+	int newY = e->y();
+
+	double frac_x = ((newX - _lastX) / (double)width() * 2);
+	double frac_y = ((newY - _lastY) / (double)height() * 2);
+	
+	_lastX = newX;
+	_lastY = newY;
+	_currInstruct->moveFractional(-frac_y, frac_x);
+	update();
+}
+
+void BlotGL::mouseReleaseEvent(QMouseEvent *e)
+{
+	if (!_editMode)
+	{
+		advancePresentation(true);
+		return;
+	}
+	
+	/* selection */
+	if (e->x() == _startX && e->y() == _startY)
+	{
+		double x = (e->x() / (double)width()  * 2) - 1;
+		double y = (e->y() / (double)height() * 2) - 1;
+
+		findSelectedInstruction(x, y);
 	}
 }
 

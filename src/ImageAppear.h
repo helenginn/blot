@@ -37,6 +37,7 @@ public:
 
 	void setNewImage(ImageProc *proc);
 	virtual void select(bool sel);
+	virtual void moveFractional(double fx, double fy);;
 
 	void setBlotObject(BlotObject *obj)
 	{

@@ -71,9 +71,12 @@ protected:
 	virtual void resizeGL(int w, int h);
 	virtual void keyPressEvent(QKeyEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
+	virtual void mousePressEvent(QMouseEvent *e);
+	virtual void mouseMoveEvent(QMouseEvent *e);
 
 private:
 	void initialisePrograms();
+	void findSelectedInstruction(double x, double y);
 	
 	Instruction *_currInstruct;
 	std::vector<BlotObject *> _objects;
@@ -81,6 +84,10 @@ private:
 	bool _editMode;
 	std::vector<Instruction *> _instructions;
 	int _currPos;
+	int _startX;
+	int _startY;
+	int _lastX;
+	int _lastY;
 	QTimer *_timer;
 };
 

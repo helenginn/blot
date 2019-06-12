@@ -50,6 +50,17 @@ void ImageAppear::setNewImage(ImageProc *proc)
 	_right = _top * ratio;
 }
 
+void ImageAppear::moveFractional(double fx, double fy)
+{
+	_left += fx;
+	_right += fx;
+	_top += fy;
+	_bottom += fy;
+
+	_obj->setVertices(_top, _bottom, _left, _right);
+}
+	
+
 void ImageAppear::select(bool sel)
 {
 	if (!_obj)

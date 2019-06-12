@@ -32,6 +32,8 @@ public:
 		return false;
 	}
 	
+	virtual void moveFractional(double fx, double fy) {};
+	
 	void setOnClick(bool click)
 	{
 		_onClick = click;
@@ -46,7 +48,7 @@ public:
 	{
 		return NULL;
 	}
-
+	
 	virtual void makeEffect() = 0;
 	
 	virtual void select(bool sel) {};
