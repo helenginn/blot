@@ -166,12 +166,46 @@ void BlotGL::keyPressEvent(QKeyEvent *event)
 	}
 }
 
-void BlotGL::mousePressEvent(QMouseEvent *event)
+void BlotGL::mouseReleaseEvent(QMouseEvent *e)
 {
 	if (!_editMode)
 	{
-		std::cout << "Pressing" << std::endl;
 		advancePresentation(true);
+		return;
+	}
+	
+	double x = (e->x() / (double)width()  * 2) - 1;
+	double y = (e->y() / (double)height() * 2) - 1;
+	
+	Instruction *instruct = NULL;
+
+	for (int i = _instructions.size() - 1; i >= 0; i--)
+	{
+		if (!_instructions[i]->canMove())
+		{
+			continue;
+		}
+
+		BlotObject *option = _instructions[i]->object();
+		bool cover = option->isCovered(x, y);
+
+		if (cover)
+		{
+			instruct = _instructions[i];
+			break;
+		}
+	}
+
+	if (!instruct)
+	{
+		std::cout << "No selection" << std::endl;
+		return;
+	}
+	else
+	{
+		BlotObject *obj = instruct->object();
+		std::cout << "Selected " << obj->getImage()->text() << std::endl;
+
 	}
 }
 

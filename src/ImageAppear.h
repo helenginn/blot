@@ -30,6 +30,11 @@ public:
 	ImageAppear(BlotGL *pres);
 	virtual ~ImageAppear() {};
 	
+	virtual bool canMove()
+	{
+		return true;
+	}
+
 	void setNewImage(ImageProc *proc);
 
 	void setBlotObject(BlotObject *obj)

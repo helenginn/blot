@@ -27,6 +27,11 @@ public:
 	Instruction(BlotGL *pres);
 	virtual ~Instruction() {};
 	
+	virtual bool canMove()
+	{
+		return false;
+	}
+	
 	void setOnClick(bool click)
 	{
 		_onClick = click;

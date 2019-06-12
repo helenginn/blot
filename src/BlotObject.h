@@ -87,6 +87,7 @@ public:
 		return _image;
 	}
 
+	bool isCovered(double x, double y);
 	void setVertices(float t, float b, float l, float r);
 protected:
 	std::vector<Vertex> _vertices;

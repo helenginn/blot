@@ -70,7 +70,7 @@ protected:
 	virtual void paintGL();
 	virtual void resizeGL(int w, int h);
 	virtual void keyPressEvent(QKeyEvent *event);
-	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void mouseReleaseEvent(QMouseEvent *event);
 
 private:
 	void initialisePrograms();
