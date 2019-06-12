@@ -33,15 +33,12 @@ StartScreen::StartScreen(QWidget *parent,
 	this->resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
 	this->setWindowTitle("Blot");
-	_pres = new BlotGL(this);
-	_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
-	                   DEFAULT_WIDTH - INSTRUCTION_WIDTH, DEFAULT_HEIGHT);
-	_pres->show();
 
 	_argc = argc;
 	_argv = argv;
 	
 	_lib = NULL;
+	_pres = NULL;
 
 	QMenu *edit = menuBar()->addMenu(tr("&File"));
 	QAction *action = edit->addAction(tr("New library"));
@@ -55,8 +52,11 @@ StartScreen::StartScreen(QWidget *parent,
 
 void StartScreen::resizeEvent(QResizeEvent *event)
 {
-	_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
-	                   width() - INSTRUCTION_WIDTH, height());
+	if (_pres)
+	{
+		_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
+		                   width() - INSTRUCTION_WIDTH, height());
+	}
 }
 
 void StartScreen::openLibrary()
@@ -99,7 +99,6 @@ void StartScreen::openLibrary()
 
 	_lib = static_cast<Library *>(p);
 	_lib->setFilename(fileNames[0].toStdString());
-	_lib->setPresentation(_pres);
 	_lib->show();
 
 	drawEditMode();
@@ -134,7 +133,6 @@ void StartScreen::newLibrary()
 	}
 
 	_lib = new Library();
-	_lib->setPresentation(_pres);
 	_lib->show();
 	drawEditMode();
 }

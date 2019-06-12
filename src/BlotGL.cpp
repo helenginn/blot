@@ -120,20 +120,6 @@ void BlotGL::advancePresentation(bool clicked)
 	}
 }
 
-void BlotGL::dodgyRefresh()
-{
-	return;
-	if (parent() == NULL)
-	{
-		return;
-	}
-
-	QWidget::setParent(parentWidget(), Qt::Window);
-	QWidget::setParent(parentWidget(), Qt::Widget);
-
-	show();
-}
-
 void BlotGL::setFullScreen()
 {
 	QList<QScreen *> screens = qApp->screens();
@@ -158,8 +144,6 @@ void BlotGL::setSmallWindow()
 	{
 		w->drawEditMode();
 	}
-
-	dodgyRefresh();
 }
 
 void BlotGL::addImage(ImageProc *proc)

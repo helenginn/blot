@@ -57,7 +57,6 @@ public:
 		return "MainPresentation";
 	}
 	
-	void dodgyRefresh();
 	void setFullScreen();
 	void setSmallWindow();
 	
