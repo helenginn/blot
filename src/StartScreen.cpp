@@ -121,6 +121,7 @@ void StartScreen::drawEditMode()
 	_pres->QOpenGLWidget::setParent(this);
 	_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
 	                   DEFAULT_WIDTH - INSTRUCTION_WIDTH, DEFAULT_HEIGHT);
+	_pres->setEditMode(true);
 	_pres->show();
 }
 
@@ -142,6 +143,8 @@ void StartScreen::keyPressEvent(QKeyEvent *event)
 	if (event->key() == Qt::Key_V && _lib != NULL)
 	{
 		_pres = _lib->presentation();
+		_pres->setEditMode(false);
+		_pres->clearAll();
 		_pres->setFullScreen();
 	}
 }

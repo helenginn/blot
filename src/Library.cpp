@@ -180,6 +180,7 @@ void Library::addToPresentation()
 	ImageAppear *appear = new ImageAppear(_pres);
 	appear->setNewImage(proc);
 	_pres->addInstruction(appear);
+	appear->makeEffect();
 }
 
 void Library::elaborateItem(QListWidgetItem *item)

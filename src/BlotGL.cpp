@@ -58,6 +58,7 @@ void BlotGL::initializeGL()
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p, 0)
 {
 	_currPos = 0;
+	_editMode = true;
 	advancePresentation();
 }
 
@@ -168,11 +169,20 @@ void BlotGL::keyPressEvent(QKeyEvent *event)
 
 void BlotGL::mousePressEvent(QMouseEvent *event)
 {
-	if (true || !_editMode)
+	if (!_editMode)
 	{
 		std::cout << "Pressing" << std::endl;
 		advancePresentation(true);
 	}
+}
+
+void BlotGL::clearAll()
+{
+	for (size_t i = 0; i < _objects.size(); i++)
+	{
+		_objects[i]->setDisabled(true);
+	}
+
 }
 
 void BlotGL::addProperties()

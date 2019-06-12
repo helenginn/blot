@@ -57,6 +57,7 @@ public:
 		return "MainPresentation";
 	}
 	
+	void clearAll();
 	void setFullScreen();
 	void setSmallWindow();
 	
