@@ -122,6 +122,11 @@ void BlotGL::advancePresentation(bool clicked)
 
 void BlotGL::dodgyRefresh()
 {
+	if (parent() == NULL)
+	{
+		return;
+	}
+
 	setWindowFlags(Qt::Window);
 	setWindowFlags(Qt::Widget);
 	show();
