@@ -40,6 +40,7 @@ public:
 	void drawEditMode();
 protected:
 	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void resizeEvent(QResizeEvent *event);
 
 private slots:
 	void newLibrary();

@@ -63,6 +63,11 @@ public:
 		_filename = file;
 	}
 	
+	void setPresentation(BlotGL *gl)
+	{
+		_pres = gl;
+	}
+	
 	BlotGL *presentation()
 	{
 		return _pres;

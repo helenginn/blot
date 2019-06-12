@@ -33,6 +33,10 @@ StartScreen::StartScreen(QWidget *parent,
 	this->resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
 	this->setWindowTitle("Blot");
+	_pres = new BlotGL(this);
+	_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
+	                   DEFAULT_WIDTH - INSTRUCTION_WIDTH, DEFAULT_HEIGHT);
+	_pres->show();
 
 	_argc = argc;
 	_argv = argv;
@@ -48,6 +52,12 @@ StartScreen::StartScreen(QWidget *parent,
 	action->setShortcut(QKeySequence::Open);
 	connect(action, &QAction::triggered, this, &StartScreen::openLibrary);
 } 
+
+void StartScreen::resizeEvent(QResizeEvent *event)
+{
+	_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
+	                   width() - INSTRUCTION_WIDTH, height());
+}
 
 void StartScreen::openLibrary()
 {
@@ -89,6 +99,7 @@ void StartScreen::openLibrary()
 
 	_lib = static_cast<Library *>(p);
 	_lib->setFilename(fileNames[0].toStdString());
+	_lib->setPresentation(_pres);
 	_lib->show();
 
 	drawEditMode();
@@ -102,7 +113,12 @@ void StartScreen::drawEditMode()
 	}
 
 	std::cout << "Draw edit mode" << std::endl;
-	_pres = _lib->presentation();
+	
+	if (_pres == NULL)
+	{
+		_pres = _lib->presentation();
+	}
+
 	_pres->QOpenGLWidget::setParent(this);
 	_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
 	                   DEFAULT_WIDTH - INSTRUCTION_WIDTH, DEFAULT_HEIGHT);
@@ -118,6 +134,7 @@ void StartScreen::newLibrary()
 	}
 
 	_lib = new Library();
+	_lib->setPresentation(_pres);
 	_lib->show();
 	drawEditMode();
 }

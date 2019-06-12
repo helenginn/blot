@@ -121,11 +121,6 @@ GLuint BlotObject::addShaderFromString(GLuint program, GLenum type,
 
 void BlotObject::initialisePrograms()
 {
-	if (_program > 0)
-	{
-//		return;
-	}
-
 	bindTextures();
 
 	GLint result;
@@ -170,9 +165,6 @@ void BlotObject::initialisePrograms()
 
 	glGenBuffers(1, &_bufferID);
 	glGenBuffers(1, &_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vbo);
-
 	rebindProgram();
 }
 
@@ -192,9 +184,13 @@ void BlotObject::bindTextures()
 
 void BlotObject::rebindProgram()
 {
-	glBufferData(GL_ARRAY_BUFFER, vSize(), vPointer(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, _bufferID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vbo);
 
+	glBufferData(GL_ARRAY_BUFFER, vSize(), vPointer(), GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize(), iPointer(), GL_STATIC_DRAW);
+
+	checkErrors();
 
 	/* Vertices */
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
@@ -207,25 +203,22 @@ void BlotObject::rebindProgram()
 	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
 	                      (void *)(6 * sizeof(float)));
 
-	if (_extra)
-	{
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-		                      (void *)(10 * sizeof(float)));
-	}
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+	                      (void *)(10 * sizeof(float)));
+
+	checkErrors();
 
 	if (_textures.size())
 	{
 		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(14 * sizeof(float)));
 	}
 
+	checkErrors();
+
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
-
-	if (_extra)
-	{
-		glEnableVertexAttribArray(3);
-	}
+	glEnableVertexAttribArray(3);
 
 	if (_textures.size())
 	{
@@ -283,12 +276,16 @@ void BlotObject::render()
 	}
 	
 	glUseProgram(_program);
-	std::cout << "Rendering with " << _program << std::endl;
+	rebindProgram();
+	std::cout << "Rendering with " << _program ;
 
 	if (_textures.size())
 	{
 		glBindTexture(GL_TEXTURE_2D, _textures[0]);
+		std::cout << " and " << _textures[0];
 	}
+	
+	std::cout << std::endl;
 
 	glDrawElements(_renderType, indexCount(), GL_UNSIGNED_INT, 0);
 	checkErrors();

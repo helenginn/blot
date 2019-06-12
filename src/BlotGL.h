@@ -66,14 +66,13 @@ public:
 public slots:
 	
 protected:
-	void resizeEvent(QResizeEvent *);
+	virtual void initializeGL();
+	virtual void paintGL();
+	virtual void resizeGL(int w, int h);
 	virtual void keyPressEvent(QKeyEvent *event);
 	virtual void mousePressEvent(QMouseEvent *event);
 
 private:
-	virtual void initializeGL();
-	virtual void paintGL();
-	virtual void resizeGL();
 	void initialisePrograms();
 	
 	std::vector<BlotObject *> _objects;

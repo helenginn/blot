@@ -43,8 +43,7 @@ void BlotGL::initializeGL()
 {
 	initializeOpenGLFunctions();
 
-	double val = rand() / (double)RAND_MAX;
-	std::cout << "Updating " << val << std::endl;
+	double val = 1.0;//rand() / (double)RAND_MAX;
 	glClearColor(val, 1.0, 1.0, 1.0);
 
 //	glEnable(GL_DEPTH_TEST);
@@ -56,7 +55,7 @@ void BlotGL::initializeGL()
 	initialisePrograms();
 }
 
-BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
+BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p, 0)
 {
 	_currPos = 0;
 	advancePresentation();
@@ -74,15 +73,16 @@ void BlotGL::addObject(BlotObject *obj)
 	_objects.push_back(obj);
 }
 
-void BlotGL::resizeGL()
+void BlotGL::resizeGL(int w, int h)
 {
-	std::cout << "Resizing" << std::endl;
+	std::cout << "Resizing " << w << " " << h << std::endl;
 
 }
 
 void BlotGL::paintGL()
 {
-	std::cout << "Repainting" << std::endl;
+	std::cout << "Repainting, validity " << isValid() << std::endl;
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
 		_objects[i]->render();
@@ -122,13 +122,15 @@ void BlotGL::advancePresentation(bool clicked)
 
 void BlotGL::dodgyRefresh()
 {
+	return;
 	if (parent() == NULL)
 	{
 		return;
 	}
 
-	setWindowFlags(Qt::Window);
-	setWindowFlags(Qt::Widget);
+	QWidget::setParent(parentWidget(), Qt::Window);
+	QWidget::setParent(parentWidget(), Qt::Widget);
+
 	show();
 }
 
@@ -170,11 +172,6 @@ void BlotGL::addInstruction(Instruction *inst)
 {
 	_instructions.push_back(inst);
 	addObject(inst->object());
-}
-
-void BlotGL::resizeEvent(QResizeEvent *)
-{
-
 }
 
 void BlotGL::keyPressEvent(QKeyEvent *event)
