@@ -49,7 +49,7 @@ void BlotObject::makeDummy()
 	memset(&v, 0, sizeof(Vertex));
 	v.color[0] = 0.0;
 	v.color[1] = 0.0;
-	v.color[2] = 0.0;
+	v.color[2] = 1.0;
 	v.color[3] = 1.0;
 	v.pos[0] = -0.5; v.pos[1] = -0.5;
 	v.tex[0] = 0; v.tex[1] = 1;
@@ -78,8 +78,9 @@ BlotObject::BlotObject(ImageProc *proc)
 	_image = proc;
 	initializeOpenGLFunctions();
 	makeDummy();
-	_disabled = false;
+	_disabled = true;
 	_extra = true;
+	_program = 0;
 }
 
 GLuint BlotObject::addShaderFromString(GLuint program, GLenum type, 
@@ -113,13 +114,18 @@ GLuint BlotObject::addShaderFromString(GLuint program, GLenum type,
 		glDeleteShader(shader);
 		return 0;
 	}
-    
+
 	glAttachShader(_program, shader);
 	return shader;
 }
 
 void BlotObject::initialisePrograms()
 {
+	if (_program > 0)
+	{
+//		return;
+	}
+
 	bindTextures();
 
 	GLint result;
@@ -168,7 +174,6 @@ void BlotObject::initialisePrograms()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vbo);
 
 	rebindProgram();
-	std::cout << "bound" << std::endl;
 }
 
 void BlotObject::bindTextures()
@@ -234,7 +239,39 @@ void BlotObject::checkErrors()
 
 	if (err != 0)
 	{
-		std::cout << "OUCH" << std::endl;
+		std::cout << "OUCH " << err << std::endl;
+		
+		switch (err)
+		{
+			case GL_INVALID_ENUM:
+			std::cout << "Invalid enumeration" << std::endl;
+			break;
+
+			case GL_STACK_OVERFLOW:
+			std::cout << "Stack overflow" << std::endl;
+			break;
+
+			case GL_STACK_UNDERFLOW:
+			std::cout << "Stack underflow" << std::endl;
+			break;
+
+			case GL_OUT_OF_MEMORY:
+			std::cout << "Out of memory" << std::endl;
+			break;
+
+			case GL_INVALID_FRAMEBUFFER_OPERATION:
+			std::cout << "Invalid framebuffer op" << std::endl;
+			break;
+
+			case GL_INVALID_VALUE:
+			std::cout << "Invalid value" << std::endl;
+			break;
+
+			case GL_INVALID_OPERATION:
+			std::cout << "Invalid operation" << std::endl;
+			break;
+
+		}
 	}
 }
 
@@ -244,8 +281,9 @@ void BlotObject::render()
 	{
 		return;
 	}
-
+	
 	glUseProgram(_program);
+	std::cout << "Rendering with " << _program << std::endl;
 
 	if (_textures.size())
 	{

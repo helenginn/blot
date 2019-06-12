@@ -19,12 +19,12 @@
 #ifndef __Blot__Instruction__
 #define __Blot__Instruction__
 
-#include "Presentation.h"
+#include "BlotGL.h"
 
 class Instruction
 {
 public:
-	Instruction(Presentation *pres);
+	Instruction(BlotGL *pres);
 	virtual ~Instruction() {};
 	
 	void setOnClick(bool click)
@@ -44,7 +44,7 @@ public:
 
 	virtual void makeEffect() = 0;
 protected:
-	Presentation *_presentation;
+	BlotGL *_presentation;
 
 private:
 	bool _onClick;

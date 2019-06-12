@@ -16,10 +16,6 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#define INSTRUCTION_WIDTH 200
-#define DEFAULT_WIDTH 1000
-#define DEFAULT_HEIGHT 600
-
 #include <QMouseEvent>
 #include <QWindow>
 #include <QMenuBar>
@@ -29,7 +25,7 @@
 #include "charmanip.h"
 #include "StartScreen.h"
 #include "Library.h"
-#include "Presentation.h"
+#include "BlotGL.h"
 
 StartScreen::StartScreen(QWidget *parent,
                          int argc, char *argv[]) : QMainWindow(parent)
@@ -105,8 +101,9 @@ void StartScreen::drawEditMode()
 		return;
 	}
 
+	std::cout << "Draw edit mode" << std::endl;
 	_pres = _lib->presentation();
-	_pres->QWidget::setParent(this);
+	_pres->QOpenGLWidget::setParent(this);
 	_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
 	                   DEFAULT_WIDTH - INSTRUCTION_WIDTH, DEFAULT_HEIGHT);
 	_pres->show();
@@ -129,22 +126,15 @@ void StartScreen::keyPressEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_V && _lib != NULL)
 	{
-		QList<QScreen *> screens = qApp->screens();
-		QSize resol = screens.last()->size();
 		_pres = _lib->presentation();
-
-		_pres->hide();
-		_pres->QWidget::setParent(NULL);
-		_pres->resize(resol.width(), resol.height());
-		_pres->show();
-		_pres->windowHandle()->setScreen(screens.last());
-		_pres->showFullScreen();
+		_pres->setFullScreen();
 	}
 }
 
 void StartScreen::mousePressEvent(QMouseEvent *e)
 {
-	
+	std::cout << "Pressing here" << std::endl;
+	_pres->advancePresentation(true);
 }
 
 StartScreen::~StartScreen()

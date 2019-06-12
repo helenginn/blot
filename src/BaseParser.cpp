@@ -8,8 +8,8 @@
 #include <iomanip>
 #include "charmanip.h"
 #include "Library.h"
+#include "BlotGL.h"
 #include "ImageProc.h"
-#include "Presentation.h"
 
 ParserMap BaseParser::_allParsers;
 ClassMap BaseParser::_allClasses;
@@ -1229,7 +1229,7 @@ Parser *BaseParser::objectOfType(char *className)
 	}
 	else if (strcmp(className, "Presentation") == 0)
 	{
-		object = static_cast<Parser *>(new Presentation());
+		object = static_cast<Parser *>(new BlotGL());
 	}
 	else
 	{

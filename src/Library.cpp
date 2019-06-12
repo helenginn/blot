@@ -25,7 +25,8 @@
 #include <QFileDialog>
 
 #include "Library.h"
-#include "Presentation.h"
+#include "BlotGL.h"
+#include "StartScreen.h"
 #include "ImageProc.h"
 #include "ImageAppear.h"
 
@@ -43,12 +44,11 @@ Library *Library::_lib = NULL;
 
 #define LIST_WIDTH 200
 
-Library::Library()
+void Library::initialise()
 {
 	_imageLabel = NULL;
 	_edit = NULL;
 	_addToPres = NULL;
-	_pres = new Presentation();
 
 	this->resize(DEFAULT_LIBRARY_WIDTH, DEFAULT_LIBRARY_HEIGHT);
 	this->setWindowTitle("Blot Library");
@@ -71,7 +71,18 @@ Library::Library()
 	action = edit->addAction(tr("Paste image"));
 	action->setShortcut(QKeySequence::Paste);
 	connect(action, &QAction::triggered, this, &Library::paste);
+}
 
+Library::Library(StartScreen *scr)
+{
+	initialise();
+	_pres = new BlotGL(scr);
+}
+
+Library::Library()
+{
+	initialise();
+	_pres = new BlotGL();
 }
 
 void Library::saveAs()
@@ -169,7 +180,6 @@ void Library::addToPresentation()
 	ImageAppear *appear = new ImageAppear(_pres);
 	appear->setNewImage(proc);
 	_pres->addInstruction(appear);
-	appear->makeEffect();
 }
 
 void Library::elaborateItem(QListWidgetItem *item)
@@ -208,6 +218,8 @@ void Library::elaborateItem(QListWidgetItem *item)
 	if (_edit == NULL)
 	{
 		_edit = new QLineEdit(this);
+		connect(_edit, &QLineEdit::editingFinished, 
+		        this, &Library::updateTitle);
 	}
 
 	_edit->setGeometry(LIST_WIDTH + 10, MENU_HEIGHT + 10,
@@ -218,6 +230,8 @@ void Library::elaborateItem(QListWidgetItem *item)
 	if (_addToPres == NULL)
 	{
 		_addToPres  = new QPushButton(this);
+		connect(_addToPres, &QPushButton::clicked, 
+		        this, &Library::addToPresentation);
 	}
 	
 	_addToPres->setGeometry(ELABORATION_MIDPOINT - BUTTON_WIDTH / 2,
@@ -225,10 +239,7 @@ void Library::elaborateItem(QListWidgetItem *item)
 							BUTTON_WIDTH, BUTTON_HEIGHT);
 	_addToPres->setText("Add to presentation");
 	_addToPres->show();
-	connect(_addToPres, &QPushButton::clicked, 
-	        this, &Library::addToPresentation);
 	
-	connect(_edit, &QLineEdit::editingFinished, this, &Library::updateTitle);
 }
 
 ImageProc *Library::imageProcForItem(QListWidgetItem *item)
@@ -275,7 +286,7 @@ void Library::addObject(Parser *child, std::string name)
 	
 	if (name == "presentation")
 	{
-		_pres = static_cast<Presentation *>(child);
+		_pres = static_cast<BlotGL *>(child);
 	}
 }
 

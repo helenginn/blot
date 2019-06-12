@@ -18,18 +18,48 @@
 
 #include "BlotGL.h"
 #include "BlotObject.h"
+#include "ImageProc.h"
+#include "Instruction.h"
+#include "Library.h"
+#include "StartScreen.h"
+#include <QApplication>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QScreen>
+#include <QWindow>
 #include <iostream>
+
+BlotGL::BlotGL(BlotGL &other)
+{
+	_objects = other._objects;
+	_parent = other._parent;
+	_editMode = other._editMode;
+	_instructions = other._instructions;
+	_currPos = other._currPos;
+	_timer = other._timer;
+}
 
 void BlotGL::initializeGL()
 {
-	update();
-	
+	initializeOpenGLFunctions();
+
+	double val = rand() / (double)RAND_MAX;
+	std::cout << "Updating " << val << std::endl;
+	glClearColor(val, 1.0, 1.0, 1.0);
+
+//	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	initialisePrograms();
 }
 
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 {
-
+	_currPos = 0;
+	advancePresentation();
 }
 
 void BlotGL::addObject(BlotObject *obj)
@@ -39,30 +69,20 @@ void BlotGL::addObject(BlotObject *obj)
 		return;
 	}
 
+	std::cout << "Single init" << std::endl;
 	obj->initialisePrograms();
 	_objects.push_back(obj);
 }
 
 void BlotGL::resizeGL()
 {
+	std::cout << "Resizing" << std::endl;
 
 }
 
 void BlotGL::paintGL()
 {
-	update();
-}
-
-void BlotGL::update()
-{
-	glClearColor(1.0, 1.0, 1.0, 1.0);
-
-	glEnable(GL_DEPTH_TEST);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
+	std::cout << "Repainting" << std::endl;
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
 		_objects[i]->render();
@@ -71,8 +91,107 @@ void BlotGL::update()
 
 void BlotGL::initialisePrograms()
 {
+	std::cout << "Every init" << std::endl;
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
 		_objects[i]->initialisePrograms();
 	}
+}
+
+void BlotGL::advancePresentation(bool clicked)
+{
+	while (true)
+	{
+		if ((int)_instructions.size() <= _currPos)
+		{
+			break;
+		}
+		
+		if (_instructions[_currPos]->waitForClick() && !clicked)
+		{
+			break;
+		}
+		
+		Instruction *inst = _instructions[_currPos];
+		inst->makeEffect();
+		update();
+		clicked = false;
+		_currPos++;
+	}
+}
+
+void BlotGL::dodgyRefresh()
+{
+	setWindowFlags(Qt::Window);
+	setWindowFlags(Qt::Widget);
+	show();
+}
+
+void BlotGL::setFullScreen()
+{
+	QList<QScreen *> screens = qApp->screens();
+	QSize resol = screens.last()->size();
+
+	std::cout << "Making full screen" << std::endl;
+	hide();
+	_parent = parent();
+	QWidget::setParent(NULL);
+	resize(resol.width(), resol.height());
+	show();
+	windowHandle()->setScreen(screens.last());
+	showFullScreen();
+}
+
+void BlotGL::setSmallWindow()
+{
+	std::cout << "Making small window" << std::endl;
+	hide();
+	StartScreen *w = static_cast<StartScreen *>(_parent);
+	if (w)
+	{
+		w->drawEditMode();
+	}
+
+	dodgyRefresh();
+}
+
+void BlotGL::addImage(ImageProc *proc)
+{
+	BlotObject *obj = new BlotObject(proc);
+	addObject(obj);
+}
+
+void BlotGL::addInstruction(Instruction *inst)
+{
+	_instructions.push_back(inst);
+	addObject(inst->object());
+}
+
+void BlotGL::resizeEvent(QResizeEvent *)
+{
+
+}
+
+void BlotGL::keyPressEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_V)
+	{
+		setSmallWindow();
+	}
+}
+
+/*
+void BlotGL::mousePressEvent(QMouseEvent *event)
+{
+	if (true || !_editMode)
+	{
+		std::cout << "Pressing" << std::endl;
+		advancePresentation(true);
+	}
+}
+*/
+
+void BlotGL::addProperties()
+{
+
 }

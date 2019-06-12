@@ -22,12 +22,12 @@
 #include "Instruction.h"
 #include "BlotObject.h"
 
-class Presentation;
+class BlotGL;
 
 class ImageAppear : public Instruction
 {
 public:
-	ImageAppear(Presentation *pres);
+	ImageAppear(BlotGL *pres);
 	virtual ~ImageAppear() {};
 	
 	void setNewImage(ImageProc *proc);

@@ -18,78 +18,48 @@
 
 #include "Presentation.h"
 #include "Instruction.h"
+#include "StartScreen.h"
 #include "ImageProc.h"
 #include "BlotObject.h"
 #include <QTimer>
 #include <QKeyEvent>
+#include <QWindow>
+#include <QScreen>
+#include <QApplication>
 
-Presentation::Presentation()
+void Presentation::initialise()
 {
 	_display = new BlotGL(this);
+	_display->setGeometry(0, 0, width(), height());
+	_display->show();
 
 	_currPos = 0;
 	_timer = new QTimer();
 	_timer->setInterval(30);
 	connect(_timer, SIGNAL(timeout()), _display, SLOT(update()));
-	_timer->start();
-	
-	resizeEvent(NULL);
+//	_timer->start();
+
 	advancePresentation();
+
 }
 
-void Presentation::advancePresentation(bool clicked)
+Presentation::Presentation() : QMainWindow(NULL)
 {
-	while (true)
-	{
-		if ((int)_instructions.size() <= _currPos)
-		{
-			break;
-		}
-		
-		if (_instructions[_currPos]->waitForClick() && !clicked)
-		{
-			break;
-		}
-		
-		Instruction *inst = _instructions[_currPos];
-		inst->makeEffect();
-		_currPos++;
-	}
+	initialise();
 }
 
-void Presentation::addImage(ImageProc *proc)
+Presentation::Presentation(QWidget *parent) : QMainWindow(parent)
 {
-	BlotObject *obj = new BlotObject(proc);
-	_display->addObject(obj);
+	initialise();
 }
 
-void Presentation::addInstruction(Instruction *inst)
-{
-	_instructions.push_back(inst);
-	_display->addObject(inst->object());
-}
-
-void Presentation::resizeEvent(QResizeEvent *)
+void Presentation::updateDisplay()
 {
 	_display->setGeometry(0, 0, width(), height());
+	_display->update();
+	
 }
 
-void Presentation::keyPressEvent(QKeyEvent *event)
-{
-	if (event->key() == Qt::Key_V)
-	{
-		hide();
-		deleteLater();
-	}
-}
-
-void Presentation::mousePressEvent(QMouseEvent *event)
-{
-	if (true || !_editMode)
-	{
-		advancePresentation(true);
-	}
-}
 
 void Presentation::addProperties()
 {

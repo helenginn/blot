@@ -18,7 +18,7 @@
 
 #include "Instruction.h"
 
-Instruction::Instruction(Presentation *pres)
+Instruction::Instruction(BlotGL *pres)
 {
 	_onClick = true;
 	_presentation = pres;

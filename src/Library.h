@@ -34,16 +34,19 @@
 
 class ImageProc;
 class QListWidgetItem;
-class Presentation;
+class BlotGL;
+class StartScreen;
 
 class Library : public QMainWindow, public Parser
 {
 	Q_OBJECT
 public:
 	Library();
+	Library(StartScreen *scr);
 	virtual ~Library();
 	
 	static void setCurrentLibrary(Library *lib);
+	void initialise();
 	
 	virtual std::string getClassName()
 	{
@@ -60,7 +63,7 @@ public:
 		_filename = file;
 	}
 	
-	Presentation *presentation()
+	BlotGL *presentation()
 	{
 		return _pres;
 	}
@@ -85,7 +88,7 @@ private:
 	QPushButton *_addToPres;
 	QLineEdit *_edit;
 	std::string _filename;
-	Presentation *_pres;
+	BlotGL *_pres;
 
 	static Library *_lib;
 };

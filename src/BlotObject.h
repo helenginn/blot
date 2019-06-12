@@ -76,11 +76,6 @@ public:
 	{
 		_disabled = dis;
 	}
-
-	void setVertices(float t, float b, float l, float r);
-protected:
-	std::vector<Vertex> _vertices;
-	std::vector<GLuint> _indices;
 	
 	bool hasImage()
 	{
@@ -91,6 +86,11 @@ protected:
 	{
 		return _image;
 	}
+
+	void setVertices(float t, float b, float l, float r);
+protected:
+	std::vector<Vertex> _vertices;
+	std::vector<GLuint> _indices;
 
 private:
 	GLuint addShaderFromString(GLuint program, GLenum type, std::string str);

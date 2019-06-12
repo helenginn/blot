@@ -20,22 +20,55 @@
 #define __Blot__BlotGL__
 
 #include <QtWidgets/qopenglwidget.h>
+#include <QtGui/qopengl.h>
+#include <QtGui/qopenglfunctions.h>
 #include <vector>
+#include "Parser.h"
 
 class BlotObject;
+class ImageProc;
+class Instruction;
 
-class BlotGL : public QOpenGLWidget
+class BlotGL : public QOpenGLWidget, QOpenGLFunctions, public Parser
 {
 	Q_OBJECT
 	
 public:
 	BlotGL(QWidget *parent = NULL);
+	BlotGL(BlotGL &other);
 	
 	void addObject(BlotObject *obj);
+	void addImage(ImageProc *proc);
+	void addInstruction(Instruction *inst);
+	void advancePresentation(bool clicked = false);
+	
+	void setEditMode(bool edit)
+	{
+		_editMode = edit;
+	}
+	
+	virtual std::string getClassName()
+	{
+		return "Presentation";
+	}
+	
+	virtual std::string getParserIdentifier()
+	{
+		return "MainPresentation";
+	}
+	
+	void dodgyRefresh();
+	void setFullScreen();
+	void setSmallWindow();
+	
+	void updateDisplay();
+	virtual void addProperties();
 public slots:
-	void update();
 	
 protected:
+	void resizeEvent(QResizeEvent *);
+	virtual void keyPressEvent(QKeyEvent *event);
+//	virtual void mousePressEvent(QMouseEvent *event);
 
 private:
 	virtual void initializeGL();
@@ -44,6 +77,11 @@ private:
 	void initialisePrograms();
 	
 	std::vector<BlotObject *> _objects;
+	QObject *_parent;
+	bool _editMode;
+	std::vector<Instruction *> _instructions;
+	int _currPos;
+	QTimer *_timer;
 };
 
 

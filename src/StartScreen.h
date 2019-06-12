@@ -19,9 +19,14 @@
 #ifndef __Blot__StartScreen__
 #define __Blot__StartScreen__
 
+#define INSTRUCTION_WIDTH 200
+#define DEFAULT_WIDTH 1000
+#define DEFAULT_HEIGHT 600
+
+
 #include <QMainWindow>
 
-class Presentation;
+class BlotGL;
 class Library;
 
 class StartScreen : public QMainWindow
@@ -32,17 +37,17 @@ public:
 	StartScreen(QWidget *parent = 0, int argc = 0, char *argv[] = NULL);
 	~StartScreen();
 	
+	void drawEditMode();
 protected:
 	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void keyPressEvent(QKeyEvent *event);
-	void drawEditMode();
 
 private slots:
 	void newLibrary();
 	void openLibrary();
 	
 private:
-	Presentation *_pres;
+	BlotGL *_pres;
 	Library *_lib;
 	char **_argv;
 	int _argc;

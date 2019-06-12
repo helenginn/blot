@@ -80,7 +80,8 @@ void ImageProc::process()
 
 void ImageProc::bindToTexture(BlotObject *sender)
 {
-	std::cout << "Binding" << std::endl;
+	std::cout << "Binding " << _text << " " << _image->width() << " " 
+	<< _image->height() << std::endl;
 	glBindTexture(GL_TEXTURE_2D, sender->texture(0));
 	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _image->width(), _image->height(), 

@@ -26,7 +26,6 @@ gen_src = custom_target('commit-output',
 moc_files = qt5.preprocess(moc_headers : [
 'src/BlotGL.h', 
 'src/Library.h', 
-'src/Presentation.h',
 'src/StartScreen.h',
 ],
 		moc_extra_arguments: ['-DMAKES_MY_MOC_HEADER_COMPILE'])
@@ -45,6 +44,5 @@ executable('blot', gen_src, moc_files,
 'src/Instruction.cpp', 
 'src/StartScreen.cpp', 
 'src/StateValue.cpp', 
-'src/Presentation.cpp', 
 cpp_args: ['-std=c++11'], dependencies : [ qt5_dep, dep_gl, png_dep ], install: true)
 

@@ -18,7 +18,7 @@
 
 #include "ImageAppear.h"
 
-ImageAppear::ImageAppear(Presentation *pres) : Instruction(pres)
+ImageAppear::ImageAppear(BlotGL *pres) : Instruction(pres)
 {
 	_advance = 10;
 	_left = -0.5;
@@ -29,13 +29,18 @@ ImageAppear::ImageAppear(Presentation *pres) : Instruction(pres)
 
 void ImageAppear::makeEffect()
 {
-//	_obj->setVertices(_top, _bottom, _left, _right);
+	std::string text = _obj->getImage()->text();
+	std::cout << "Make effect for " << text << std::endl;
 	_obj->setDisabled(false);
+
+	_presentation->dodgyRefresh();
+	
+	_presentation->update();
 }
 
 void ImageAppear::setNewImage(ImageProc *proc)
 {
+	std::cout << "Setting new image" << std::endl;
 	_obj = new BlotObject(proc);
-	_presentation->addInstruction(this);
 }
 
