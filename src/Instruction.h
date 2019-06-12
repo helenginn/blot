@@ -21,17 +21,26 @@
 
 #include "BlotGL.h"
 
-class Instruction
+class Instruction : public Parser
 {
 public:
 	Instruction(BlotGL *pres);
 	virtual ~Instruction() {};
 	
+	virtual std::string getClassName()
+	{
+		return "Instruction";
+	}
+	
+	virtual std::string getParserIdentifier()
+	{
+		return "Instruction" + _random;
+	}
+	
 	virtual bool canMove()
 	{
 		return false;
 	}
-	
 	
 	virtual bool isCovered(double x, double y) { return false; }
 	virtual void moveFractional(double fx, double fy) {};
@@ -54,8 +63,11 @@ public:
 	virtual void makeEffect() = 0;
 	
 	virtual void select(bool sel) {};
+	virtual void addProperties();
+	virtual void linkReference(BaseParser *child, std::string name);
 protected:
 	BlotGL *_presentation;
+	std::string _random;
 
 private:
 	bool _onClick;

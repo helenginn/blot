@@ -37,6 +37,28 @@ void ImageAppear::makeEffect()
 	_presentation->update();
 }
 
+void ImageAppear::addProperties()
+{
+	Instruction::addProperties();
+	
+	addReference("blot_object", _obj);
+	addDoubleProperty("left", &_left);
+	addDoubleProperty("right", &_right);
+	addDoubleProperty("top", &_top);
+	addDoubleProperty("bottom", &_bottom);
+}
+
+void ImageAppear::linkReference(BaseParser *child, std::string name)
+{
+	std::cout << "Linking " << name << std::endl;
+	if (name == "blot_object")
+	{
+		_obj = static_cast<BlotObject *>(child);
+	}
+	
+	Instruction::linkReference(child, name);
+}
+
 void ImageAppear::setNewImage(ImageProc *proc)
 {
 	_obj = new BlotObject(proc);

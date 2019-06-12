@@ -27,7 +27,7 @@ class BlotGL;
 class ImageAppear : public Instruction
 {
 public:
-	ImageAppear(BlotGL *pres);
+	ImageAppear(BlotGL *pres = NULL);
 	virtual ~ImageAppear() {};
 	
 	virtual bool canMove()
@@ -59,13 +59,26 @@ public:
 	{
 		return _obj;
 	}
+	
+	virtual std::string getClassName()
+	{
+		return "ImageAppear";
+	}
+	
+	virtual std::string getParserIdentifier()
+	{
+		return "ImageAppear_" + _random;
+	}
+
+	virtual void addProperties();
+	virtual void linkReference(BaseParser *child, std::string name);
 private:
 	BlotObject *_obj;
 	
-	float _left;
-	float _right;
-	float _bottom;
-	float _top;
+	double _left;
+	double _right;
+	double _bottom;
+	double _top;
 
 	int _advance;
 };

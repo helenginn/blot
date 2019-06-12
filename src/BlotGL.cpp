@@ -47,6 +47,11 @@ void BlotGL::initializeGL()
 
 void BlotGL::makeList(QWidget *p)
 {
+	if (_list)
+	{
+		return;
+	}
+
 	_list = new QListWidget(p);
 	_list->setGeometry(0, MENU_HEIGHT, INSTRUCTION_WIDTH, 
 	                   p->height() - MENU_HEIGHT);
@@ -54,12 +59,19 @@ void BlotGL::makeList(QWidget *p)
 
 }
 
-BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p, 0)
+BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 {
 	_list = NULL;
 	_currPos = 0;
 	_editMode = true;
 	_currInstruct = NULL;
+	
+	if (p == NULL)
+	{
+		p = StartScreen::startScreenPtr;
+	}
+
+	makeList(p);
 
 	advancePresentation();
 }
@@ -167,7 +179,6 @@ void BlotGL::addInstruction(Instruction *inst)
 	item->setText("Show " + inst->object()->getImage()->qText());
 
 	_list->addItem(item);
-	_instructions.push_back(inst);
 	addObject(inst->object());
 }
 
@@ -300,5 +311,40 @@ void BlotGL::clearAll()
 
 void BlotGL::addProperties()
 {
+	for (size_t i = 0; i < _objects.size(); i++)
+	{
+		addChild("blot_object", _objects[i]);
+	}
 
+	if (_list == NULL)
+	{
+		return;
+	}
+
+	for (int i = 0; i < _list->count(); i++)
+	{
+		QListWidgetItem *item = _list->item(i);
+		Instruction *inst = instructionForItem(item);
+		addChild("instruction", inst);
+	}
+}
+
+void BlotGL::addObject(Parser *child, std::string name)
+{
+	if (name == "blot_object")
+	{
+		_objects.push_back(static_cast<BlotObject *>(child));
+	}
+
+	if (name == "instruction")
+	{
+		QListWidgetItem *item = new QListWidgetItem();
+		Instruction *inst = static_cast<Instruction *>(child);
+		QVariant var = QVariant::fromValue<Instruction *>(inst);
+
+		item->setData(Qt::UserRole, var);
+		item->setText("Temp");
+		
+		_list->addItem(item);
+	}
 }

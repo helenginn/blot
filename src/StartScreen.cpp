@@ -27,12 +27,16 @@
 #include "Library.h"
 #include "BlotGL.h"
 
+StartScreen *StartScreen::startScreenPtr = NULL;
+
 StartScreen::StartScreen(QWidget *parent,
                          int argc, char *argv[]) : QMainWindow(parent)
 {
 	this->resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
 	this->setWindowTitle("Blot");
+	
+	startScreenPtr = this;
 
 	_argc = argc;
 	_argv = argv;

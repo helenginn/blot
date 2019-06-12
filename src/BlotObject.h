@@ -22,6 +22,7 @@
 #include <QtGui/qopengl.h>
 #include <QtGui/qopenglfunctions.h>
 #include "ImageProc.h"
+#include "Parser.h"
 
 typedef struct
 {
@@ -34,13 +35,20 @@ typedef struct
 
 class ImageProc;
 
-class BlotObject : public QOpenGLFunctions
+class BlotObject : public QOpenGLFunctions, public Parser
 {
 public:
 	BlotObject(ImageProc *proc = NULL);
 	virtual ~BlotObject() {};
 	void initialisePrograms();
 	void render();
+	
+	virtual std::string getClassName()
+	{
+		return "BlotObject";
+	}
+	
+	virtual std::string getParserIdentifier();
 	
 	Vertex *vPointer()
 	{
@@ -91,6 +99,9 @@ public:
 	{
 		return _image;
 	}
+	
+	void addProperties();
+	void postParseTidy();
 
 	void setVertices(float t, float b, float l, float r);
 	
@@ -98,6 +109,7 @@ public:
 protected:
 	std::vector<Vertex> _vertices;
 	std::vector<GLuint> _indices;
+	virtual void linkReference(BaseParser *child, std::string name);
 
 private:
 	GLuint addShaderFromString(GLuint program, GLenum type, std::string str);

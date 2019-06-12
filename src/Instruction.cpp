@@ -17,10 +17,27 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "Instruction.h"
+#include "BlotGL.h"
+#include "charmanip.h"
 
 Instruction::Instruction(BlotGL *pres)
 {
 	_onClick = true;
 	_presentation = pres;
+	_random = i_to_str(rand());
+}
+
+void Instruction::addProperties()
+{
+	addBoolProperty("on_click", &_onClick);
+	addReference("presentation", _presentation);
+}
+
+void Instruction::linkReference(BaseParser *child, std::string name)
+{
+	if (name == "presentation")
+	{
+		_presentation = static_cast<BlotGL *>(child);
+	}
 }
 

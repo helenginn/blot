@@ -25,7 +25,7 @@
 
 void BlotObject::setVertices(float t, float b, float l, float r)
 {
-	if (vSize() == 0)
+	if (_vertices.size() == 0)
 	{
 		makeDummy();
 	}
@@ -76,7 +76,6 @@ BlotObject::BlotObject(ImageProc *proc)
 {
 	_renderType = GL_TRIANGLES;
 	_image = proc;
-	initializeOpenGLFunctions();
 	makeDummy();
 	_disabled = true;
 	_extra = true;
@@ -121,6 +120,7 @@ GLuint BlotObject::addShaderFromString(GLuint program, GLenum type,
 
 void BlotObject::initialisePrograms()
 {
+	initializeOpenGLFunctions();
 	bindTextures();
 
 	GLint result;
@@ -292,6 +292,12 @@ void BlotObject::render()
 void BlotObject::select(bool sel)
 {
 	bool selval = (sel ? 0.0 : 1.0);
+	
+	if (_vertices.size() == 0)
+	{
+		makeDummy();
+	}
+
 	for (size_t i = 0; i < _vertices.size(); i++)
 	{
 		_vertices[i].color[0] = selval;
@@ -299,5 +305,27 @@ void BlotObject::select(bool sel)
 		_vertices[i].color[2] = 1.0;
 		_vertices[i].color[3] = 1.0;
 	}
+}
+
+std::string BlotObject::getParserIdentifier()
+{
+	return "BO_" + _image->getParserIdentifier();
+}
+
+void BlotObject::addProperties()
+{
+	addReference("image", _image);
+}
+
+void BlotObject::linkReference(BaseParser *child, std::string name)
+{
+	if (name == "image")
+	{
+		_image = static_cast<ImageProc *>(child);
+	}
+}
+
+void BlotObject::postParseTidy()
+{
 
 }

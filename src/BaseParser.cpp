@@ -10,6 +10,8 @@
 #include "Library.h"
 #include "BlotGL.h"
 #include "ImageProc.h"
+#include "BlotObject.h"
+#include "ImageAppear.h"
 
 ParserMap BaseParser::_allParsers;
 ClassMap BaseParser::_allClasses;
@@ -1230,6 +1232,14 @@ Parser *BaseParser::objectOfType(char *className)
 	else if (strcmp(className, "Presentation") == 0)
 	{
 		object = static_cast<Parser *>(new BlotGL());
+	}
+	else if (strcmp(className, "BlotObject") == 0)
+	{
+		object = static_cast<Parser *>(new BlotObject());
+	}
+	else if (strcmp(className, "ImageAppear") == 0)
+	{
+		object = static_cast<Parser *>(new ImageAppear());
 	}
 	else
 	{

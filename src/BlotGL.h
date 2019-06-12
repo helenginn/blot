@@ -76,6 +76,7 @@ protected:
 	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void mouseMoveEvent(QMouseEvent *e);
 
+	virtual void addObject(Parser *child, std::string name);
 private:
 	void initialisePrograms();
 	void findSelectedInstruction(double x, double y);
@@ -85,7 +86,6 @@ private:
 	std::vector<BlotObject *> _objects;
 	QObject *_parent;
 	bool _editMode;
-	std::vector<Instruction *> _instructions;
 	int _currPos;
 	int _startX;
 	int _startY;
