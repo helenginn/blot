@@ -75,6 +75,7 @@ protected:
 private:
 	void initialisePrograms();
 	
+	Instruction *_currInstruct;
 	std::vector<BlotObject *> _objects;
 	QObject *_parent;
 	bool _editMode;

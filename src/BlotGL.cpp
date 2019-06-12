@@ -59,6 +59,7 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p, 0)
 {
 	_currPos = 0;
 	_editMode = true;
+	_currInstruct = NULL;
 	advancePresentation();
 }
 
@@ -76,7 +77,6 @@ void BlotGL::addObject(BlotObject *obj)
 
 void BlotGL::resizeGL(int w, int h)
 {
-	std::cout << "Resizing " << w << " " << h << std::endl;
 
 }
 
@@ -177,11 +177,22 @@ void BlotGL::mouseReleaseEvent(QMouseEvent *e)
 	double x = (e->x() / (double)width()  * 2) - 1;
 	double y = (e->y() / (double)height() * 2) - 1;
 	
-	Instruction *instruct = NULL;
+	if (_currInstruct != NULL)
+	{
+		_currInstruct->select(false);
+	}
+
+	Instruction *old = _currInstruct;
+	_currInstruct = NULL;
 
 	for (int i = _instructions.size() - 1; i >= 0; i--)
 	{
 		if (!_instructions[i]->canMove())
+		{
+			continue;
+		}
+		
+		if (_instructions[i] == old)
 		{
 			continue;
 		}
@@ -191,20 +202,21 @@ void BlotGL::mouseReleaseEvent(QMouseEvent *e)
 
 		if (cover)
 		{
-			instruct = _instructions[i];
+			_currInstruct = _instructions[i];
 			break;
 		}
 	}
 
-	if (!instruct)
+	if (_currInstruct == NULL)
 	{
 		std::cout << "No selection" << std::endl;
 		return;
 	}
 	else
 	{
-		BlotObject *obj = instruct->object();
+		BlotObject *obj = _currInstruct->object();
 		std::cout << "Selected " << obj->getImage()->text() << std::endl;
+		_currInstruct->select(true);
 
 	}
 }

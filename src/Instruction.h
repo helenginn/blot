@@ -48,6 +48,8 @@ public:
 	}
 
 	virtual void makeEffect() = 0;
+	
+	virtual void select(bool sel) {};
 protected:
 	BlotGL *_presentation;
 

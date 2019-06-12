@@ -303,3 +303,16 @@ void BlotObject::render()
 
 	glUseProgram(0);
 }
+
+void BlotObject::select(bool sel)
+{
+	bool selval = (sel ? 0.0 : 1.0);
+	for (size_t i = 0; i < _vertices.size(); i++)
+	{
+		_vertices[i].color[0] = selval;
+		_vertices[i].color[1] = selval;
+		_vertices[i].color[2] = 1.0;
+		_vertices[i].color[3] = 1.0;
+	}
+
+}

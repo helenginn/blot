@@ -89,6 +89,8 @@ public:
 
 	bool isCovered(double x, double y);
 	void setVertices(float t, float b, float l, float r);
+	
+	void select(bool sel);
 protected:
 	std::vector<Vertex> _vertices;
 	std::vector<GLuint> _indices;

@@ -36,6 +36,7 @@ public:
 	}
 
 	void setNewImage(ImageProc *proc);
+	virtual void select(bool sel);
 
 	void setBlotObject(BlotObject *obj)
 	{

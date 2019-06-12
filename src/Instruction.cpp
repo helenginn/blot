@@ -23,3 +23,4 @@ Instruction::Instruction(BlotGL *pres)
 	_onClick = true;
 	_presentation = pres;
 }
+

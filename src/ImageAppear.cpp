@@ -50,3 +50,13 @@ void ImageAppear::setNewImage(ImageProc *proc)
 	_right = _top * ratio;
 }
 
+void ImageAppear::select(bool sel)
+{
+	if (!_obj)
+	{
+		return;
+	}
+	
+	_obj->select(sel);
+	_presentation->update();
+}
