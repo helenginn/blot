@@ -20,7 +20,6 @@
 
 ImageAppear::ImageAppear(BlotGL *pres) : Instruction(pres)
 {
-	_advance = 10;
 	_left = -0.3;
 	_right = 0.3;
 	_top = 0.3;
@@ -67,7 +66,7 @@ void ImageAppear::setTime(double time)
 void ImageAppear::makeEffect()
 {
 	std::string text = _obj->getImage()->text();
-	std::cout << "Make effect for " << text << std::endl;
+	std::cout << "Show effect for " << text << std::endl;
 	_obj->setDisabled(false);
 	_obj->setVertices(_top, _bottom, _left, _right);
 
@@ -79,6 +78,7 @@ void ImageAppear::addProperties()
 	Instruction::addProperties();
 	
 	addReference("blot_object", _obj);
+	addBoolProperty("fade", &_fade);
 	addDoubleProperty("left", &_left);
 	addDoubleProperty("right", &_right);
 	addDoubleProperty("top", &_top);

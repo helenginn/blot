@@ -20,10 +20,12 @@
 #include "Properties.h"
 #include "BlotObject.h"
 #include "ImageProc.h"
+#include "ImageHide.h"
 #include "Instruction.h"
 #include "Library.h"
 #include "StartScreen.h"
 #include <QApplication>
+#include <algorithm>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QIcon>
@@ -201,7 +203,7 @@ void BlotGL::setAspectRatio(double ratio)
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 {
 	_timer = new QTimer();
-	_timer->setInterval(30);
+	_timer->setInterval(20);
 	connect(_timer, &QTimer::timeout, this, &BlotGL::progressAnimations);
 
 	_prop = NULL;
@@ -230,6 +232,11 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 
 void BlotGL::selectInstruction()
 {
+	if (!_editMode)
+	{
+		return;
+	}
+
 	if (_list->count() == 0)
 	{
 		return;
@@ -275,7 +282,14 @@ void BlotGL::addObject(BlotObject *obj)
 
 	std::cout << "Single init" << std::endl;
 	obj->initialisePrograms();
-	_objects.push_back(obj);
+	
+	std::vector<BlotObject *>::iterator it;
+	it = std::find(_objects.begin(), _objects.end(), obj);
+	
+	if (it == _objects.end())
+	{
+		_objects.push_back(obj);
+	}
 }
 
 void BlotGL::resizeGL(int w, int h)
@@ -336,6 +350,7 @@ void BlotGL::advancePresentation(bool clicked)
 		else
 		{
 			bool started = inst->animateEffect();
+			std::cout << "Started = " << started << std::endl;
 			
 			begun_sequence |= started;
 
@@ -704,4 +719,21 @@ void BlotGL::progressAnimations()
 	}
 	
 	update();
+}
+
+void BlotGL::addHideCurrentImage()
+{
+	Instruction *curr = instructionForItem(_list->currentItem());
+	
+	if (!curr || curr->object() == NULL)
+	{
+		return;
+	}
+	
+	ImageHide *hide = new ImageHide(this, curr);
+	
+	if (hide->isValid())
+	{
+		addInstruction(hide);
+	}
 }

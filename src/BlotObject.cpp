@@ -346,3 +346,9 @@ void BlotObject::postParseTidy()
 }
 
 
+void BlotObject::setDisabled(bool dis)
+{
+	std::cout << "Setting " << getImage()->text() << " dis " << dis
+	<< std::endl;
+	_disabled = dis;
+}

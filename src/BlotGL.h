@@ -91,6 +91,7 @@ public:
 	void setSmallWindow();
 	
 	bool imageInUse(ImageProc *image);
+	void addHideCurrentImage();
 	void removeImageReferences(ImageProc *image);
 	void updateDisplay();
 	virtual void addProperties();

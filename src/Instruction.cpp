@@ -28,7 +28,7 @@ Instruction::Instruction(BlotGL *pres)
 	_time = 1;
 	_startTime = 0;
 	_endTime = 1;
-	_stepTime = 0.1;
+	_stepTime = 0.05;
 }
 
 void Instruction::addProperties()

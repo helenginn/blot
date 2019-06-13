@@ -16,79 +16,57 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __Blot__ImageAppear__
-#define __Blot__ImageAppear__
+#ifndef __Blot__ImageHide__
+#define __Blot__ImageHide__
 
 #include "Instruction.h"
-#include "BlotObject.h"
 
 class BlotGL;
+class BlotObject;
 
-class ImageAppear : public Instruction
+class ImageHide : public Instruction
 {
 public:
-	ImageAppear(BlotGL *pres = NULL);
-	virtual ~ImageAppear() {};
-	
-	virtual bool canMove()
+	ImageHide(BlotGL *pres = NULL, Instruction *inst = NULL);
+
+	bool isValid()
 	{
-		return true;
+		return _valid;
 	}
-
-	void setNewImage(ImageProc *proc);
-	virtual void select(bool sel);
-	virtual void moveFractional(double fx, double fy);
-	virtual void resizeFractional(double fx, double fy, bool aspect);
-	virtual bool isCovered(double x, double y);
-
+	
 	void setBlotObject(BlotObject *obj)
 	{
 		_obj = obj;
 	}
-	
-	void setPosition(float t, float b, float l, float r)
-	{
-		_left = l;
-		_top = t;
-		_bottom = b;
-		_right = r;
-	}
 
-	virtual void makeEffect();
-	virtual bool animateEffect();
-	virtual bool animateStep();
-	
 	virtual BlotObject *object()
 	{
 		return _obj;
 	}
-	
+
 	virtual std::string getClassName()
 	{
-		return "ImageAppear";
+		return "ImageHide";
 	}
 	
 	virtual std::string getParserIdentifier()
 	{
-		return "ImageAppear_" + _random;
+		return "ImageHide_" + _random;
 	}
 
 	virtual std::string instText();
 
+	virtual void makeEffect();
+	virtual bool animateEffect();
+	virtual bool animateStep();
+protected:
 	virtual void addProperties();
 	virtual void linkReference(BaseParser *child, std::string name);
-protected:
 	void setTime(double time);
 private:
 	BlotObject *_obj;
-	
-	double _left;
-	double _right;
-	double _bottom;
-	double _top;
-
+	bool _valid;
 	bool _fade;
 };
-
 
 #endif

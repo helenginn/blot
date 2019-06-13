@@ -65,6 +65,8 @@ StartScreen::StartScreen(QWidget *parent,
 	QMenu *insert = menuBar()->addMenu(tr("&Insert"));
 	action = insert->addAction(tr("Wipe slate"));
 	connect(action, &QAction::triggered, this, &StartScreen::addWipe);
+	action = insert->addAction(tr("Hide image"));
+	connect(action, &QAction::triggered, this, &StartScreen::addHide);
 } 
 
 void StartScreen::aspect16t9()
@@ -190,6 +192,11 @@ void StartScreen::addWipe()
 {
 	WipeSlate *wipe = new WipeSlate(_pres);
 	_pres->addInstruction(wipe);
+}
+
+void StartScreen::addHide()
+{
+	_pres->addHideCurrentImage();
 }
 
 StartScreen::~StartScreen()

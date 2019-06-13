@@ -86,10 +86,7 @@ public:
 		return _disabled;
 	}
 	
-	void setDisabled(bool dis)
-	{
-		_disabled = dis;
-	}
+	void setDisabled(bool dis);
 	
 	bool hasImage()
 	{
