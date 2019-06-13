@@ -348,3 +348,14 @@ void BlotGL::addObject(Parser *child, std::string name)
 		_list->addItem(item);
 	}
 }
+
+void BlotGL::postParseTidy()
+{
+	for (int i = 0; i < _list->count(); i++)
+	{
+		QListWidgetItem *item = _list->item(i);
+		Instruction *inst = instructionForItem(item);
+		item->setText("Show " + inst->object()->getImage()->qText());
+	}
+
+}

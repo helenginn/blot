@@ -77,6 +77,7 @@ protected:
 	virtual void mouseMoveEvent(QMouseEvent *e);
 
 	virtual void addObject(Parser *child, std::string name);
+	virtual void postParseTidy();
 private:
 	void initialisePrograms();
 	void findSelectedInstruction(double x, double y);
