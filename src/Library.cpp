@@ -81,12 +81,6 @@ Library::Library(StartScreen *scr)
 	_pres = new BlotGL(scr);
 }
 
-Library::Library()
-{
-	initialise();
-	_pres = new BlotGL();
-}
-
 void Library::saveAs()
 {
 	QString types = "Blot files (*.blot)";

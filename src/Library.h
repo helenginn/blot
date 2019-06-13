@@ -41,8 +41,7 @@ class Library : public QMainWindow, public Parser
 {
 	Q_OBJECT
 public:
-	Library();
-	Library(StartScreen *scr);
+	Library(StartScreen *scr = NULL);
 	virtual ~Library();
 	
 	static void setCurrentLibrary(Library *lib);
