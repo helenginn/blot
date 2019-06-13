@@ -66,6 +66,7 @@ public:
 	void updateDisplay();
 	virtual void addProperties();
 public slots:
+	void selectInstruction();
 	
 protected:
 	virtual void initializeGL();

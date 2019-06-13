@@ -72,8 +72,44 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 	}
 
 	makeList(p);
+	
+	connect(_list, &QListWidget::currentRowChanged, 
+	        this, &BlotGL::selectInstruction);
 
 	advancePresentation();
+}
+
+void BlotGL::selectInstruction()
+{
+	if (_list->count() == 0)
+	{
+		return;
+	}
+
+	QListWidgetItem *item = _list->currentItem();
+	int row = _list->row(item);
+	_currPos = row;
+	
+	int lastWipe = 0;
+
+	for (int i = row - 1; i >= 0; i--)
+	{
+		Instruction *inst = instructionForItem(_list->item(row));
+
+		if (inst->getClassName() == "WipeSlate")
+		{
+			lastWipe = i;
+			break;
+		}
+	}
+
+	clearAll();
+
+	for (int i = lastWipe; i <= row; i++)
+	{
+		Instruction *inst = instructionForItem(_list->item(i));
+		inst->makeEffect();
+	}
 }
 
 void BlotGL::addObject(BlotObject *obj)
