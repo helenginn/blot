@@ -59,11 +59,19 @@ StartScreen::StartScreen(QWidget *parent,
 	QMenu *aspects = file->addMenu(tr("Choose aspect ratio"));
 	action = aspects->addAction(tr("4:3"));
 	connect(action, &QAction::triggered, this, &StartScreen::aspect4t3);
+	action = aspects->addAction(tr("16:9"));
+	connect(action, &QAction::triggered, this, &StartScreen::aspect16t9);
 
 	QMenu *insert = menuBar()->addMenu(tr("&Insert"));
 	action = insert->addAction(tr("Wipe slate"));
 	connect(action, &QAction::triggered, this, &StartScreen::addWipe);
 } 
+
+void StartScreen::aspect16t9()
+{
+	_pres->setAspectRatio(16./9.);
+	resizeEvent(NULL);
+}
 
 void StartScreen::aspect4t3()
 {
@@ -153,32 +161,10 @@ void StartScreen::openLibrary()
 	_lib = static_cast<Library *>(p);
 	_lib->setFilename(fileNames[0].toStdString());
 	_lib->show();
+	_pres = _lib->presentation();
+	_pres->QWidget::setParent(this);
 
-	drawEditMode();
-	resizeEvent(NULL);
-}
-
-void StartScreen::drawEditMode()
-{
-	if (_lib == NULL)
-	{
-		return;
-	}
-
-	std::cout << "Draw edit mode" << std::endl;
-	
-	if (_pres == NULL)
-	{
-		_pres = _lib->presentation();
-	}
-
-	_pres->QOpenGLWidget::setParent(this);
-	_pres->makeList(this);
-	_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
-	                   DEFAULT_WIDTH - INSTRUCTION_WIDTH, DEFAULT_HEIGHT);
-	_pres->setEditMode(true);
-	_pres->show();
-
+	_pres->setSmallWindow();
 	_pres->setFocus();
 	_pres->setFocusPolicy(Qt::StrongFocus);
 }
@@ -193,18 +179,11 @@ void StartScreen::newLibrary()
 
 	_lib = new Library();
 	_lib->show();
-	drawEditMode();
-}
-
-void StartScreen::keyPressEvent(QKeyEvent *event)
-{
-	if (event->key() == Qt::Key_V && _lib != NULL)
-	{
-		_pres = _lib->presentation();
-		_pres->setEditMode(false);
-		_pres->clearAll();
-		_pres->setFullScreen();
-	}
+	_pres = _lib->presentation();
+	_pres->QWidget::setParent(this);
+	_pres->setSmallWindow();
+	_pres->setFocus();
+	_pres->setFocusPolicy(Qt::StrongFocus);
 }
 
 void StartScreen::addWipe()

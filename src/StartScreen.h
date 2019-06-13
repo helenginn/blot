@@ -38,10 +38,12 @@ public:
 	~StartScreen();
 	
 	static StartScreen *startScreenPtr;
-	void drawEditMode();
 
+	void resizeWidgets()
+	{
+		resizeEvent(NULL);
+	}
 protected:
-	virtual void keyPressEvent(QKeyEvent *event);
 	virtual void resizeEvent(QResizeEvent *event);
 
 private slots:
@@ -49,6 +51,7 @@ private slots:
 	void openLibrary();
 	void addWipe();
 	void aspect4t3();
+	void aspect16t9();
 	
 private:
 	BlotGL *_pres;

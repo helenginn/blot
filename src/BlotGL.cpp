@@ -163,6 +163,7 @@ void BlotGL::setAspectRatio(double ratio)
 
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 {
+	_parent = NULL;
 	_list = NULL;
 	_currPos = 0;
 	_editMode = true;
@@ -291,8 +292,8 @@ void BlotGL::setFullScreen()
 	hide();
 	_parent = parent();
 	QWidget::setParent(NULL);
-	setWindowFlags(Qt::Window);
 	resize(resol.width(), resol.height());
+	setWindowState(Qt::WindowFullScreen);
 	show();
 	windowHandle()->setScreen(screens.last());
 	showFullScreen();
@@ -303,10 +304,22 @@ void BlotGL::setSmallWindow()
 	std::cout << "Making small window" << std::endl;
 	hide();
 	StartScreen *w = static_cast<StartScreen *>(_parent);
-	if (w)
+
+	if (w == NULL)
 	{
-		w->drawEditMode();
+		w = static_cast<StartScreen *>(parent());
 	}
+	
+	if (w == NULL)
+	{
+		return;
+	}
+	
+	QWidget::setParent(w);
+	makeList(w);
+	setEditMode(true);
+	show();
+	w->resizeWidgets();
 }
 
 void BlotGL::addImage(ImageProc *proc)
@@ -363,6 +376,9 @@ void BlotGL::keyPressEvent(QKeyEvent *event)
 			clearAll();
 			setFullScreen();
 		}
+
+		setFocus();
+		setFocusPolicy(Qt::StrongFocus);
 	}
 }
 
