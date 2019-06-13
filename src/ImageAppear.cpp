@@ -25,6 +25,43 @@ ImageAppear::ImageAppear(BlotGL *pres) : Instruction(pres)
 	_right = 0.3;
 	_top = 0.3;
 	_bottom = -0.3;
+	_fade = true;
+}
+
+bool ImageAppear::animateEffect()
+{
+	if (!_fade)
+	{
+		makeEffect();
+		setTime(1);
+		return false;
+	}
+
+	setTime(_startTime);
+	makeEffect();
+	return true;
+}
+
+bool ImageAppear::animateStep()
+{
+	double newTime = _time + _stepTime;
+	bool keep_going = true;
+	
+	if (newTime > _endTime)
+	{
+		keep_going = false;
+		newTime = _endTime;
+	}
+
+	setTime(newTime);
+
+	return keep_going;
+}
+
+void ImageAppear::setTime(double time)
+{
+	_time = time;
+	_obj->setTime(time);
 }
 
 void ImageAppear::makeEffect()

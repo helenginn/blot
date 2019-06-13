@@ -76,11 +76,6 @@ public:
 	
 	mat3x3 getAspectMatrix();
 	
-	float getTime()
-	{
-		return _time;
-	}
-	
 	QPushButton *button(int i)
 	{
 		return _buttons[i];
@@ -105,6 +100,7 @@ public slots:
 	void moveInstructionDown();
 	void deleteInstruction();
 	void changeInstruction();
+	void progressAnimations();
 	
 protected:
 	virtual void initializeGL();
@@ -131,6 +127,7 @@ private:
 	QPushButton *_bMore;
 	std::vector<QPushButton *> _buttons;
 	Instruction *_currInstruct;
+	std::vector<Instruction *> _animating;
 	Properties *_prop;
 	std::vector<BlotObject *> _objects;
 	QObject *_parent;
@@ -142,7 +139,6 @@ private:
 	int _startY;
 	int _lastX;
 	int _lastY;
-	double _time;
 	mat3x3 _aspect;
 	double _aspectRatio;
 	QTimer *_timer;

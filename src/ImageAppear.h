@@ -55,6 +55,8 @@ public:
 	}
 
 	virtual void makeEffect();
+	virtual bool animateEffect();
+	virtual bool animateStep();
 	
 	virtual BlotObject *object()
 	{
@@ -75,6 +77,8 @@ public:
 
 	virtual void addProperties();
 	virtual void linkReference(BaseParser *child, std::string name);
+protected:
+	void setTime(double time);
 private:
 	BlotObject *_obj;
 	
@@ -83,6 +87,7 @@ private:
 	double _bottom;
 	double _top;
 
+	bool _fade;
 	int _advance;
 };
 

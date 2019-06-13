@@ -101,6 +101,11 @@ public:
 		return _image;
 	}
 	
+	void setTime(float time)
+	{
+		_time = time;
+	}
+	
 	void addProperties();
 	void postParseTidy();
 
@@ -129,6 +134,7 @@ private:
 	ImageProc *_image;
 	std::vector<GLuint> _textures;
 	
+	float _time;
 	bool _extra;
 	bool _disabled;
 };

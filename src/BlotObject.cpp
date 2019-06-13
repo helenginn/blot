@@ -72,6 +72,7 @@ void BlotObject::makeDummy()
 
 BlotObject::BlotObject(ImageProc *proc)
 {
+	_time = 1;
 	_random = i_to_str(rand());
 	_renderType = GL_TRIANGLES;
 	_image = proc;
@@ -278,7 +279,6 @@ void BlotObject::render(BlotGL *sender)
 	rebindProgram();
 	
 	mat3x3 aspect = sender->getAspectMatrix();
-	std::cout << mat3x3_desc(aspect) << std::endl;
 	float *toFloat = mat3x3_malloc_float3x3(aspect);
 
 	const char *uniform_name = "aspect";
@@ -286,10 +286,9 @@ void BlotObject::render(BlotGL *sender)
 	glUniformMatrix3fv(_uAspect, 1, GL_FALSE, toFloat);
 	checkErrors();
 
-	float time = sender->getTime();
 	const char *time_name = "time";
 	_uTime = glGetUniformLocation(_program, time_name);
-	glUniform1fv(_uTime, 1, &time);
+	glUniform1fv(_uTime, 1, &_time);
 
 	if (_textures.size())
 	{
@@ -345,3 +344,5 @@ void BlotObject::postParseTidy()
 {
 
 }
+
+

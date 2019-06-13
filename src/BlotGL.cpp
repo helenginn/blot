@@ -31,6 +31,7 @@
 #include <QStyle>
 #include <QScreen>
 #include <QWindow>
+#include <QTimer>
 #include <iostream>
 
 void BlotGL::initializeGL()
@@ -199,7 +200,10 @@ void BlotGL::setAspectRatio(double ratio)
 
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 {
-	_time = 1;
+	_timer = new QTimer();
+	_timer->setInterval(30);
+	connect(_timer, &QTimer::timeout, this, &BlotGL::progressAnimations);
+
 	_prop = NULL;
 	_parent = NULL;
 	_list = NULL;
@@ -303,6 +307,13 @@ void BlotGL::advancePresentation(bool clicked)
 	{
 		return;
 	}
+	
+	if (_animating.size())
+	{
+		return;
+	}
+	
+	bool begun_sequence = false;
 
 	while (true)
 	{
@@ -318,11 +329,31 @@ void BlotGL::advancePresentation(bool clicked)
 			break;
 		}
 		
-		inst->makeEffect();
+		if (_editMode)
+		{
+			inst->makeEffect();
+		}
+		else
+		{
+			bool started = inst->animateEffect();
+			
+			begun_sequence |= started;
+
+			if (started)
+			{
+				_animating.push_back(inst);
+			}
+		}
+
 		update();
 		clicked = false;
 		_list->setCurrentRow(_currPos);
 		_currPos++;
+	}
+	
+	if (begun_sequence)
+	{
+		_timer->start();
 	}
 }
 
@@ -652,4 +683,25 @@ mat3x3 BlotGL::getAspectMatrix()
 	}
 	
 	return make_mat3x3();
+}
+
+void BlotGL::progressAnimations()
+{
+	for (size_t i = 0; i < _animating.size(); i++)
+	{
+		bool keep = _animating[i]->animateStep();
+		
+		if (!keep)
+		{
+			_animating.erase(_animating.begin() + i);
+			i--;
+		}
+	}
+
+	if (_animating.size() == 0)
+	{
+		_timer->stop();
+	}
+	
+	update();
 }

@@ -25,6 +25,10 @@ Instruction::Instruction(BlotGL *pres)
 	_onClick = true;
 	_presentation = pres;
 	_random = i_to_str(rand());
+	_time = 1;
+	_startTime = 0;
+	_endTime = 1;
+	_stepTime = 0.1;
 }
 
 void Instruction::addProperties()
@@ -50,4 +54,10 @@ void Instruction::updateText()
 		_item->listWidget()->repaint();
 	}
 
+}
+
+bool Instruction::animateEffect()
+{
+	makeEffect();
+	return false;
 }

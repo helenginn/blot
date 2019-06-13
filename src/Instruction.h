@@ -82,6 +82,12 @@ public:
 	}
 	
 	virtual void makeEffect() = 0;
+
+	virtual bool animateEffect();
+	virtual bool animateStep() 
+	{ 
+		return false; 
+	};
 	
 	virtual void select(bool sel) {};
 	virtual void addProperties();
@@ -89,6 +95,10 @@ public:
 protected:
 	BlotGL *_presentation;
 	std::string _random;
+	double _time;
+	double _startTime;
+	double _endTime;
+	double _stepTime;
 
 private:
 	bool _onClick;
