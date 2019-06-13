@@ -154,6 +154,13 @@ void BlotGL::moveInstruction(int diff)
 	_list->setCurrentRow(row);
 }
 
+void BlotGL::setAspectRatio(double ratio)
+{
+	_aspectRatio = ratio;
+	_aspect = make_mat3x3();
+	_aspect.vals[0] = 1 / _aspectRatio;
+}
+
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 {
 	_list = NULL;
@@ -163,6 +170,7 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 	_shiftPressed = false;
 	_currInstruct = NULL;
 	_aspectRatio = 1;
+	_aspect = make_mat3x3();
 	
 	if (p == NULL)
 	{
@@ -232,7 +240,7 @@ void BlotGL::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
-		_objects[i]->render();
+		_objects[i]->render(this);
 	}
 }
 
@@ -530,6 +538,7 @@ void BlotGL::postParseTidy()
 		item->setText(inst->qText());
 	}
 
+	setAspectRatio(_aspectRatio);
 }
 
 bool BlotGL::imageInUse(ImageProc *image)
@@ -571,4 +580,14 @@ void BlotGL::removeImageReferences(ImageProc *image)
 	}
 	
 	selectInstruction();
+}
+
+mat3x3 BlotGL::getAspectMatrix()
+{
+	if (windowFlags() == Qt::Window || true)
+	{
+		return _aspect;
+	}
+	
+	return make_mat3x3();
 }

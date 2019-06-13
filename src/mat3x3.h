@@ -40,6 +40,18 @@ void unit_cell_from_mat3x3(mat3x3 mat, double *vals);
 /** Return an identity matrix */
 mat3x3 make_mat3x3();
 
+inline float *mat3x3_malloc_float3x3(mat3x3 &mat)
+{
+	float *fmat = (float *)malloc(sizeof(float) * 9);
+	
+	for (size_t i = 0; i < 9; i++)
+	{
+		fmat[i] = mat.vals[i];
+	}
+	
+	return fmat;
+}
+
 /** Inline method (mildly faster) to multiply a vector by
  * a matrix, by supplying pointer to vector to change */
 inline void mat3x3_mult_vec(struct mat3x3 mat, struct vec3 *vec)

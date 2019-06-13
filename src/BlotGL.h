@@ -25,6 +25,7 @@
 #include <QListWidget>
 #include <vector>
 #include "Parser.h"
+#include "mat3x3.h"
 
 class BlotObject;
 class ImageProc;
@@ -65,15 +66,14 @@ public:
 		return _list;
 	}
 	
-	void setAspectRatio(double ratio)
-	{
-		_aspectRatio = ratio;
-	}
+	void setAspectRatio(double ratio);
 	
 	double aspectRatio()
 	{
 		return _aspectRatio;
 	}
+	
+	mat3x3 getAspectMatrix();
 	
 	QPushButton *button(int i)
 	{
@@ -134,6 +134,7 @@ private:
 	int _startY;
 	int _lastX;
 	int _lastY;
+	mat3x3 _aspect;
 	double _aspectRatio;
 	QTimer *_timer;
 };

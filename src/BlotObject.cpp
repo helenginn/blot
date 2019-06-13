@@ -17,6 +17,7 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "BlotObject.h"
+#include "BlotGL.h"
 #include <iostream>
 #include <string>
 #include <QImage>
@@ -268,7 +269,7 @@ void BlotObject::checkErrors()
 	}
 }
 
-void BlotObject::render()
+void BlotObject::render(BlotGL *sender)
 {
 	if (_disabled)
 	{
@@ -277,6 +278,14 @@ void BlotObject::render()
 	
 	glUseProgram(_program);
 	rebindProgram();
+	
+	mat3x3 aspect = sender->getAspectMatrix();
+	float *toFloat = mat3x3_malloc_float3x3(aspect);
+
+	const char *uniform_name = "aspect";
+	_uAspect = glGetUniformLocation(_program, uniform_name);
+	glUniformMatrix3fv(_uAspect, 1, GL_FALSE, toFloat);
+	checkErrors();
 
 	if (_textures.size())
 	{
@@ -285,6 +294,8 @@ void BlotObject::render()
 	
 	glDrawElements(_renderType, indexCount(), GL_UNSIGNED_INT, 0);
 	checkErrors();
+	
+	free(toFloat);
 
 	glUseProgram(0);
 }

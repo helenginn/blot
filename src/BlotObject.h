@@ -34,6 +34,7 @@ typedef struct
 } Vertex;
 
 class ImageProc;
+class BlotGL;
 
 class BlotObject : public QOpenGLFunctions, public Parser
 {
@@ -41,7 +42,7 @@ public:
 	BlotObject(ImageProc *proc = NULL);
 	virtual ~BlotObject() {};
 	void initialisePrograms();
-	void render();
+	void render(BlotGL *sender);
 	
 	virtual std::string getClassName()
 	{
@@ -121,6 +122,7 @@ private:
 	GLuint _bufferID;
 	GLuint _vbo;
 	GLuint _renderType;
+	GLuint _uAspect;
 	ImageProc *_image;
 	std::vector<GLuint> _textures;
 	
