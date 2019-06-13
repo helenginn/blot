@@ -37,7 +37,8 @@ public:
 
 	void setNewImage(ImageProc *proc);
 	virtual void select(bool sel);
-	virtual void moveFractional(double fx, double fy);;
+	virtual void moveFractional(double fx, double fy);
+	virtual void resizeFractional(double fx, double fy, bool aspect);
 	virtual bool isCovered(double x, double y);
 
 	void setBlotObject(BlotObject *obj)
@@ -69,6 +70,8 @@ public:
 	{
 		return "ImageAppear_" + _random;
 	}
+
+	virtual std::string instText();
 
 	virtual void addProperties();
 	virtual void linkReference(BaseParser *child, std::string name);

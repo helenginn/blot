@@ -12,6 +12,7 @@
 #include "ImageProc.h"
 #include "BlotObject.h"
 #include "ImageAppear.h"
+#include "WipeSlate.h"
 
 ParserMap BaseParser::_allParsers;
 ClassMap BaseParser::_allClasses;
@@ -1240,6 +1241,10 @@ Parser *BaseParser::objectOfType(char *className)
 	else if (strcmp(className, "ImageAppear") == 0)
 	{
 		object = static_cast<Parser *>(new ImageAppear());
+	}
+	else if (strcmp(className, "WipeSlate") == 0)
+	{
+		object = static_cast<Parser *>(new WipeSlate());
 	}
 	else
 	{

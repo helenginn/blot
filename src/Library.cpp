@@ -18,6 +18,7 @@
 
 #include <QClipboard>
 #include <QMimeData>
+#include <QMessageBox>
 #include <QMenuBar>
 #include <QApplication>
 #include <iostream>
@@ -33,7 +34,7 @@
 Library *Library::_lib = NULL;
 
 #define DEFAULT_LIBRARY_HEIGHT 800
-#define DEFAULT_LIBRARY_WIDTH 600
+#define DEFAULT_LIBRARY_WIDTH 1000
 #define IMAGE_TITLE_HEIGHT 30
 #define IMAGE_HEIGHT 300
 #define BUTTON_WIDTH 200
@@ -53,7 +54,8 @@ void Library::initialise()
 	this->resize(DEFAULT_LIBRARY_WIDTH, DEFAULT_LIBRARY_HEIGHT);
 	this->setWindowTitle("Blot Library");
 	_list = new QListWidget(this);
-	_list->setGeometry(0, MENU_HEIGHT, LIST_WIDTH, DEFAULT_LIBRARY_HEIGHT);
+	_list->setGeometry(0, MENU_HEIGHT, LIST_WIDTH, 
+	                   DEFAULT_LIBRARY_HEIGHT - QUICK_BUTTON_HEIGHT);
 	_list->show();
 	connect(_list, &QListWidget::itemSelectionChanged, 
 	        this, &Library::elaborate);
@@ -233,14 +235,51 @@ void Library::elaborateItem(QListWidgetItem *item)
 		_addToPres  = new QPushButton(this);
 		connect(_addToPres, &QPushButton::clicked, 
 		        this, &Library::addToPresentation);
+
+		_bDelete = new QPushButton(this);
+		connect(_bDelete, &QPushButton::clicked, 
+		        this, &Library::deleteFromLibrary);
 	}
 	
+	int y = MENU_HEIGHT + IMAGE_TITLE_HEIGHT + IMAGE_HEIGHT;
+	
 	_addToPres->setGeometry(ELABORATION_MIDPOINT - BUTTON_WIDTH / 2,
-	                        MENU_HEIGHT + IMAGE_TITLE_HEIGHT + IMAGE_HEIGHT,
-							BUTTON_WIDTH, BUTTON_HEIGHT);
+	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	_addToPres->setText("Add to presentation");
 	_addToPres->show();
 	
+	y += BUTTON_HEIGHT * 1.2;
+	
+	_bDelete->setGeometry(ELABORATION_MIDPOINT - BUTTON_WIDTH / 2,
+	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	_bDelete->setText("Delete");
+	_bDelete->show();
+}
+
+void Library::deleteFromLibrary()
+{
+	QListWidgetItem *item = _list->currentItem();
+	ImageProc *proc = imageProcForItem(item);
+	if (_pres->imageInUse(proc))
+	{
+		QMessageBox msgBox;
+		msgBox.setText("The presentation uses this image.");
+		msgBox.setInformativeText("Do you want to delete all instances?");
+		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+		msgBox.setDefaultButton(QMessageBox::No);
+		int ret = msgBox.exec();	
+
+		if (ret == QMessageBox::No)
+		{
+			return;
+		}
+		else
+		{
+			_pres->removeImageReferences(proc);
+		}
+	}
+	
+	_list->takeItem(_list->currentRow());
 }
 
 ImageProc *Library::imageProcForItem(QListWidgetItem *item)

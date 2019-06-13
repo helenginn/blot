@@ -1,5 +1,5 @@
-// BLot
-// Copyright (C) 2019- Helen Ginn
+// Blot
+// Copyright (C) 2017-2018 Helen Ginn
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,46 +16,34 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __Blot__StartScreen__
-#define __Blot__StartScreen__
+#ifndef __Blot__WipeSlate__
+#define __Blot__WipeSlate__
 
-#define INSTRUCTION_WIDTH 200
-#define DEFAULT_WIDTH 1000
-#define DEFAULT_HEIGHT 600
-#define QUICK_BUTTON_HEIGHT 40
+#include "Instruction.h"
 
-#include <QMainWindow>
-
-class BlotGL;
-class Library;
-
-class StartScreen : public QMainWindow
+class WipeSlate : public Instruction
 {
-	Q_OBJECT
-	
 public:
-	StartScreen(QWidget *parent = 0, int argc = 0, char *argv[] = NULL);
-	~StartScreen();
-	
-	static StartScreen *startScreenPtr;
-	void drawEditMode();
+	WipeSlate(BlotGL *pres = NULL);
+	virtual ~WipeSlate() {};
 
-protected:
-	virtual void keyPressEvent(QKeyEvent *event);
-	virtual void resizeEvent(QResizeEvent *event);
-
-private slots:
-	void newLibrary();
-	void openLibrary();
-	void addWipe();
-	void aspect4t3();
+	virtual std::string getClassName()
+	{
+		return "WipeSlate";
+	}
 	
+	virtual std::string getParserIdentifier()
+	{
+		return "WipeSlate" + _random;
+	}
+	
+	virtual std::string instText()
+	{
+		return "Wipe slate";
+	}
+	
+	virtual void makeEffect();
 private:
-	BlotGL *_pres;
-	Library *_lib;
-	char **_argv;
-	int _argc;
-
 };
 
 #endif

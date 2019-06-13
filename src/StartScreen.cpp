@@ -24,6 +24,7 @@
 #include <QScreen>
 #include "charmanip.h"
 #include "StartScreen.h"
+#include "WipeSlate.h"
 #include "Library.h"
 #include "BlotGL.h"
 
@@ -44,22 +45,70 @@ StartScreen::StartScreen(QWidget *parent,
 	_lib = NULL;
 	_pres = NULL;
 
-	QMenu *edit = menuBar()->addMenu(tr("&File"));
-	QAction *action = edit->addAction(tr("New library"));
+	QMenu *file = menuBar()->addMenu(tr("&File"));
+	QAction *action = file->addAction(tr("New library"));
 	action->setShortcut(QKeySequence::New);
 	connect(action, &QAction::triggered, this, &StartScreen::newLibrary);
 
-	action = edit->addAction(tr("Open library"));
+	action = file->addAction(tr("Open library"));
 	action->setShortcut(QKeySequence::Open);
 	connect(action, &QAction::triggered, this, &StartScreen::openLibrary);
+
+	file->addSeparator();
+
+	QMenu *aspects = file->addMenu(tr("Choose aspect ratio"));
+	action = aspects->addAction(tr("4:3"));
+	connect(action, &QAction::triggered, this, &StartScreen::aspect4t3);
+
+	QMenu *insert = menuBar()->addMenu(tr("&Insert"));
+	action = insert->addAction(tr("Wipe slate"));
+	connect(action, &QAction::triggered, this, &StartScreen::addWipe);
 } 
+
+void StartScreen::aspect4t3()
+{
+	_pres->setAspectRatio(4./3.);
+	resizeEvent(NULL);
+}
 
 void StartScreen::resizeEvent(QResizeEvent *event)
 {
 	if (_pres)
 	{
-		_pres->setGeometry(INSTRUCTION_WIDTH, MENU_HEIGHT, 
-		                   width() - INSTRUCTION_WIDTH, height());
+		double asp = _pres->aspectRatio();
+		int plus_x = 0;
+		int plus_y = 0;
+		int pres_width = width() - INSTRUCTION_WIDTH;
+		int pres_height = pres_width / asp;
+
+		if (pres_height > height())
+		{
+			pres_height = height() - MENU_HEIGHT;
+			pres_width = height() * asp;
+			plus_x += (width() - INSTRUCTION_WIDTH - pres_width) / 2;
+		}
+		else
+		{
+			plus_y += (height() - pres_height - MENU_HEIGHT) / 2;
+		}
+
+		_pres->setGeometry(INSTRUCTION_WIDTH + plus_x, MENU_HEIGHT + plus_y, 
+		                   pres_width, pres_height);
+		
+		if (_pres->list())
+		{
+			_pres->list()->setGeometry(0, MENU_HEIGHT, INSTRUCTION_WIDTH, 
+			                           height() - MENU_HEIGHT 
+			                           - QUICK_BUTTON_HEIGHT);
+
+			for (size_t i = 0; i < _pres->buttonCount(); i++)
+			{
+				QRect geom = _pres->button(i)->geometry();
+				geom.setTop(height() - QUICK_BUTTON_HEIGHT);
+				geom.setHeight(QUICK_BUTTON_HEIGHT);
+				_pres->button(i)->setGeometry(geom);
+			}
+		}
 	}
 }
 
@@ -106,6 +155,7 @@ void StartScreen::openLibrary()
 	_lib->show();
 
 	drawEditMode();
+	resizeEvent(NULL);
 }
 
 void StartScreen::drawEditMode()
@@ -129,8 +179,8 @@ void StartScreen::drawEditMode()
 	_pres->setEditMode(true);
 	_pres->show();
 
-	setFocus();
-	setFocusPolicy(Qt::StrongFocus);
+	_pres->setFocus();
+	_pres->setFocusPolicy(Qt::StrongFocus);
 }
 
 void StartScreen::newLibrary()
@@ -155,6 +205,12 @@ void StartScreen::keyPressEvent(QKeyEvent *event)
 		_pres->clearAll();
 		_pres->setFullScreen();
 	}
+}
+
+void StartScreen::addWipe()
+{
+	WipeSlate *wipe = new WipeSlate(_pres);
+	_pres->addInstruction(wipe);
 }
 
 StartScreen::~StartScreen()

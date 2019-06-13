@@ -44,5 +44,6 @@ executable('blot', gen_src, moc_files,
 'src/Instruction.cpp', 
 'src/StartScreen.cpp', 
 'src/StateValue.cpp', 
+'src/WipeSlate.cpp', 
 cpp_args: ['-std=c++11'], dependencies : [ qt5_dep, dep_gl, png_dep ], install: true)
 

@@ -29,6 +29,7 @@
 class BlotObject;
 class ImageProc;
 class Instruction;
+class QPushButton;
 
 class BlotGL : public QOpenGLWidget, QOpenGLFunctions, public Parser
 {
@@ -40,7 +41,7 @@ public:
 	void makeList(QWidget *p);
 	void addObject(BlotObject *obj);
 	void addImage(ImageProc *proc);
-	void addInstruction(Instruction *inst);
+	void addInstruction(Instruction *inst, bool atRow = true);
 	void advancePresentation(bool clicked = false);
 	Instruction *instructionForItem(QListWidgetItem *item);
 	
@@ -59,20 +60,51 @@ public:
 		return "MainPresentation";
 	}
 	
+	virtual QListWidget *list()
+	{
+		return _list;
+	}
+	
+	void setAspectRatio(double ratio)
+	{
+		_aspectRatio = ratio;
+	}
+	
+	double aspectRatio()
+	{
+		return _aspectRatio;
+	}
+	
+	QPushButton *button(int i)
+	{
+		return _buttons[i];
+	}
+	
+	size_t buttonCount()
+	{
+		return _buttons.size();
+	}
+	
 	void clearAll();
 	void setFullScreen();
 	void setSmallWindow();
 	
+	bool imageInUse(ImageProc *image);
+	void removeImageReferences(ImageProc *image);
 	void updateDisplay();
 	virtual void addProperties();
 public slots:
 	void selectInstruction();
+	void moveInstructionUp();
+	void moveInstructionDown();
+	void deleteInstruction();
 	
 protected:
 	virtual void initializeGL();
 	virtual void paintGL();
 	virtual void resizeGL(int w, int h);
 	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void keyReleaseEvent(QKeyEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void mouseMoveEvent(QMouseEvent *e);
@@ -80,19 +112,29 @@ protected:
 	virtual void addObject(Parser *child, std::string name);
 	virtual void postParseTidy();
 private:
+	void moveInstruction(int diff);
 	void initialisePrograms();
 	void findSelectedInstruction(double x, double y);
 	
 	QListWidget *_list;
+	QPushButton *_bDelete;
+	QPushButton *_bUp;
+	QPushButton *_bDown;
+	QPushButton *_bPlus;
+	QPushButton *_bMore;
+	std::vector<QPushButton *> _buttons;
 	Instruction *_currInstruct;
 	std::vector<BlotObject *> _objects;
 	QObject *_parent;
 	bool _editMode;
+	bool _shiftPressed;
+	bool _controlPressed;
 	int _currPos;
 	int _startX;
 	int _startY;
 	int _lastX;
 	int _lastY;
+	double _aspectRatio;
 	QTimer *_timer;
 };
 

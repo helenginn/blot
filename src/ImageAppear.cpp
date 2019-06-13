@@ -82,6 +82,28 @@ void ImageAppear::moveFractional(double fx, double fy)
 	_obj->setVertices(_top, _bottom, _left, _right);
 }
 
+void ImageAppear::resizeFractional(double fx, double fy, bool aspect)
+{
+	double ratio = (_bottom - _top) / (_right - _left);
+
+	_left -= fx;
+	_right += fx;
+	_top += fy;
+	_bottom -= fy;
+	
+	if (aspect)
+	{
+		double new_ratio = (_bottom - _top) / (_right - _left);
+		double fix = ratio / new_ratio;
+		double diff = (_bottom - _top) * (fix - 1) / 2;
+		
+		_bottom += diff;
+		_top -= diff;
+	}
+
+	_obj->setVertices(_top, _bottom, _left, _right);
+}
+
 bool ImageAppear::isCovered(double x, double y)
 {
 	if (_obj->isDisabled())
@@ -112,3 +134,9 @@ void ImageAppear::select(bool sel)
 	_obj->select(sel);
 	_presentation->update();
 }
+
+std::string ImageAppear::instText()
+{
+	return "Show " + object()->getImage()->text();
+}
+

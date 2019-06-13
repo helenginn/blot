@@ -44,10 +44,21 @@ public:
 	
 	virtual bool isCovered(double x, double y) { return false; }
 	virtual void moveFractional(double fx, double fy) {};
+	virtual void resizeFractional(double fx, double fy, bool aspect) {};
 	
 	void setOnClick(bool click)
 	{
 		_onClick = click;
+	}
+	
+	virtual QString qText()
+	{
+		return QString::fromStdString(instText());
+	}
+	
+	virtual std::string instText()
+	{
+		return "Instruct";
 	}
 	
 	bool waitForClick()

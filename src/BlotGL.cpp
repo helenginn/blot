@@ -25,6 +25,9 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QIcon>
+#include <QPushButton>
+#include <QStyle>
 #include <QScreen>
 #include <QWindow>
 #include <iostream>
@@ -54,9 +57,101 @@ void BlotGL::makeList(QWidget *p)
 
 	_list = new QListWidget(p);
 	_list->setGeometry(0, MENU_HEIGHT, INSTRUCTION_WIDTH, 
-	                   p->height() - MENU_HEIGHT);
+	                   p->height() - MENU_HEIGHT - QUICK_BUTTON_HEIGHT);
 	_list->show();
 
+	QIcon del = qApp->style()->standardIcon(QStyle::SP_TrashIcon);
+	QIcon up = qApp->style()->standardIcon(QStyle::SP_ArrowUp);
+	QIcon down = qApp->style()->standardIcon(QStyle::SP_ArrowDown);
+	QIcon more = qApp->style()->standardIcon(QStyle::SP_ToolBarHorizontalExtensionButton);
+	
+	int x = 0;
+
+	_bUp = new QPushButton(p);
+	_bUp->setGeometry(x, p->height() - QUICK_BUTTON_HEIGHT, 
+	                      QUICK_BUTTON_HEIGHT,
+	                      QUICK_BUTTON_HEIGHT);
+	_bUp->setIcon(up);
+	_bUp->show();
+	
+	x += QUICK_BUTTON_HEIGHT;
+
+	_bDown = new QPushButton(p);
+	_bDown->setGeometry(x, p->height() - QUICK_BUTTON_HEIGHT, 
+	                      QUICK_BUTTON_HEIGHT,
+	                      QUICK_BUTTON_HEIGHT);
+	_bDown->setIcon(down);
+	_bDown->show();
+	
+	x += QUICK_BUTTON_HEIGHT;
+
+	_bDelete = new QPushButton(p);
+	_bDelete->setGeometry(x, p->height() - QUICK_BUTTON_HEIGHT, 
+	                      QUICK_BUTTON_HEIGHT,
+	                      QUICK_BUTTON_HEIGHT);
+	_bDelete->setIcon(del);
+	_bDelete->show();
+	
+	x += QUICK_BUTTON_HEIGHT;
+
+
+	_bMore = new QPushButton(p);
+	_bMore->setGeometry(x, p->height() - QUICK_BUTTON_HEIGHT, 
+	                      QUICK_BUTTON_HEIGHT,
+	                      QUICK_BUTTON_HEIGHT);
+	_bMore->setIcon(more);
+	_bMore->show();
+
+	x += QUICK_BUTTON_HEIGHT;
+
+	_bPlus = new QPushButton(p);
+	_bPlus->setGeometry(x, p->height() - QUICK_BUTTON_HEIGHT, 
+	                      QUICK_BUTTON_HEIGHT,
+	                      QUICK_BUTTON_HEIGHT);
+	_bPlus->setText("+");
+	_bPlus->show();
+
+	connect(_bUp, &QPushButton::pressed, this, &BlotGL::moveInstructionUp);
+	connect(_bDown, &QPushButton::pressed, this, &BlotGL::moveInstructionDown);
+	connect(_bDelete, &QPushButton::pressed, this, &BlotGL::deleteInstruction);
+	
+	_buttons.push_back(_bDown);
+	_buttons.push_back(_bUp);
+	_buttons.push_back(_bDelete);
+	_buttons.push_back(_bMore);
+	_buttons.push_back(_bPlus);
+}
+
+void BlotGL::deleteInstruction()
+{
+	_list->takeItem(_list->currentRow());
+	/* clears image if needed */
+	selectInstruction();
+}
+
+void BlotGL::moveInstructionUp()
+{
+	moveInstruction(-1);
+}
+
+void BlotGL::moveInstructionDown()
+{
+	moveInstruction(1);
+}
+
+void BlotGL::moveInstruction(int diff)
+{
+	int row = _list->currentRow();
+	
+	if (row + diff < 0 || row + diff >= _list->count())
+	{
+		return;
+	}
+
+	QListWidgetItem *item = _list->takeItem(row);
+	row += diff;
+	_list->insertItem(row, item);
+	_list->setCurrentRow(row);
 }
 
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
@@ -64,7 +159,10 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 	_list = NULL;
 	_currPos = 0;
 	_editMode = true;
+	_controlPressed = false;
+	_shiftPressed = false;
 	_currInstruct = NULL;
+	_aspectRatio = 1;
 	
 	if (p == NULL)
 	{
@@ -171,6 +269,7 @@ void BlotGL::advancePresentation(bool clicked)
 		inst->makeEffect();
 		update();
 		clicked = false;
+		_list->setCurrentRow(_currPos);
 		_currPos++;
 	}
 }
@@ -184,6 +283,7 @@ void BlotGL::setFullScreen()
 	hide();
 	_parent = parent();
 	QWidget::setParent(NULL);
+	setWindowFlags(Qt::Window);
 	resize(resol.width(), resol.height());
 	show();
 	windowHandle()->setScreen(screens.last());
@@ -207,22 +307,54 @@ void BlotGL::addImage(ImageProc *proc)
 	addObject(obj);
 }
 
-void BlotGL::addInstruction(Instruction *inst)
+void BlotGL::addInstruction(Instruction *inst, bool atRow)
 {
 	QListWidgetItem *item = new QListWidgetItem();
 	QVariant var = QVariant::fromValue<Instruction *>(inst);
 	item->setData(Qt::UserRole, var);
-	item->setText("Show " + inst->object()->getImage()->qText());
+	item->setText(inst->qText());
 
-	_list->addItem(item);
+	if (atRow)
+	{
+		_list->insertItem(_list->currentRow() + 1, item);
+		_list->setCurrentRow(_list->currentRow() + 1);
+	}
+	else
+	{
+		_list->addItem(item);
+	}
+
 	addObject(inst->object());
+}
+
+void BlotGL::keyReleaseEvent(QKeyEvent *event)
+{
+	_shiftPressed = false;
+	_controlPressed = false;
 }
 
 void BlotGL::keyPressEvent(QKeyEvent *event)
 {
+	if (event->key() == Qt::Key_Shift)
+	{
+		_shiftPressed = true;
+	}
+	if (event->key() == Qt::Key_Control)
+	{
+		_controlPressed = true;
+	}
 	if (event->key() == Qt::Key_V)
 	{
-		setSmallWindow();
+		if (windowFlags() & Qt::Window)
+		{
+			setSmallWindow();
+		}
+		else
+		{
+			setEditMode(false);
+			clearAll();
+			setFullScreen();
+		}
 	}
 }
 
@@ -273,7 +405,7 @@ void BlotGL::findSelectedInstruction(double x, double y)
 		if (cover)
 		{
 			_currInstruct = option;
-			_list->setCurrentItem(_list->item(i));
+//			_list->setCurrentItem(_list->item(i));
 			break;
 		}
 	}
@@ -299,13 +431,6 @@ void BlotGL::mouseMoveEvent(QMouseEvent *e)
 		return;
 	}
 
-	/*
-	if (e->button() != Qt::RightButton)
-	{
-		return;
-	}
-	*/
-
 	int newX = e->x();
 	int newY = e->y();
 
@@ -314,7 +439,16 @@ void BlotGL::mouseMoveEvent(QMouseEvent *e)
 	
 	_lastX = newX;
 	_lastY = newY;
-	_currInstruct->moveFractional(-frac_y, frac_x);
+	
+	if (!_shiftPressed)
+	{
+		_currInstruct->moveFractional(-frac_y, frac_x);
+	}
+	else if (_shiftPressed)
+	{
+		_currInstruct->resizeFractional(-frac_y, frac_x, _controlPressed);
+	}
+
 	update();
 }
 
@@ -347,6 +481,8 @@ void BlotGL::clearAll()
 
 void BlotGL::addProperties()
 {
+	addDoubleProperty("aspect_ratio", &_aspectRatio);
+	
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
 		addChild("blot_object", _objects[i]);
@@ -391,7 +527,48 @@ void BlotGL::postParseTidy()
 	{
 		QListWidgetItem *item = _list->item(i);
 		Instruction *inst = instructionForItem(item);
-		item->setText("Show " + inst->object()->getImage()->qText());
+		item->setText(inst->qText());
 	}
 
+}
+
+bool BlotGL::imageInUse(ImageProc *image)
+{
+	for (size_t i = 0; i < _objects.size(); i++)
+	{
+		if (_objects[i]->getImage() == image)
+		{
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+void BlotGL::removeImageReferences(ImageProc *image)
+{
+	/* remove instructions first */
+	for (int i = 0; i < _list->count(); i++)
+	{
+		Instruction *inst = instructionForItem(_list->item(i));
+		
+		if (inst->object() && inst->object()->getImage() == image)
+		{
+			_list->takeItem(i);
+			i--;
+		}
+	}
+
+	/* remove blot objects */
+
+	for (size_t i = 0; i < _objects.size(); i++)
+	{
+		if (_objects[i]->getImage() == image)
+		{
+			_objects.erase(_objects.begin() + i);
+			i--;
+		}
+	}
+	
+	selectInstruction();
 }
