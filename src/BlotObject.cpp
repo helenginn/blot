@@ -280,6 +280,7 @@ void BlotObject::render(BlotGL *sender)
 	rebindProgram();
 	
 	mat3x3 aspect = sender->getAspectMatrix();
+	std::cout << mat3x3_desc(aspect) << std::endl;
 	float *toFloat = mat3x3_malloc_float3x3(aspect);
 
 	const char *uniform_name = "aspect";

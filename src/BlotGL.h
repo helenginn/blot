@@ -30,6 +30,7 @@
 class BlotObject;
 class ImageProc;
 class Instruction;
+class Properties;
 class QPushButton;
 
 class BlotGL : public QOpenGLWidget, QOpenGLFunctions, public Parser
@@ -98,6 +99,7 @@ public slots:
 	void moveInstructionUp();
 	void moveInstructionDown();
 	void deleteInstruction();
+	void changeInstruction();
 	
 protected:
 	virtual void initializeGL();
@@ -124,6 +126,7 @@ private:
 	QPushButton *_bMore;
 	std::vector<QPushButton *> _buttons;
 	Instruction *_currInstruct;
+	Properties *_prop;
 	std::vector<BlotObject *> _objects;
 	QObject *_parent;
 	bool _editMode;

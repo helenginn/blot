@@ -16,37 +16,36 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#include "Instruction.h"
-#include "BlotGL.h"
-#include "charmanip.h"
+#ifndef __Blot__Properties__
+#define __Blot__Properties__
 
-Instruction::Instruction(BlotGL *pres)
+#include <QMainWindow>
+
+#define PROPERTIES_DEFAULT_WIDTH 350
+#define PROPERTIES_DEFAULT_HEIGHT 600
+
+#define PROPERTY_LABEL_WIDTH 250
+#define PROPERTY_LABEL_HEIGHT 30
+
+#define CHECK_BOX_DIMENSION 30 
+
+class Instruction;
+class QCheckBox;
+
+class Properties : public QMainWindow
 {
-	_onClick = true;
-	_presentation = pres;
-	_random = i_to_str(rand());
-}
+	Q_OBJECT
+public:
+	Properties(Instruction *inst = NULL);
+	virtual ~Properties() {};
+	
+public slots:
+	void changeClickRequirement();
+	
+private:
+	Instruction *_inst;
+	QCheckBox *_onClickCheck;
+	std::vector<QObject *> _toDelete;
+};
 
-void Instruction::addProperties()
-{
-	addBoolProperty("on_click", &_onClick);
-	addReference("presentation", _presentation);
-}
-
-void Instruction::linkReference(BaseParser *child, std::string name)
-{
-	if (name == "presentation")
-	{
-		_presentation = static_cast<BlotGL *>(child);
-	}
-}
-
-void Instruction::updateText()
-{
-	if (_item)
-	{
-		_item->setText(qText());
-		_item->listWidget()->repaint();
-	}
-
-}
+#endif

@@ -50,7 +50,6 @@ void ImageAppear::addProperties()
 
 void ImageAppear::linkReference(BaseParser *child, std::string name)
 {
-	std::cout << "Linking " << name << std::endl;
 	if (name == "blot_object")
 	{
 		_obj = static_cast<BlotObject *>(child);
@@ -137,6 +136,9 @@ void ImageAppear::select(bool sel)
 
 std::string ImageAppear::instText()
 {
-	return "Show " + object()->getImage()->text();
+	std::string start = "";
+	start += (waitForClick() ? "" : "+ ");
+	start += "Show " + object()->getImage()->text();
+	return start;
 }
 

@@ -190,15 +190,23 @@ void Library::elaborateItem(QListWidgetItem *item)
 	ImageProc *proc = imageProcForItem(item);
 	QImage *im = proc->getImage();
 	
-	float width = im->width();
+	float mywidth = im->width();
 	float height = 300;
 	if (im->height() > height)
 	{
-		width = im->width() * 300 / im->height();
+		mywidth = im->width() * 300 / im->height();
 	}
 	else
 	{
 		height = im->height();
+	}
+	
+	/* if width is too long still */
+	if (mywidth > (width() - LIST_WIDTH))
+	{
+		double ratio = (width() - LIST_WIDTH) / (double)mywidth;
+		height *= ratio;
+		mywidth *= ratio;
 	}
 
 	if (_imageLabel == NULL)
@@ -206,10 +214,10 @@ void Library::elaborateItem(QListWidgetItem *item)
 		_imageLabel = new QLabel(this);
 	}
 
-	_imageLabel->setPixmap(QPixmap::fromImage(im->scaled(width, height)));
-	_imageLabel->setGeometry(ELABORATION_MIDPOINT - width / 2, 
+	_imageLabel->setPixmap(QPixmap::fromImage(im->scaled(mywidth, height)));
+	_imageLabel->setGeometry(ELABORATION_MIDPOINT - mywidth / 2, 
 	                    MENU_HEIGHT + IMAGE_TITLE_HEIGHT,
-	                    width, height);
+	                    mywidth, height);
 	_imageLabel->show();
 	
 	if (_edit == NULL)

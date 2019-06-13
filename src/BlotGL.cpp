@@ -17,6 +17,7 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "BlotGL.h"
+#include "Properties.h"
 #include "BlotObject.h"
 #include "ImageProc.h"
 #include "Instruction.h"
@@ -63,7 +64,7 @@ void BlotGL::makeList(QWidget *p)
 	QIcon del = qApp->style()->standardIcon(QStyle::SP_TrashIcon);
 	QIcon up = qApp->style()->standardIcon(QStyle::SP_ArrowUp);
 	QIcon down = qApp->style()->standardIcon(QStyle::SP_ArrowDown);
-	QIcon more = qApp->style()->standardIcon(QStyle::SP_ToolBarHorizontalExtensionButton);
+//	QIcon more = qApp->style()->standardIcon(QStyle::SP_ToolBarHorizontalExtensionButton);
 	
 	int x = 0;
 
@@ -85,21 +86,12 @@ void BlotGL::makeList(QWidget *p)
 	
 	x += QUICK_BUTTON_HEIGHT;
 
-	_bDelete = new QPushButton(p);
-	_bDelete->setGeometry(x, p->height() - QUICK_BUTTON_HEIGHT, 
-	                      QUICK_BUTTON_HEIGHT,
-	                      QUICK_BUTTON_HEIGHT);
-	_bDelete->setIcon(del);
-	_bDelete->show();
-	
-	x += QUICK_BUTTON_HEIGHT;
-
-
 	_bMore = new QPushButton(p);
 	_bMore->setGeometry(x, p->height() - QUICK_BUTTON_HEIGHT, 
 	                      QUICK_BUTTON_HEIGHT,
 	                      QUICK_BUTTON_HEIGHT);
-	_bMore->setIcon(more);
+//	_bMore->setIcon(more);
+	_bMore->setText("...");
 	_bMore->show();
 
 	x += QUICK_BUTTON_HEIGHT;
@@ -111,9 +103,20 @@ void BlotGL::makeList(QWidget *p)
 	_bPlus->setText("+");
 	_bPlus->show();
 
+	x += QUICK_BUTTON_HEIGHT;
+
+	_bDelete = new QPushButton(p);
+	_bDelete->setGeometry(x, p->height() - QUICK_BUTTON_HEIGHT, 
+	                      QUICK_BUTTON_HEIGHT,
+	                      QUICK_BUTTON_HEIGHT);
+	_bDelete->setIcon(del);
+	_bDelete->show();
+	
+
 	connect(_bUp, &QPushButton::pressed, this, &BlotGL::moveInstructionUp);
 	connect(_bDown, &QPushButton::pressed, this, &BlotGL::moveInstructionDown);
 	connect(_bDelete, &QPushButton::pressed, this, &BlotGL::deleteInstruction);
+	connect(_bMore, &QPushButton::pressed, this, &BlotGL::changeInstruction);
 	
 	_buttons.push_back(_bDown);
 	_buttons.push_back(_bUp);
@@ -122,8 +125,36 @@ void BlotGL::makeList(QWidget *p)
 	_buttons.push_back(_bPlus);
 }
 
+void BlotGL::changeInstruction()
+{
+	if (_prop != NULL)
+	{
+		delete _prop;
+		_prop = NULL;
+	}
+	
+	QListWidgetItem *item = _list->currentItem();
+
+	if (item == NULL)
+	{
+		return;
+	}
+	
+	QRect me = geometry();
+
+	_prop = new Properties(instructionForItem(item));
+	_prop->setGeometry(me.right() + 50, 100, 
+	                  PROPERTIES_DEFAULT_WIDTH, PROPERTIES_DEFAULT_HEIGHT);
+	_prop->show();
+}
+
 void BlotGL::deleteInstruction()
 {
+	if (_list->currentItem() == NULL)
+	{
+		return;
+	}
+
 	_list->takeItem(_list->currentRow());
 	/* clears image if needed */
 	selectInstruction();
@@ -141,6 +172,11 @@ void BlotGL::moveInstructionDown()
 
 void BlotGL::moveInstruction(int diff)
 {
+	if (_list->currentItem() == NULL)
+	{
+		return;
+	}
+
 	int row = _list->currentRow();
 	
 	if (row + diff < 0 || row + diff >= _list->count())
@@ -163,6 +199,7 @@ void BlotGL::setAspectRatio(double ratio)
 
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 {
+	_prop = NULL;
 	_parent = NULL;
 	_list = NULL;
 	_currPos = 0;
@@ -216,6 +253,11 @@ void BlotGL::selectInstruction()
 	{
 		Instruction *inst = instructionForItem(_list->item(i));
 		inst->makeEffect();
+	}
+	
+	if (_prop && _prop->isVisible())
+	{
+		changeInstruction();
 	}
 }
 
@@ -331,9 +373,10 @@ void BlotGL::addImage(ImageProc *proc)
 void BlotGL::addInstruction(Instruction *inst, bool atRow)
 {
 	QListWidgetItem *item = new QListWidgetItem();
+	inst->setListItem(item);
 	QVariant var = QVariant::fromValue<Instruction *>(inst);
 	item->setData(Qt::UserRole, var);
-	item->setText(inst->qText());
+	inst->updateText();
 
 	if (atRow)
 	{
@@ -551,7 +594,8 @@ void BlotGL::postParseTidy()
 	{
 		QListWidgetItem *item = _list->item(i);
 		Instruction *inst = instructionForItem(item);
-		item->setText(inst->qText());
+		inst->setListItem(item);
+		inst->updateText();
 	}
 
 	setAspectRatio(_aspectRatio);

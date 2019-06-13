@@ -27,6 +27,7 @@ moc_files = qt5.preprocess(moc_headers : [
 'src/BlotGL.h', 
 'src/Library.h', 
 'src/StartScreen.h',
+'src/Properties.h', 
 ],
 		moc_extra_arguments: ['-DMAKES_MY_MOC_HEADER_COMPILE'])
 
@@ -42,6 +43,7 @@ executable('blot', gen_src, moc_files,
 'src/ImageAppear.cpp', 
 'src/ImageProc.cpp', 
 'src/Instruction.cpp', 
+'src/Properties.cpp', 
 'src/StartScreen.cpp', 
 'src/StateValue.cpp', 
 'src/WipeSlate.cpp', 

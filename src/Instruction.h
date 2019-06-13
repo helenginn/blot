@@ -21,6 +21,8 @@
 
 #include "BlotGL.h"
 
+class QListWidgetItem;
+
 class Instruction : public Parser
 {
 public:
@@ -49,6 +51,7 @@ public:
 	void setOnClick(bool click)
 	{
 		_onClick = click;
+		updateText();
 	}
 	
 	virtual QString qText()
@@ -65,10 +68,17 @@ public:
 	{
 		return _onClick;
 	}
+	
+	void updateText();
 
 	virtual BlotObject *object()
 	{
 		return NULL;
+	}
+	
+	void setListItem(QListWidgetItem *item)
+	{
+		_item = item;
 	}
 	
 	virtual void makeEffect() = 0;
@@ -82,6 +92,7 @@ protected:
 
 private:
 	bool _onClick;
+	QListWidgetItem *_item;
 
 };
 
