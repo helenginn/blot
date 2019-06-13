@@ -18,6 +18,7 @@
 
 #include "BlotObject.h"
 #include "BlotGL.h"
+#include "charmanip.h"
 #include <iostream>
 #include <string>
 #include <QImage>
@@ -48,10 +49,6 @@ void BlotObject::makeDummy()
 {
 	Vertex v; 
 	memset(&v, 0, sizeof(Vertex));
-	v.color[0] = 1.0;
-	v.color[1] = 1.0;
-	v.color[2] = 1.0;
-	v.color[3] = 1.0;
 	v.pos[0] = -0.5; v.pos[1] = -0.5;
 	v.tex[0] = 0; v.tex[1] = 1;
 	_vertices.push_back(v);
@@ -75,6 +72,7 @@ void BlotObject::makeDummy()
 
 BlotObject::BlotObject(ImageProc *proc)
 {
+	_random = i_to_str(rand());
 	_renderType = GL_TRIANGLES;
 	_image = proc;
 	makeDummy();
@@ -288,6 +286,11 @@ void BlotObject::render(BlotGL *sender)
 	glUniformMatrix3fv(_uAspect, 1, GL_FALSE, toFloat);
 	checkErrors();
 
+	float time = sender->getTime();
+	const char *time_name = "time";
+	_uTime = glGetUniformLocation(_program, time_name);
+	glUniform1fv(_uTime, 1, &time);
+
 	if (_textures.size())
 	{
 		glBindTexture(GL_TEXTURE_2D, _textures[0]);
@@ -303,7 +306,7 @@ void BlotObject::render(BlotGL *sender)
 
 void BlotObject::select(bool sel)
 {
-	bool selval = (sel ? 0.0 : 1.0);
+	bool selval = (sel ? 0.3 : 0.0);
 	
 	if (_vertices.size() == 0)
 	{
@@ -312,20 +315,21 @@ void BlotObject::select(bool sel)
 
 	for (size_t i = 0; i < _vertices.size(); i++)
 	{
-		_vertices[i].color[0] = selval;
-		_vertices[i].color[1] = selval;
-		_vertices[i].color[2] = 1.0;
-		_vertices[i].color[3] = 1.0;
+		_vertices[i].color[0] = 0.0;
+		_vertices[i].color[1] = 0.0;
+		_vertices[i].color[2] = selval;
+		_vertices[i].color[3] = 0.0;
 	}
 }
 
 std::string BlotObject::getParserIdentifier()
 {
-	return "BO_" + _image->getParserIdentifier();
+	return "BO_" + _image->getParserIdentifier() + "_" + _random;
 }
 
 void BlotObject::addProperties()
 {
+	addStringProperty("random", &_random);
 	addReference("image", _image);
 }
 

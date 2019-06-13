@@ -118,11 +118,14 @@ private:
 	void rebindProgram();
 	void bindTextures();
 	void makeDummy();
+
+	std::string _random;
 	GLuint _program;
 	GLuint _bufferID;
 	GLuint _vbo;
 	GLuint _renderType;
 	GLuint _uAspect;
+	GLuint _uTime;
 	ImageProc *_image;
 	std::vector<GLuint> _textures;
 	

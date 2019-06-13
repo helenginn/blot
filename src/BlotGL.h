@@ -76,6 +76,11 @@ public:
 	
 	mat3x3 getAspectMatrix();
 	
+	float getTime()
+	{
+		return _time;
+	}
+	
 	QPushButton *button(int i)
 	{
 		return _buttons[i];
@@ -137,6 +142,7 @@ private:
 	int _startY;
 	int _lastX;
 	int _lastY;
+	double _time;
 	mat3x3 _aspect;
 	double _aspectRatio;
 	QTimer *_timer;

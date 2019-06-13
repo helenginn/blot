@@ -194,12 +194,12 @@ void BlotGL::setAspectRatio(double ratio)
 {
 	_aspectRatio = ratio;
 	_aspect = make_mat3x3();
-	double current = width() / (double)height();
 	_aspect.vals[0] = 1 / (ratio);
 }
 
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 {
+	_time = 1;
 	_prop = NULL;
 	_parent = NULL;
 	_list = NULL;

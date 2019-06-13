@@ -30,6 +30,7 @@ Instruction::Instruction(BlotGL *pres)
 void Instruction::addProperties()
 {
 	addBoolProperty("on_click", &_onClick);
+	addStringProperty("_random", &_random);
 	addReference("presentation", _presentation);
 }
 

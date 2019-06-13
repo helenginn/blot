@@ -865,6 +865,7 @@ char *BaseParser::parseNextObject(char *block)
 		*comma = 0;
 
 		Parser *object = objectOfType(block);
+
 		if (!object)
 		{
 			return NULL;
@@ -881,6 +882,7 @@ char *BaseParser::parseNextObject(char *block)
 
 		if (_allParsers.count(path) > 0)
 		{
+			std::cout << "Already have a parser with " << path << std::endl;
 			return NULL;
 		}
 
@@ -888,6 +890,7 @@ char *BaseParser::parseNextObject(char *block)
 
 		if (block == NULL)
 		{
+			std::cout << "Block is NULL" << path << std::endl;
 			return NULL;
 		}
 
@@ -1132,13 +1135,14 @@ bool BaseParser::parseNextChunk(char **blockPtr)
 		break;
 	}
 
-	block = *blockPtr;
-
 	if (*blockPtr == NULL)
 	{
-		std::cout << "Parsing error occurred." << std::endl;
+		std::cout << "Parsing error occurred, " << property << " " << block << std::endl;
+		std::cout << "In " << getParserIdentifier() << std::endl;
 		return false;
 	}
+
+	block = *blockPtr;
 
 	if (block[0] == '}')
 	{
@@ -1156,7 +1160,11 @@ char *BaseParser::parse(char *block)
 	incrementIndent(&block);
 
 	char *newline = strchrwhite(block);
-	if (newline == NULL) return NULL;
+	if (newline == NULL) 
+	{
+		std::cout << "No more words" << std::endl;
+		return NULL;
+	}
 
 	// We prepare the vessels to accept our data.
 	setup(true);
