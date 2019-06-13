@@ -194,7 +194,8 @@ void BlotGL::setAspectRatio(double ratio)
 {
 	_aspectRatio = ratio;
 	_aspect = make_mat3x3();
-	_aspect.vals[0] = 1 / _aspectRatio;
+	double current = width() / (double)height();
+	_aspect.vals[0] = 1 / (ratio);
 }
 
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
@@ -335,6 +336,7 @@ void BlotGL::setFullScreen()
 	_parent = parent();
 	QWidget::setParent(NULL);
 	resize(resol.width(), resol.height());
+	setAspectRatio(_aspectRatio);
 	setWindowState(Qt::WindowFullScreen);
 	show();
 	windowHandle()->setScreen(screens.last());
@@ -376,7 +378,6 @@ void BlotGL::addInstruction(Instruction *inst, bool atRow)
 	inst->setListItem(item);
 	QVariant var = QVariant::fromValue<Instruction *>(inst);
 	item->setData(Qt::UserRole, var);
-	inst->updateText();
 
 	if (atRow)
 	{
@@ -388,6 +389,7 @@ void BlotGL::addInstruction(Instruction *inst, bool atRow)
 		_list->addItem(item);
 	}
 
+	inst->updateText();
 	addObject(inst->object());
 }
 
@@ -644,7 +646,7 @@ void BlotGL::removeImageReferences(ImageProc *image)
 
 mat3x3 BlotGL::getAspectMatrix()
 {
-	if (windowFlags() == Qt::Window || true)
+	if (parent() == NULL)
 	{
 		return _aspect;
 	}
