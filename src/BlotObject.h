@@ -110,6 +110,7 @@ public:
 	bool isCovered(double x, double y);
 	void setVertices(float t, float b, float l, float r);
 	void addToVertices(float x, float y);
+	void rotateVertices(double angle);
 	
 	void select(bool sel, double red, double green, double blue);
 	void changeProgram(std::string &v, std::string &f);

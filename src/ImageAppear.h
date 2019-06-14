@@ -39,6 +39,7 @@ public:
 	virtual void select(bool sel);
 	virtual void moveFractional(double fx, double fy);
 	virtual void resizeFractional(double fx, double fy, bool aspect);
+	virtual void rotateFractional(float x0, float y0, float fx, float fy);
 	virtual bool isCovered(double x, double y);
 
 	void setBlotObject(BlotObject *obj)
@@ -86,6 +87,7 @@ private:
 	double _right;
 	double _bottom;
 	double _top;
+	double _angle;
 
 	bool _fade;
 };

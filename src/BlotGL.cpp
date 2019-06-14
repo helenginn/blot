@@ -214,6 +214,7 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 	_editMode = true;
 	_controlPressed = false;
 	_shiftPressed = false;
+	_altPressed = false;
 	_currInstruct = NULL;
 	_aspectRatio = 1;
 	_aspect = make_mat3x3();
@@ -449,6 +450,7 @@ void BlotGL::addInstruction(Instruction *inst, bool atRow)
 void BlotGL::keyReleaseEvent(QKeyEvent *event)
 {
 	_shiftPressed = false;
+	_altPressed = false;
 	_controlPressed = false;
 }
 
@@ -457,6 +459,10 @@ void BlotGL::keyPressEvent(QKeyEvent *event)
 	if (event->key() == Qt::Key_Shift)
 	{
 		_shiftPressed = true;
+	}
+	if (event->key() == Qt::Key_Alt)
+	{
+		_altPressed = true;
 	}
 	if (event->key() == Qt::Key_Control)
 	{
@@ -491,6 +497,11 @@ void BlotGL::mousePressEvent(QMouseEvent *e)
 
 Instruction *BlotGL::instructionForItem(QListWidgetItem *item)
 {
+	if (item == NULL)
+	{
+		return NULL;
+	}
+
 	QVariant var = item->data(Qt::UserRole);
 	Instruction *inst = qvariant_cast<Instruction *>(var);
 	
@@ -500,6 +511,11 @@ Instruction *BlotGL::instructionForItem(QListWidgetItem *item)
 bool isPossibleInstruction(Instruction *option, Instruction *old,
                            double x, double y)
 {
+	if (option == NULL)
+	{
+		return false;
+	}
+
 	if (!option->canMove())
 	{
 		return false;
@@ -521,7 +537,7 @@ void BlotGL::findSelectedInstruction(double x, double y)
 	{
 		_currInstruct->select(false);
 	}
-
+	
 	Instruction *old = _currInstruct;
 	_currInstruct = NULL;
 	
@@ -573,7 +589,13 @@ void BlotGL::mouseMoveEvent(QMouseEvent *e)
 	_lastX = newX;
 	_lastY = newY;
 	
-	if (!_shiftPressed)
+	if (_altPressed)
+	{
+		double from_x = _lastX * 2 / (double)width() - 1;
+		double from_y = _lastY * 2 / (double)width() - 1;
+		_currInstruct->rotateFractional(from_x, -from_y, frac_x, -frac_y);
+	}
+	else if (!_shiftPressed)
 	{
 		_currInstruct->moveFractional(-frac_y, frac_x);
 	}

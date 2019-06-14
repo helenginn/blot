@@ -17,6 +17,7 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "ImageAppear.h"
+#include "maths.h"
 #include <float.h>
 
 ImageAppear::ImageAppear(BlotGL *pres) : Instruction(pres)
@@ -25,6 +26,7 @@ ImageAppear::ImageAppear(BlotGL *pres) : Instruction(pres)
 	_right = 0.3;
 	_top = 0.3;
 	_bottom = -0.3;
+	_angle = deg2rad(0);
 	_fade = true;
 }
 
@@ -71,6 +73,7 @@ void ImageAppear::makeEffect()
 	std::cout << "Show effect for " << text << std::endl;
 	_obj->setDisabled(false);
 	_obj->setVertices(_top, _bottom, _left, _right);
+	_obj->rotateVertices(_angle);
 
 	_presentation->update();
 }
@@ -85,6 +88,21 @@ void ImageAppear::addProperties()
 	addDoubleProperty("right", &_right);
 	addDoubleProperty("top", &_top);
 	addDoubleProperty("bottom", &_bottom);
+	addDoubleProperty("angle", &_angle);
+}
+
+void ImageAppear::rotateFractional(float x0, float y0, float fx, float fy)
+{
+	float angle = fy;
+//	angle /= 10;
+	
+	if (angle != angle)
+	{
+		return;
+	}
+	
+	_angle += angle;
+	_obj->rotateVertices(angle);
 }
 
 void ImageAppear::linkReference(BaseParser *child, std::string name)
@@ -113,13 +131,15 @@ void ImageAppear::setNewImage(ImageProc *proc)
 		return;
 	}
 	
+	double aspect = _presentation->aspectRatio();
+	
 	QImage *im = proc->getImage();
 	int width = im->width();
 	int height = im->height();
 
 	double ratio = height / (double)width;
-	_left = _bottom * ratio;
-	_right = _top * ratio;
+	_left = _bottom * ratio * aspect;
+	_right = _top * ratio * aspect;
 }
 
 void ImageAppear::moveFractional(double fx, double fy)
@@ -130,6 +150,7 @@ void ImageAppear::moveFractional(double fx, double fy)
 	_bottom += fy;
 
 	_obj->setVertices(_top, _bottom, _left, _right);
+	_obj->rotateVertices(_angle);
 }
 
 void ImageAppear::resizeFractional(double fx, double fy, bool aspect)
@@ -152,6 +173,7 @@ void ImageAppear::resizeFractional(double fx, double fy, bool aspect)
 	}
 
 	_obj->setVertices(_top, _bottom, _left, _right);
+	_obj->rotateVertices(_angle);
 	_obj->getImage()->setLastDims((_left - _right) / 2, (_top - _bottom) / 2);
 }
 
@@ -183,7 +205,7 @@ void ImageAppear::select(bool sel)
 		return;
 	}
 	
-	_obj->select(sel, 0.0, 0.0, 0.3);
+	_obj->select(sel, 0.0, 0.0, 0.5);
 	_presentation->update();
 }
 

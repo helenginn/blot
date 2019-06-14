@@ -90,7 +90,7 @@ void ImageMove::select(bool sel)
 		return;
 	}
 	
-	_obj->select(sel, 0.3, 0.0, 0.0);
+	_obj->select(sel, 0.5, 0.0, 0.0);
 	_presentation->update();
 }
 

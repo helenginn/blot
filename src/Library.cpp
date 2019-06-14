@@ -22,6 +22,7 @@
 #include <QMenuBar>
 #include <QApplication>
 #include <iostream>
+#include <cstdio>
 #include <fstream>
 #include <QFileDialog>
 
@@ -100,11 +101,15 @@ void Library::save()
 		saveAs();
 		return;
 	}
+	
+	std::string tmp = _filename + ".tmp";
 
 	std::ofstream file;
-	file.open(_filename);
+	file.open(tmp);
 	writeToFile(file, 0);
 	file.close();
+	
+	rename(tmp.c_str(), _filename.c_str());
 }
 
 void Library::paste()

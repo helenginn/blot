@@ -28,7 +28,7 @@
 
 void BlotObject::addToVertices(float x, float y)
 {
-	for (int i = 0; i < 4; i++)
+	for (size_t i = 0; i < _vertices.size(); i++)
 	{
 		_vertices[i].pos[0] += x;
 		_vertices[i].pos[1] += y;
@@ -41,18 +41,41 @@ bool BlotObject::isCovered(double x, double y)
 	{
 		return false;
 	}
+	
+	int all_s[] = {0, 1, 3, 2};
+	int all_e[] = {1, 3, 2, 0};
 
-	if (y < _vertices[0].pos[0] || y > _vertices[2].pos[0])
+	int crosses = 0;
+
+	for (int i = 0; i < 4; i++)
 	{
-		return false;
+		int s = all_s[i];
+		int e = all_e[i];
+
+		float sx = _vertices[s].pos[1];
+		float sy = _vertices[s].pos[0];
+		float ex = _vertices[e].pos[1];
+		float ey = _vertices[e].pos[0];
+
+		/* ys are outside of the range of this line cross */
+		if ((sy < ey && (y < sy || y > ey)) ||
+		    (sy >= ey && (y > sy || y < ey)))
+		{
+			continue;
+		}
+
+		float px = sx + (y - sy) * (ex - sx) / (ey - sy);
+
+		/* cross point is to the right of the x value */
+		if (px < x)
+		{
+			continue;
+		}
+
+		crosses++;
 	}
 
-	if (x < _vertices[0].pos[1] || x > _vertices[1].pos[1])
-	{
-		return false;
-	}
-
-	return true;
+	return (crosses % 2 == 1);
 }
 
 void BlotObject::setVertices(float t, float b, float l, float r)
@@ -73,6 +96,28 @@ void BlotObject::setVertices(float t, float b, float l, float r)
 	
 	_vertices[3].pos[0] = t;
 	_vertices[3].pos[1] = r;
+}
+
+void BlotObject::rotateVertices(double angle)
+{
+	double sina = sin(angle);
+	double cosa = cos(angle);
+
+	double mx, my;
+	midpoint(&mx, &my);
+	
+	for (size_t i = 0; i < _vertices.size(); i++)
+	{
+		float dx, dy;
+		dx = _vertices[i].pos[0] - mx;
+		dy = _vertices[i].pos[1] - my;
+		
+		float nx = dx * cosa - dy * sina;
+		float ny = dx * sina + dy * cosa;
+		
+		_vertices[i].pos[0] = mx + nx;
+		_vertices[i].pos[1] = my + ny;
+	}
 }
 
 void BlotObject::makeDummy()

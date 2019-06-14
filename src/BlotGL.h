@@ -136,6 +136,7 @@ private:
 	bool _editMode;
 	bool _shiftPressed;
 	bool _controlPressed;
+	bool _altPressed;
 	int _currPos;
 	int _startX;
 	int _startY;
