@@ -20,6 +20,7 @@
 #include "Properties.h"
 #include "BlotObject.h"
 #include "ImageProc.h"
+#include "ImageMove.h"
 #include "ImageHide.h"
 #include "Instruction.h"
 #include "Library.h"
@@ -266,6 +267,11 @@ void BlotGL::selectInstruction()
 		Instruction *inst = instructionForItem(_list->item(i));
 		inst->makeEffect();
 	}
+
+	if (_currInstruct != NULL)
+	{
+		_currInstruct->select(false);
+	}
 	
 	if (_prop && _prop->isVisible())
 	{
@@ -343,6 +349,8 @@ void BlotGL::advancePresentation(bool clicked)
 			break;
 		}
 		
+		std::cout << "Must do " << inst->instText() << std::endl;
+		
 		if (_editMode)
 		{
 			inst->makeEffect();
@@ -350,7 +358,6 @@ void BlotGL::advancePresentation(bool clicked)
 		else
 		{
 			bool started = inst->animateEffect();
-			std::cout << "Started = " << started << std::endl;
 			
 			begun_sequence |= started;
 
@@ -490,6 +497,23 @@ Instruction *BlotGL::instructionForItem(QListWidgetItem *item)
 	return inst;
 }
 
+bool isPossibleInstruction(Instruction *option, Instruction *old,
+                           double x, double y)
+{
+	if (!option->canMove())
+	{
+		return false;
+	}
+
+	if (option == old)
+	{
+		return false;
+	}
+
+	bool cover = option->isCovered(-y, x);
+
+	return cover;
+}
 
 void BlotGL::findSelectedInstruction(double x, double y)
 {
@@ -500,30 +524,24 @@ void BlotGL::findSelectedInstruction(double x, double y)
 
 	Instruction *old = _currInstruct;
 	_currInstruct = NULL;
+	
+	Instruction *option = instructionForItem(_list->currentItem());
+	if (isPossibleInstruction(option, old, x, y))
+	{
+		_currInstruct = option;
+	}
 
-	for (int i = _list->count() - 1; i >= 0; i--)
+	for (int i = _list->count() - 1; i >= 0 && _currInstruct == NULL; i--)
 	{
 		Instruction *option = instructionForItem(_list->item(i));
 
-		if (!option->canMove())
-		{
-			continue;
-		}
-		
-		if (option == old)
-		{
-			continue;
-		}
-
-		bool cover = option->isCovered(-y, x);
-
-		if (cover)
+		if (isPossibleInstruction(option, old, x, y))
 		{
 			_currInstruct = option;
-//			_list->setCurrentItem(_list->item(i));
 			break;
 		}
 	}
+	
 
 	if (_currInstruct == NULL)
 	{
@@ -719,6 +737,19 @@ void BlotGL::progressAnimations()
 	}
 	
 	update();
+}
+
+void BlotGL::addMoveCurrentImage()
+{
+	Instruction *curr = instructionForItem(_list->currentItem());
+
+	if (!curr || curr->object() == NULL)
+	{
+		return;
+	}
+
+	ImageMove *move = new ImageMove(this, curr);
+	addInstruction(move);
 }
 
 void BlotGL::addHideCurrentImage()

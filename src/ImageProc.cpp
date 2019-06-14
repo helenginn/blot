@@ -21,27 +21,22 @@
 #include "BlotObject.h"
 #include "charmanip.h"
 #include <iostream>
+#include <float.h>
 
 ImageProc::ImageProc(QImage *image)
 {
-	QImage rgba = image->convertToFormat(QImage::Format_RGBA8888);
-	_image = new QImage(rgba);
-	_randomID = i_to_str(rand());
-}
-
-ImageProc::ImageProc()
-{
 	_image = NULL;
-	_randomID = i_to_str(rand());
-}
 
-/*
-ImageProc::ImageProc(const ImageProc &other)
-{
-	_image = other._image;
-	_values = other._values;
+	if (image != NULL)
+	{
+		QImage rgba = image->convertToFormat(QImage::Format_RGBA8888);
+		_image = new QImage(rgba);
+	}
+
+	_randomID = i_to_str(rand());
+	_lastLeft = FLT_MAX;
+	_lastTop = FLT_MAX;
 }
-*/
 
 void ImageProc::collapseToActiveCoordinate()
 {

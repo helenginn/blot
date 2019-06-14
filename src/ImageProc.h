@@ -36,8 +36,7 @@ class BlotObject;
 class ImageProc : public Parser
 {
 public:
-	ImageProc();
-	ImageProc(QImage *image);
+	ImageProc(QImage *image = NULL);
 //	ImageProc(const ImageProc &other);
 	~ImageProc() {};
 	void process();
@@ -74,6 +73,18 @@ public:
 	{
 		return _text;
 	}
+	
+	void getLastDims(double *left, double *top)
+	{
+		*left = _lastLeft;
+		*top = _lastTop;
+	}
+	
+	void setLastDims(double left, double top)
+	{
+		_lastLeft = left;
+		_lastTop = top;
+	}
 private:
 	void collapseToActiveCoordinate();
 	void postParseTidy();
@@ -81,6 +92,8 @@ private:
 	std::string _text;
 	std::string _randomID;
 	std::string _base64;
+	double _lastLeft;
+	double _lastTop;
 	QImage *_image;
 	std::vector<ImageVal> _values;
 

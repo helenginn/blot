@@ -67,6 +67,8 @@ StartScreen::StartScreen(QWidget *parent,
 	connect(action, &QAction::triggered, this, &StartScreen::addWipe);
 	action = insert->addAction(tr("Hide image"));
 	connect(action, &QAction::triggered, this, &StartScreen::addHide);
+	action = insert->addAction(tr("Move image"));
+	connect(action, &QAction::triggered, this, &StartScreen::addMove);
 } 
 
 void StartScreen::aspect16t9()
@@ -197,6 +199,11 @@ void StartScreen::addWipe()
 void StartScreen::addHide()
 {
 	_pres->addHideCurrentImage();
+}
+
+void StartScreen::addMove()
+{
+	_pres->addMoveCurrentImage();
 }
 
 StartScreen::~StartScreen()

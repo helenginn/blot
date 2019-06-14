@@ -16,10 +16,11 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#include "ImageHide.h"
 #include "BlotObject.h"
+#include "BlotGL.h"
+#include "ImageMove.h"
 
-ImageHide::ImageHide(BlotGL *pres, Instruction *inst) : Instruction(pres)
+ImageMove::ImageMove(BlotGL *pres, Instruction *inst) : Instruction(pres)
 {
 	if (inst == NULL || inst->object() == NULL)
 	{
@@ -28,64 +29,100 @@ ImageHide::ImageHide(BlotGL *pres, Instruction *inst) : Instruction(pres)
 	}
 
 	_valid = true;
-	_startTime = 1;
-	_endTime = 0;
-	_stepTime *= -1;
 	_obj = inst->object();
 	_fade = true;
+	_endTime = 3;
+	_obj->midpoint(&_newx, &_newy);
+	_obj->midpoint(&_oldx, &_oldy);
+	_newx += 0.05;
+	_newy += 0.05;
 }
 
-bool ImageHide::animateEffect()
+bool ImageMove::isCovered(double x, double y)
+{
+	return _obj->isCovered(x, y);
+}
+
+bool ImageMove::animateEffect()
 {
 	if (!_fade)
 	{
-		std::cout << "Instant " << " " << _obj->isDisabled() << std::endl;
 		makeEffect();
 		setTime(1);
 		return false;
 	}
 
 	setTime(_startTime);
-	std::cout << "Fade " << " " << _obj->isDisabled() << std::endl;
 	return true;
 }
 
-bool ImageHide::animateStep()
+bool ImageMove::animateStep()
 {
 	double newTime = _time + _stepTime;
 	bool keep_going = true;
 	
-	if (newTime < _endTime)
+	std::cout << "Start" << std::endl;
+	if (newTime > _endTime)
 	{
 		keep_going = false;
 		newTime = _endTime;
-		makeEffect();
 	}
 
 	setTime(newTime);
+	
+	double diffx = (_newx - _oldx) * _stepTime / (_endTime - _startTime);
+	double diffy = (_newy - _oldy) * _stepTime / (_endTime - _startTime);
+
+	_obj->addToVertices(diffx, diffy);
 
 	return keep_going;
 }
 
-
-void ImageHide::makeEffect()
+void ImageMove::setTime(double time)
 {
-	std::string text = _obj->getImage()->text();
-	std::cout << "Hide effect for " << text << std::endl;
-	_obj->setDisabled(true);
+	_time = time;
+}
 
+void ImageMove::select(bool sel)
+{
+	if (!_obj)
+	{
+		return;
+	}
+	
+	_obj->select(sel, 0.3, 0.0, 0.0);
 	_presentation->update();
 }
 
-void ImageHide::addProperties()
+void ImageMove::moveFractional(double fx, double fy)
+{
+	_newx += fy;
+	_newy += fx;
+
+	_obj->addToVertices(fy, fx);
+}
+
+void ImageMove::makeEffect()
+{
+	std::string text = _obj->getImage()->text();
+	std::cout << "Move effect for " << text << std::endl;
+	_obj->addToVertices(_newx - _oldx, _newy - _oldy);
+	_presentation->update();
+}
+
+void ImageMove::addProperties()
 {
 	Instruction::addProperties();
 	
 	addReference("blot_object", _obj);
 	addBoolProperty("fade", &_fade);
+	addDoubleProperty("oldx", &_oldx);
+	addDoubleProperty("oldy", &_oldy);
+	addDoubleProperty("newx", &_newx);
+	addDoubleProperty("newy", &_newy);
 }
 
-void ImageHide::linkReference(BaseParser *child, std::string name)
+void ImageMove::linkReference(BaseParser *child, std::string name)
 {
 	if (name == "blot_object")
 	{
@@ -95,16 +132,10 @@ void ImageHide::linkReference(BaseParser *child, std::string name)
 	Instruction::linkReference(child, name);
 }
 
-std::string ImageHide::instText()
+std::string ImageMove::instText()
 {
 	std::string start = "";
 	start += (waitForClick() ? "" : "+ ");
-	start += "Hide " + object()->getImage()->text();
+	start += "Move " + object()->getImage()->text();
 	return start;
-}
-
-void ImageHide::setTime(double time)
-{
-	_time = time;
-	_obj->setTime(time);
 }

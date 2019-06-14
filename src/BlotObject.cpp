@@ -24,6 +24,36 @@
 #include <QImage>
 #include "shaders/vImage.h"
 #include "shaders/fImage.h"
+#include "shaders/fWipe.h"
+
+void BlotObject::addToVertices(float x, float y)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		_vertices[i].pos[0] += x;
+		_vertices[i].pos[1] += y;
+	}
+}
+
+bool BlotObject::isCovered(double x, double y)
+{
+	if (isDisabled())
+	{
+		return false;
+	}
+
+	if (y < _vertices[0].pos[0] || y > _vertices[2].pos[0])
+	{
+		return false;
+	}
+
+	if (x < _vertices[0].pos[1] || x > _vertices[1].pos[1])
+	{
+		return false;
+	}
+
+	return true;
+}
 
 void BlotObject::setVertices(float t, float b, float l, float r)
 {
@@ -118,8 +148,24 @@ GLuint BlotObject::addShaderFromString(GLuint program, GLenum type,
 	return shader;
 }
 
-void BlotObject::initialisePrograms()
+void BlotObject::deletePrograms()
 {
+	glDeleteProgram(_program);
+	_program = 0;
+}
+
+void BlotObject::initialisePrograms(std::string *v, std::string *f)
+{
+	if (v == NULL)
+	{
+		v = &vImage;
+	}
+
+	if (f == NULL)
+	{
+		f = &fImage;
+	}
+	
 	initializeOpenGLFunctions();
 	bindTextures();
 
@@ -128,8 +174,8 @@ void BlotObject::initialisePrograms()
 	/* create program object and attach shaders */
 	_program = glCreateProgram();
 
-	addShaderFromString(_program, GL_VERTEX_SHADER, vImage);
-	addShaderFromString(_program, GL_FRAGMENT_SHADER, fImage);
+	addShaderFromString(_program, GL_VERTEX_SHADER, *v);
+	addShaderFromString(_program, GL_FRAGMENT_SHADER, *f);
 
 	glBindAttribLocation(_program, 0, "position");
 	glBindAttribLocation(_program, 1, "normal");
@@ -303,10 +349,8 @@ void BlotObject::render(BlotGL *sender)
 	glUseProgram(0);
 }
 
-void BlotObject::select(bool sel)
+void BlotObject::select(bool sel, double red, double green, double blue)
 {
-	bool selval = (sel ? 0.3 : 0.0);
-	
 	if (_vertices.size() == 0)
 	{
 		makeDummy();
@@ -314,11 +358,17 @@ void BlotObject::select(bool sel)
 
 	for (size_t i = 0; i < _vertices.size(); i++)
 	{
-		_vertices[i].color[0] = 0.0;
-		_vertices[i].color[1] = 0.0;
-		_vertices[i].color[2] = selval;
+		_vertices[i].color[0] = red * sel;
+		_vertices[i].color[1] = green * sel;
+		_vertices[i].color[2] = blue * sel;
 		_vertices[i].color[3] = 0.0;
 	}
+}
+
+void BlotObject::changeProgram(std::string &v, std::string &f)
+{
+	deletePrograms();
+	initialisePrograms(&v, &f);
 }
 
 std::string BlotObject::getParserIdentifier()
@@ -340,6 +390,11 @@ void BlotObject::linkReference(BaseParser *child, std::string name)
 	}
 }
 
+void BlotObject::wipeEffect()
+{
+	changeProgram(vImage, fImage);
+}
+
 void BlotObject::postParseTidy()
 {
 
@@ -348,7 +403,19 @@ void BlotObject::postParseTidy()
 
 void BlotObject::setDisabled(bool dis)
 {
-	std::cout << "Setting " << getImage()->text() << " dis " << dis
-	<< std::endl;
 	_disabled = dis;
+}
+
+void BlotObject::midpoint(double *x, double *y)
+{
+	*x = 0; *y = 0;
+
+	for (size_t i = 0; i < _vertices.size(); i++)
+	{
+		*x += _vertices[i].pos[0];
+		*y += _vertices[i].pos[1];
+	}
+	
+	*x /= (double)_vertices.size();
+	*y /= (double)_vertices.size();
 }

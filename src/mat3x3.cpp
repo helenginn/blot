@@ -172,7 +172,6 @@ double mat3x3_volume(mat3x3 mat)
 	double cosA = cos(deg2rad(vals[3]));
 	double cosB = cos(deg2rad(vals[4]));
 	double cosC = cos(deg2rad(vals[5]));
-	double sinC = sin(deg2rad(vals[5]));
 	
 	double vol_bit = 1 - cosA * cosA - cosB * cosB - cosC * cosC;
 	vol_bit += 2 * cosA * cosB * cosC;
@@ -496,23 +495,23 @@ mat3x3 mat3x3_covariance(std::vector<vec3> points)
 
 	vec3 mean = make_vec3(0, 0, 0);
 
-	for (int i = 0; i < points.size(); i++)
+	for (size_t i = 0; i < points.size(); i++)
 	{
 		mean = vec3_add_vec3(mean, points[i]);
 	}
 
 	vec3_mult(&mean, 1 / (double)points.size());
 
-	for (int i = 0; i < points.size(); i++)
+	for (size_t i = 0; i < points.size(); i++)
 	{
 		points[i] = vec3_subtract_vec3(points[i], mean);
 	}
 
 	for (int j = 0; j < 3; j++)
 	{
-		for (int i = 0; i < 3; i++)
+		for (size_t i = 0; i < 3; i++)
 		{
-			for (int k = 0; k < points.size(); k++)
+			for (size_t k = 0; k < points.size(); k++)
 			{
 				double add = *(&points[k].x + i) * *(&points[k].x + j);
 				mat.vals[j * 3 + i] += add;
@@ -520,7 +519,7 @@ mat3x3 mat3x3_covariance(std::vector<vec3> points)
 		}
 	}
 
-	for (int i = 0; i < 9; i++)
+	for (size_t i = 0; i < 9; i++)
 	{
 		mat.vals[i] /= (double)points.size();
 	}
@@ -589,7 +588,6 @@ void mat3x3_mult_scalar(mat3x3 *mat, double scale)
 
 double mat3x3_rotation_angle(mat3x3 &mat)
 {
-	double angle = 0;
 	double a = mat.vals[0];
 	double b = mat.vals[4];
 	double c = mat.vals[8];

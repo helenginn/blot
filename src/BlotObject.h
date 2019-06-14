@@ -41,7 +41,7 @@ class BlotObject : public QOpenGLFunctions, public Parser
 public:
 	BlotObject(ImageProc *proc = NULL);
 	virtual ~BlotObject() {};
-	void initialisePrograms();
+	void initialisePrograms(std::string *v = NULL, std::string *f = NULL);
 	void render(BlotGL *sender);
 	
 	virtual std::string getClassName()
@@ -86,6 +86,7 @@ public:
 		return _disabled;
 	}
 	
+	void midpoint(double *x, double *y);
 	void setDisabled(bool dis);
 	
 	bool hasImage()
@@ -106,9 +107,13 @@ public:
 	void addProperties();
 	void postParseTidy();
 
+	bool isCovered(double x, double y);
 	void setVertices(float t, float b, float l, float r);
+	void addToVertices(float x, float y);
 	
-	void select(bool sel);
+	void select(bool sel, double red, double green, double blue);
+	void changeProgram(std::string &v, std::string &f);
+	void wipeEffect();
 protected:
 	std::vector<Vertex> _vertices;
 	std::vector<GLuint> _indices;
@@ -118,6 +123,7 @@ private:
 	GLuint addShaderFromString(GLuint program, GLenum type, std::string str);
 	void checkErrors();
 	void rebindProgram();
+	void deletePrograms();
 	void bindTextures();
 	void makeDummy();
 

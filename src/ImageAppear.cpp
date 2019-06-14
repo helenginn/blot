@@ -17,6 +17,7 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "ImageAppear.h"
+#include <float.h>
 
 ImageAppear::ImageAppear(BlotGL *pres) : Instruction(pres)
 {
@@ -26,6 +27,7 @@ ImageAppear::ImageAppear(BlotGL *pres) : Instruction(pres)
 	_bottom = -0.3;
 	_fade = true;
 }
+
 
 bool ImageAppear::animateEffect()
 {
@@ -99,6 +101,18 @@ void ImageAppear::setNewImage(ImageProc *proc)
 {
 	_obj = new BlotObject(proc);
 	
+	double l, t;
+	proc->getLastDims(&l, &t);
+	
+	if (l < FLT_MAX && t < FLT_MAX)
+	{
+		_left = l;
+		_right = -l;
+		_top = t;
+		_bottom = -t;
+		return;
+	}
+	
 	QImage *im = proc->getImage();
 	int width = im->width();
 	int height = im->height();
@@ -138,10 +152,12 @@ void ImageAppear::resizeFractional(double fx, double fy, bool aspect)
 	}
 
 	_obj->setVertices(_top, _bottom, _left, _right);
+	_obj->getImage()->setLastDims((_left - _right) / 2, (_top - _bottom) / 2);
 }
 
 bool ImageAppear::isCovered(double x, double y)
 {
+	return _obj->isCovered(x, y);
 	if (_obj->isDisabled())
 	{
 		return false;
@@ -167,7 +183,7 @@ void ImageAppear::select(bool sel)
 		return;
 	}
 	
-	_obj->select(sel);
+	_obj->select(sel, 0.0, 0.0, 0.3);
 	_presentation->update();
 }
 

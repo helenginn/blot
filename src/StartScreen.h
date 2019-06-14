@@ -51,6 +51,7 @@ private slots:
 	void openLibrary();
 	void addWipe();
 	void addHide();
+	void addMove();
 	void aspect4t3();
 	void aspect16t9();
 	

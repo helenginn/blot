@@ -92,6 +92,7 @@ public:
 	
 	bool imageInUse(ImageProc *image);
 	void addHideCurrentImage();
+	void addMoveCurrentImage();
 	void removeImageReferences(ImageProc *image);
 	void updateDisplay();
 	virtual void addProperties();
