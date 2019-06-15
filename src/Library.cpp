@@ -112,18 +112,25 @@ void Library::save()
 	rename(tmp.c_str(), _filename.c_str());
 }
 
-void Library::paste()
+void Library::getImageFromClipboard(QImage *im)
 {
 	const QClipboard *clip = QApplication::clipboard();
-	const QMimeData *mimeData = clip->mimeData();
 
-	if (!mimeData->hasImage())
+	QImage image = clip->image();
+	
+	*im = image;
+}
+
+void Library::paste()
+{
+	QImage image;
+	getImageFromClipboard(&image);
+	
+	if (image.isNull())
 	{
 		std::cout << "No image" << std::endl;
 		return;
 	} 
-
-	QImage image = clip->image();
 	
 	ImageProc *tmp = new ImageProc(&image);
 	tmp->process();
@@ -142,6 +149,23 @@ void Library::paste()
 		_edit->setFocus();
 		_edit->setFocusPolicy(Qt::StrongFocus);
 	}
+}
+
+void Library::updatePaste()
+{
+	QImage image;
+	getImageFromClipboard(&image);
+	
+	if (image.isNull())
+	{
+		std::cout << "No image" << std::endl;
+		return;
+	} 
+	
+	QListWidgetItem *item = _list->currentItem();
+	ImageProc *proc = imageProcForItem(item);
+	proc->setImage(image);
+	elaborate();
 }
 
 void Library::setCurrentLibrary(Library *lib)
@@ -246,6 +270,10 @@ void Library::elaborateItem(QListWidgetItem *item)
 		_bDelete = new QPushButton(this);
 		connect(_bDelete, &QPushButton::clicked, 
 		        this, &Library::deleteFromLibrary);
+
+		_bUpdate = new QPushButton(this);
+		connect(_bUpdate, &QPushButton::clicked, 
+		        this, &Library::updatePaste);
 	}
 	
 	int y = MENU_HEIGHT + IMAGE_TITLE_HEIGHT + IMAGE_HEIGHT;
@@ -261,6 +289,13 @@ void Library::elaborateItem(QListWidgetItem *item)
 	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	_bDelete->setText("Delete");
 	_bDelete->show();
+	
+	y += BUTTON_HEIGHT * 1.2;
+	
+	_bUpdate->setGeometry(ELABORATION_MIDPOINT - BUTTON_WIDTH / 2,
+	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	_bUpdate->setText("Update from clipboard");
+	_bUpdate->show();
 }
 
 void Library::deleteFromLibrary()

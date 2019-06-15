@@ -37,7 +37,6 @@ class ImageProc : public Parser
 {
 public:
 	ImageProc(QImage *image = NULL);
-//	ImageProc(const ImageProc &other);
 	~ImageProc() {};
 	void process();
 	void bindToTexture(BlotObject *sender);
@@ -58,6 +57,8 @@ public:
 	{
 		return _image;
 	}
+	
+	void setImage(QImage &im);
 
 	void setText(std::string text)
 	{
@@ -74,16 +75,18 @@ public:
 		return _text;
 	}
 	
-	void getLastDims(double *left, double *top)
+	void getLastDims(double *left, double *top, double *angle)
 	{
 		*left = _lastLeft;
 		*top = _lastTop;
+		*angle = _angle;
 	}
 	
-	void setLastDims(double left, double top)
+	void setLastDims(double left, double top, double angle)
 	{
 		_lastLeft = left;
 		_lastTop = top;
+		_angle = angle;
 	}
 private:
 	void collapseToActiveCoordinate();
@@ -94,6 +97,7 @@ private:
 	std::string _base64;
 	double _lastLeft;
 	double _lastTop;
+	double _angle;
 	QImage *_image;
 	std::vector<ImageVal> _values;
 

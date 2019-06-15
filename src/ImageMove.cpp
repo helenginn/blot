@@ -32,6 +32,7 @@ ImageMove::ImageMove(BlotGL *pres, Instruction *inst) : Instruction(pres)
 	_obj = inst->object();
 	_fade = true;
 	_endTime = 3;
+	_angle = 0;
 	_obj->midpoint(&_newx, &_newy);
 	_obj->midpoint(&_oldx, &_oldy);
 	_newx += 0.05;
@@ -70,10 +71,14 @@ bool ImageMove::animateStep()
 
 	setTime(newTime);
 	
-	double diffx = (_newx - _oldx) * _stepTime / (_endTime - _startTime);
-	double diffy = (_newy - _oldy) * _stepTime / (_endTime - _startTime);
+	double portion = _stepTime / (_endTime - _startTime);
+	
+	double diffx = (_newx - _oldx) * portion;
+	double diffy = (_newy - _oldy) * portion;
+	double diffa = _angle * portion;
 
 	_obj->addToVertices(diffx, diffy);
+	_obj->rotateVertices(diffa);
 
 	return keep_going;
 }
@@ -102,11 +107,18 @@ void ImageMove::moveFractional(double fx, double fy)
 	_obj->addToVertices(fy, fx);
 }
 
+void ImageMove::rotateFractional(float x0, float y0, float fx, float fy)
+{
+	_angle += fy;
+	_obj->rotateVertices(fy);
+}
+
 void ImageMove::makeEffect()
 {
 	std::string text = _obj->getImage()->text();
 	std::cout << "Move effect for " << text << std::endl;
 	_obj->addToVertices(_newx - _oldx, _newy - _oldy);
+	_obj->rotateVertices(_angle);
 	_presentation->update();
 }
 
@@ -116,6 +128,7 @@ void ImageMove::addProperties()
 	
 	addReference("blot_object", _obj);
 	addBoolProperty("fade", &_fade);
+	addDoubleProperty("angle", &_angle);
 	addDoubleProperty("oldx", &_oldx);
 	addDoubleProperty("oldy", &_oldy);
 	addDoubleProperty("newx", &_newx);

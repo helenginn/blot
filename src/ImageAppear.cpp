@@ -93,16 +93,35 @@ void ImageAppear::addProperties()
 
 void ImageAppear::rotateFractional(float x0, float y0, float fx, float fy)
 {
-	float angle = fy;
-//	angle /= 10;
+	float angle = fx;
 	
 	if (angle != angle)
 	{
 		return;
 	}
 	
+	double old_sin = sin(_angle) * sin(_angle);
+	double old_cos = cos(_angle) * cos(_angle);
 	_angle += angle;
-	_obj->rotateVertices(angle);
+	double new_sin = sin(_angle) * sin(_angle);
+	double new_cos = cos(_angle) * cos(_angle);
+
+	double aspect = _presentation->aspectRatio();
+	
+	double diff = _right - _left;
+	double mid = (_right + _left) / 2;
+	diff *= 1 + (aspect - 1) * (new_cos - old_cos);
+	_left = mid - diff / 2;
+	_right = mid + diff / 2;
+	
+	diff = _bottom - _top;
+	mid = (_bottom + _top) / 2;
+	diff *= 1 + (aspect - 1) * (new_sin - old_sin);
+	_top = mid - diff / 2;
+	_bottom = mid + diff / 2;
+
+	_obj->setVertices(_top, _bottom, _left, _right);
+	_obj->rotateVertices(_angle);
 }
 
 void ImageAppear::linkReference(BaseParser *child, std::string name)
@@ -119,8 +138,8 @@ void ImageAppear::setNewImage(ImageProc *proc)
 {
 	_obj = new BlotObject(proc);
 	
-	double l, t;
-	proc->getLastDims(&l, &t);
+	double l, t, a;
+	proc->getLastDims(&l, &t, &a);
 	
 	if (l < FLT_MAX && t < FLT_MAX)
 	{
@@ -128,6 +147,7 @@ void ImageAppear::setNewImage(ImageProc *proc)
 		_right = -l;
 		_top = t;
 		_bottom = -t;
+		_angle = a;
 		return;
 	}
 	
@@ -174,7 +194,8 @@ void ImageAppear::resizeFractional(double fx, double fy, bool aspect)
 
 	_obj->setVertices(_top, _bottom, _left, _right);
 	_obj->rotateVertices(_angle);
-	_obj->getImage()->setLastDims((_left - _right) / 2, (_top - _bottom) / 2);
+	_obj->getImage()->setLastDims((_left - _right) / 2, 
+	                              (_top - _bottom) / 2, _angle);
 }
 
 bool ImageAppear::isCovered(double x, double y)

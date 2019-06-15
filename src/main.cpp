@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <time.h>
 #include <iostream>
 #include <QtWidgets/qapplication.h>
 #include "commit.h"
@@ -11,6 +12,7 @@ int main(int argc, char * argv[])
 
 	QApplication app(argc, argv);
 	setlocale(LC_NUMERIC, "C");
+	srand(time(NULL));
 
 	/*
 	Library library;

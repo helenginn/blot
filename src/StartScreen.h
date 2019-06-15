@@ -28,6 +28,8 @@
 
 class BlotGL;
 class Library;
+class Instruction;
+class QAction;
 
 class StartScreen : public QMainWindow
 {
@@ -43,6 +45,8 @@ public:
 	{
 		resizeEvent(NULL);
 	}
+
+	void setClick(Instruction *inst);
 protected:
 	virtual void resizeEvent(QResizeEvent *event);
 
@@ -54,8 +58,11 @@ private slots:
 	void addMove();
 	void aspect4t3();
 	void aspect16t9();
+	void changeClick();
+	void moveInstToBottom();
 	
 private:
+	QAction *_waitClick;
 	BlotGL *_pres;
 	Library *_lib;
 	char **_argv;

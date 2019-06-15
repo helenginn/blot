@@ -69,7 +69,38 @@ StartScreen::StartScreen(QWidget *parent,
 	connect(action, &QAction::triggered, this, &StartScreen::addHide);
 	action = insert->addAction(tr("Move image"));
 	connect(action, &QAction::triggered, this, &StartScreen::addMove);
+
+	QMenu *instruction = menuBar()->addMenu(tr("&Instruction"));
+	_waitClick = instruction->addAction(tr("Wait for click"));
+	_waitClick->setCheckable(true);
+	_waitClick->setShortcut(QKeySequence(Qt::ALT + Qt::Key_C));
+	connect(_waitClick, &QAction::triggered, 
+	        this, &StartScreen::changeClick);
+
+	action = instruction->addAction(tr("Move to bottom"));
+	action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_B));
+	connect(action, &QAction::triggered, 
+	        this, &StartScreen::moveInstToBottom);
+
 } 
+
+void StartScreen::moveInstToBottom()
+{
+	_pres->moveInstToBottom();
+}
+
+void StartScreen::changeClick()
+{
+	_pres->changeClick(_waitClick->isChecked());
+}
+
+void StartScreen::setClick(Instruction *inst)
+{
+	if (inst != NULL)
+	{
+		_waitClick->setChecked(inst->waitForClick());
+	}
+}
 
 void StartScreen::aspect16t9()
 {
@@ -209,4 +240,5 @@ void StartScreen::addMove()
 StartScreen::~StartScreen()
 {
 }
+
 

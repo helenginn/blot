@@ -68,6 +68,13 @@ void ImageProc::collapseToActiveCoordinate()
 	}
 }
 
+void ImageProc::setImage(QImage &im)
+{
+	QImage rgba = im.convertToFormat(QImage::Format_RGBA8888);
+	_image = new QImage(rgba);
+	process();
+}
+
 void ImageProc::process()
 {
 	collapseToActiveCoordinate();

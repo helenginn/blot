@@ -95,6 +95,9 @@ public:
 	void addMoveCurrentImage();
 	void removeImageReferences(ImageProc *image);
 	void updateDisplay();
+	
+	void moveInstToBottom();
+	void changeClick(bool click);
 	virtual void addProperties();
 public slots:
 	void selectInstruction();

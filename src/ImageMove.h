@@ -57,6 +57,7 @@ public:
 	virtual void select(bool sel);
 	virtual bool isCovered(double x, double y);
 	virtual void moveFractional(double fx, double fy);
+	virtual void rotateFractional(float x0, float y0, float fx, float fy);
 	virtual std::string instText();
 	virtual void makeEffect();
 	virtual bool animateEffect();
@@ -70,6 +71,7 @@ private:
 	double _oldx, _oldy;
 	double _newx, _newy;
 	double _time;
+	double _angle;
 	bool _fade;
 	bool _valid;
 

@@ -150,6 +150,7 @@ void BlotGL::changeInstruction()
 	_prop->setGeometry(me.right() + 50, 100, 
 	                  PROPERTIES_DEFAULT_WIDTH, PROPERTIES_DEFAULT_HEIGHT);
 	_prop->show();
+
 }
 
 void BlotGL::deleteInstruction()
@@ -172,6 +173,18 @@ void BlotGL::moveInstructionUp()
 void BlotGL::moveInstructionDown()
 {
 	moveInstruction(1);
+}
+
+void BlotGL::moveInstToBottom()
+{
+	if (_list->currentItem() == NULL)
+	{
+		return;
+	}
+
+	int row = _list->currentRow();
+	QListWidgetItem *item = _list->takeItem(row);
+	_list->addItem(item);
 }
 
 void BlotGL::moveInstruction(int diff)
@@ -208,7 +221,7 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 	connect(_timer, &QTimer::timeout, this, &BlotGL::progressAnimations);
 
 	_prop = NULL;
-	_parent = NULL;
+	_parent = p;
 	_list = NULL;
 	_currPos = 0;
 	_editMode = true;
@@ -247,6 +260,9 @@ void BlotGL::selectInstruction()
 	QListWidgetItem *item = _list->currentItem();
 	int row = _list->row(item);
 	_currPos = row;
+
+	Instruction *myInst = instructionForItem(item);
+	StartScreen::startScreenPtr->setClick(myInst);
 	
 	int lastWipe = 0;
 
@@ -263,11 +279,13 @@ void BlotGL::selectInstruction()
 
 	clearAll();
 
+
 	for (int i = lastWipe; i <= row; i++)
 	{
 		Instruction *inst = instructionForItem(_list->item(i));
 		inst->makeEffect();
 	}
+
 
 	if (_currInstruct != NULL)
 	{
@@ -380,6 +398,14 @@ void BlotGL::advancePresentation(bool clicked)
 	}
 }
 
+void BlotGL::changeClick(bool click)
+{
+	Instruction *inst = instructionForItem(_list->currentItem());
+	inst->setOnClick(click);
+	
+	StartScreen::startScreenPtr->setClick(inst);
+}
+
 void BlotGL::setFullScreen()
 {
 	QList<QScreen *> screens = qApp->screens();
@@ -477,7 +503,6 @@ void BlotGL::keyPressEvent(QKeyEvent *event)
 		else
 		{
 			setEditMode(false);
-			clearAll();
 			setFullScreen();
 		}
 
