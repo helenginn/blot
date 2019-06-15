@@ -100,7 +100,7 @@ public:
 	void changeClick(bool click);
 	virtual void addProperties();
 public slots:
-	void selectInstruction();
+	void selectInEditMode();
 	void moveInstructionUp();
 	void moveInstructionDown();
 	void deleteInstruction();
@@ -120,6 +120,8 @@ protected:
 	virtual void addObject(Parser *child, std::string name);
 	virtual void postParseTidy();
 private:
+	void selectInstruction();
+	void goBackOneSlide();
 	void moveInstruction(int diff);
 	void initialisePrograms();
 	void findSelectedInstruction(double x, double y);

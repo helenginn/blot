@@ -162,7 +162,7 @@ void BlotGL::deleteInstruction()
 
 	_list->takeItem(_list->currentRow());
 	/* clears image if needed */
-	selectInstruction();
+	selectInEditMode();
 }
 
 void BlotGL::moveInstructionUp()
@@ -240,18 +240,21 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 	makeList(p);
 	
 	connect(_list, &QListWidget::currentRowChanged, 
-	        this, &BlotGL::selectInstruction);
+	        this, &BlotGL::selectInEditMode);
 
 	advancePresentation();
 }
 
+void BlotGL::selectInEditMode()
+{
+	if (_editMode)
+	{
+		selectInstruction();
+	}
+}
+
 void BlotGL::selectInstruction()
 {
-	if (!_editMode)
-	{
-		return;
-	}
-
 	if (_list->count() == 0)
 	{
 		return;
@@ -279,10 +282,10 @@ void BlotGL::selectInstruction()
 
 	clearAll();
 
-
 	for (int i = lastWipe; i <= row; i++)
 	{
 		Instruction *inst = instructionForItem(_list->item(i));
+		
 		inst->makeEffect();
 	}
 
@@ -337,6 +340,32 @@ void BlotGL::initialisePrograms()
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
 		_objects[i]->initialisePrograms();
+	}
+}
+
+void BlotGL::goBackOneSlide()
+{
+	int row = _list->currentRow() - 1;
+	
+	if (!instructionForItem(_list->item(row + 1))->waitForClick())
+	{
+		while (true)
+		{
+			Instruction *inst = instructionForItem(_list->item(row - 1));
+			row--;
+			if (inst->waitForClick())
+			{
+				row--;
+				break;
+			}
+		}
+	}
+	
+	if (row >= 0 && row < _list->count())
+	{
+		_list->setCurrentRow(row);
+		selectInstruction();
+		_currPos = row + 1;
 	}
 }
 
@@ -419,6 +448,7 @@ void BlotGL::setFullScreen()
 	setAspectRatio(_aspectRatio);
 	setWindowState(Qt::WindowFullScreen);
 	show();
+	_currPos++;
 	windowHandle()->setScreen(screens.last());
 	showFullScreen();
 }
@@ -508,6 +538,23 @@ void BlotGL::keyPressEvent(QKeyEvent *event)
 
 		setFocus();
 		setFocusPolicy(Qt::StrongFocus);
+	}
+	else if (event->key() == Qt::Key_Right || 
+	         event->key() == Qt::Key_Down ||
+	         event->key() == Qt::Key_PageDown ||
+	         event->key() == Qt::Key_Enter ||
+	         event->key() == Qt::Key_Space ||
+	         event->key() == Qt::Key_N)
+	{
+		advancePresentation(true);
+	}
+	else if (event->key() == Qt::Key_Left ||
+	         event->key() == Qt::Key_Up ||
+	         event->key() == Qt::Key_PageDown ||
+	         event->key() == Qt::Key_Backspace ||
+	         event->key() == Qt::Key_P)
+	{
+		goBackOneSlide();
 	}
 }
 
@@ -752,7 +799,7 @@ void BlotGL::removeImageReferences(ImageProc *image)
 		}
 	}
 	
-	selectInstruction();
+	selectInEditMode();
 }
 
 mat3x3 BlotGL::getAspectMatrix()
