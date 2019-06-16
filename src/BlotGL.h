@@ -106,6 +106,7 @@ public slots:
 	void deleteInstruction();
 	void changeInstruction();
 	void progressAnimations();
+	void toggleVKey();
 	
 protected:
 	virtual void initializeGL();
@@ -130,7 +131,7 @@ private:
 	QPushButton *_bDelete;
 	QPushButton *_bUp;
 	QPushButton *_bDown;
-	QPushButton *_bPlus;
+	QPushButton *_bView;
 	QPushButton *_bMore;
 	std::vector<QPushButton *> _buttons;
 	Instruction *_currInstruct;

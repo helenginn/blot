@@ -68,7 +68,7 @@ void BlotGL::makeList(QWidget *p)
 	QIcon del = qApp->style()->standardIcon(QStyle::SP_TrashIcon);
 	QIcon up = qApp->style()->standardIcon(QStyle::SP_ArrowUp);
 	QIcon down = qApp->style()->standardIcon(QStyle::SP_ArrowDown);
-//	QIcon more = qApp->style()->standardIcon(QStyle::SP_ToolBarHorizontalExtensionButton);
+	QIcon more = qApp->style()->standardIcon(QStyle::SP_ToolBarHorizontalExtensionButton);
 	
 	int x = 0;
 
@@ -94,18 +94,17 @@ void BlotGL::makeList(QWidget *p)
 	_bMore->setGeometry(x, p->height() - QUICK_BUTTON_HEIGHT, 
 	                      QUICK_BUTTON_HEIGHT,
 	                      QUICK_BUTTON_HEIGHT);
-//	_bMore->setIcon(more);
 	_bMore->setText("...");
 	_bMore->show();
 
 	x += QUICK_BUTTON_HEIGHT;
 
-	_bPlus = new QPushButton(p);
-	_bPlus->setGeometry(x, p->height() - QUICK_BUTTON_HEIGHT, 
+	_bView = new QPushButton(p);
+	_bView->setGeometry(x, p->height() - QUICK_BUTTON_HEIGHT, 
 	                      QUICK_BUTTON_HEIGHT,
 	                      QUICK_BUTTON_HEIGHT);
-	_bPlus->setText("+");
-	_bPlus->show();
+	_bView->setIcon(more);
+	_bView->show();
 
 	x += QUICK_BUTTON_HEIGHT;
 
@@ -121,12 +120,13 @@ void BlotGL::makeList(QWidget *p)
 	connect(_bDown, &QPushButton::pressed, this, &BlotGL::moveInstructionDown);
 	connect(_bDelete, &QPushButton::pressed, this, &BlotGL::deleteInstruction);
 	connect(_bMore, &QPushButton::pressed, this, &BlotGL::changeInstruction);
+	connect(_bView, &QPushButton::pressed, this, &BlotGL::toggleVKey);
 	
 	_buttons.push_back(_bDown);
 	_buttons.push_back(_bUp);
 	_buttons.push_back(_bDelete);
 	_buttons.push_back(_bMore);
-	_buttons.push_back(_bPlus);
+	_buttons.push_back(_bView);
 }
 
 void BlotGL::changeInstruction()
@@ -508,6 +508,12 @@ void BlotGL::keyReleaseEvent(QKeyEvent *event)
 	_shiftPressed = false;
 	_altPressed = false;
 	_controlPressed = false;
+}
+
+void BlotGL::toggleVKey()
+{
+	QKeyEvent event(QEvent::KeyPress, (int)Qt::Key_V, Qt::NoModifier);
+	keyPressEvent(&event);
 }
 
 void BlotGL::keyPressEvent(QKeyEvent *event)
