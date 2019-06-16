@@ -377,7 +377,7 @@ void BlotGL::advancePresentation(bool clicked)
 		return;
 	}
 	
-	if (_animating.size())
+	if (_animating.size() && !clicked)
 	{
 		return;
 	}
