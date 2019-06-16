@@ -127,6 +127,11 @@ private:
 	void initialisePrograms();
 	void findSelectedInstruction(double x, double y);
 	
+	bool isFullScreen()
+	{
+		return _fullScreen;
+	}
+	
 	QListWidget *_list;
 	QPushButton *_bDelete;
 	QPushButton *_bUp;
@@ -140,6 +145,7 @@ private:
 	std::vector<BlotObject *> _objects;
 	QObject *_parent;
 	bool _editMode;
+	bool _fullScreen;
 	bool _shiftPressed;
 	bool _controlPressed;
 	bool _altPressed;

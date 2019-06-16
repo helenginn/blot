@@ -225,6 +225,7 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 	_list = NULL;
 	_currPos = 0;
 	_editMode = true;
+	_fullScreen = false;
 	_controlPressed = false;
 	_shiftPressed = false;
 	_altPressed = false;
@@ -437,9 +438,10 @@ void BlotGL::changeClick(bool click)
 
 void BlotGL::setFullScreen()
 {
+
 	QList<QScreen *> screens = qApp->screens();
 	QSize resol = screens.last()->size();
-
+	
 	std::cout << "Making full screen" << std::endl;
 	hide();
 	_parent = parent();
@@ -447,10 +449,26 @@ void BlotGL::setFullScreen()
 	resize(resol.width(), resol.height());
 	setAspectRatio(_aspectRatio);
 	setWindowState(Qt::WindowFullScreen);
-	show();
+
+	_fullScreen = true;
 	_currPos++;
+
+	std::cout << "Number of screens (will set last): " 
+	<< screens.size() << std::endl;
+	
+	for (int i = 0; i < screens.size(); i++)
+	{
+		QScreen *scr = screens[i];
+		std::cout << scr->geometry().x() << " " <<
+		scr->geometry().y() << " " << scr->geometry().width() << " "
+		<< scr->geometry().height() << std::endl;
+	}
+	
 	windowHandle()->setScreen(screens.last());
-	showFullScreen();
+	setGeometry(screens.last()->geometry());
+	
+
+	windowHandle()->showFullScreen();
 }
 
 void BlotGL::setSmallWindow()
@@ -458,6 +476,7 @@ void BlotGL::setSmallWindow()
 	std::cout << "Making small window" << std::endl;
 	hide();
 	StartScreen *w = static_cast<StartScreen *>(_parent);
+	_fullScreen = false;
 
 	if (w == NULL)
 	{
