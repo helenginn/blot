@@ -85,6 +85,7 @@ public slots:
 	void deleteFromLibrary();
 	void updatePaste();
 	void changeBackground();
+	void copyToClipboard();
 
 private:
 	ImageProc *imageProcForItem(QListWidgetItem *item);
@@ -95,6 +96,7 @@ private:
 	QLabel *_imageLabel;
 	QPushButton *_addToPres;
 	QPushButton *_bDelete;
+	QPushButton *_bCopy;
 	QPushButton *_bUpdate;
 	QPushButton *_bChange;
 	QLineEdit *_edit;

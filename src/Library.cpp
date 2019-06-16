@@ -72,6 +72,10 @@ void Library::initialise()
 	connect(action, &QAction::triggered, this, &Library::saveAs);
 
 	QMenu *edit = menuBar()->addMenu(tr("&Edit"));
+	action = edit->addAction(tr("Copy image"));
+	action->setShortcut(QKeySequence::Copy);
+	connect(action, &QAction::triggered, this, &Library::copyToClipboard);
+
 	action = edit->addAction(tr("Paste image"));
 	action->setShortcut(QKeySequence::Paste);
 	connect(action, &QAction::triggered, this, &Library::paste);
@@ -150,6 +154,26 @@ void Library::paste()
 		_edit->setFocus();
 		_edit->setFocusPolicy(Qt::StrongFocus);
 	}
+}
+
+void Library::copyToClipboard()
+{
+	QListWidgetItem *item = _list->currentItem();
+	
+	if (item == NULL)
+	{
+		return;
+	}
+
+	ImageProc *proc = imageProcForItem(item);
+	QImage *im = proc->getImage();
+	
+	if (im->isNull())
+	{
+		return;
+	}
+	
+	QApplication::clipboard()->setImage(*im);
 }
 
 void Library::updatePaste()
@@ -284,6 +308,10 @@ void Library::elaborateItem(QListWidgetItem *item)
 		connect(_bUpdate, &QPushButton::clicked, 
 		        this, &Library::updatePaste);
 
+		_bCopy = new QPushButton(this);
+		connect(_bCopy, &QPushButton::clicked, 
+		        this, &Library::copyToClipboard);
+
 		_bChange = new QPushButton(this);
 		connect(_bChange, &QPushButton::clicked, 
 		        this, &Library::changeBackground);
@@ -302,6 +330,13 @@ void Library::elaborateItem(QListWidgetItem *item)
 	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	_bDelete->setText("Delete");
 	_bDelete->show();
+	
+	y += BUTTON_HEIGHT * 1.2;
+	
+	_bCopy->setGeometry(ELABORATION_MIDPOINT - BUTTON_WIDTH / 2,
+	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	_bCopy->setText("Copy to clipboard");
+	_bCopy->show();
 	
 	y += BUTTON_HEIGHT * 1.2;
 	
