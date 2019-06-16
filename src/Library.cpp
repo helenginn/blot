@@ -318,6 +318,8 @@ void Library::elaborateItem(QListWidgetItem *item)
 	}
 	
 	int y = MENU_HEIGHT + IMAGE_TITLE_HEIGHT + IMAGE_HEIGHT;
+
+	y += BUTTON_HEIGHT * 0.2;
 	
 	_addToPres->setGeometry(ELABORATION_MIDPOINT - BUTTON_WIDTH / 2,
 	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
