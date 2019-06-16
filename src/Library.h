@@ -84,6 +84,7 @@ public slots:
 	void addToPresentation();
 	void deleteFromLibrary();
 	void updatePaste();
+	void changeBackground();
 
 private:
 	ImageProc *imageProcForItem(QListWidgetItem *item);
@@ -95,6 +96,7 @@ private:
 	QPushButton *_addToPres;
 	QPushButton *_bDelete;
 	QPushButton *_bUpdate;
+	QPushButton *_bChange;
 	QLineEdit *_edit;
 	std::string _filename;
 	BlotGL *_pres;

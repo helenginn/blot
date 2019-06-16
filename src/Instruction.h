@@ -70,6 +70,11 @@ public:
 		return _onClick;
 	}
 	
+	virtual bool primaryLoad()
+	{
+		return false;
+	}
+	
 	void updateText();
 
 	virtual BlotObject *object()

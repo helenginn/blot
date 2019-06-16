@@ -41,7 +41,7 @@ public:
 	BlotGL(QWidget *parent = NULL);
 	
 	void makeList(QWidget *p);
-	void addObject(BlotObject *obj);
+	void addObject(BlotObject *obj, bool top = false);
 	void addImage(ImageProc *proc);
 	void addInstruction(Instruction *inst, bool atRow = true);
 	void advancePresentation(bool clicked = false);

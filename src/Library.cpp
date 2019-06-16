@@ -31,6 +31,7 @@
 #include "StartScreen.h"
 #include "ImageProc.h"
 #include "ImageAppear.h"
+#include "ChangeBackground.h"
 
 Library *Library::_lib = NULL;
 
@@ -208,6 +209,14 @@ void Library::addToPresentation()
 	appear->makeEffect();
 }
 
+void Library::changeBackground()
+{
+	ImageProc *proc = imageProcForItem(_list->currentItem());
+	ChangeBackground *change = new ChangeBackground(_pres, proc);
+	_pres->addInstruction(change);
+	change->makeEffect();
+}
+
 void Library::elaborateItem(QListWidgetItem *item)
 {
 	if (item == NULL)
@@ -274,6 +283,10 @@ void Library::elaborateItem(QListWidgetItem *item)
 		_bUpdate = new QPushButton(this);
 		connect(_bUpdate, &QPushButton::clicked, 
 		        this, &Library::updatePaste);
+
+		_bChange = new QPushButton(this);
+		connect(_bChange, &QPushButton::clicked, 
+		        this, &Library::changeBackground);
 	}
 	
 	int y = MENU_HEIGHT + IMAGE_TITLE_HEIGHT + IMAGE_HEIGHT;
@@ -296,6 +309,13 @@ void Library::elaborateItem(QListWidgetItem *item)
 	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	_bUpdate->setText("Update from clipboard");
 	_bUpdate->show();
+	
+	y += BUTTON_HEIGHT * 1.2;
+	
+	_bChange->setGeometry(ELABORATION_MIDPOINT - BUTTON_WIDTH / 2,
+	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	_bChange->setText("Change background");
+	_bChange->show();
 }
 
 void Library::deleteFromLibrary()

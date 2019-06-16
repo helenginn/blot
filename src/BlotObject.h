@@ -75,7 +75,7 @@ public:
 	{
 		return _textures[i];
 	}
-
+	
 	size_t indexCount()
 	{
 		return _indices.size();
@@ -104,6 +104,16 @@ public:
 		_time = time;
 	}
 	
+	void ignoreAspectRatio(bool ignore = true)
+	{
+		_ignoreAspectRatio = ignore;
+	}
+	
+	bool shouldWipe()
+	{
+		return !_ignoreAspectRatio;
+	}
+	
 	void addProperties();
 	void postParseTidy();
 
@@ -115,6 +125,8 @@ public:
 	void select(bool sel, double red, double green, double blue);
 	void changeProgram(std::string &v, std::string &f);
 	void wipeEffect();
+	
+	void setZCoord(float z);
 protected:
 	std::vector<Vertex> _vertices;
 	std::vector<GLuint> _indices;
@@ -141,6 +153,7 @@ private:
 	float _time;
 	bool _extra;
 	bool _disabled;
+	bool _ignoreAspectRatio;
 };
 
 #endif

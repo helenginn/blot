@@ -78,6 +78,14 @@ bool BlotObject::isCovered(double x, double y)
 	return (crosses % 2 == 1);
 }
 
+void BlotObject::setZCoord(float z)
+{
+	for (size_t i = 0; i < _vertices.size(); i++)
+	{
+		_vertices[i].pos[2] = z;
+	}
+}
+
 void BlotObject::setVertices(float t, float b, float l, float r)
 {
 	if (_vertices.size() == 0)
@@ -153,6 +161,7 @@ BlotObject::BlotObject(ImageProc *proc)
 	_image = proc;
 	makeDummy();
 	_disabled = true;
+	_ignoreAspectRatio = false;
 	_extra = true;
 	_program = 0;
 }
@@ -369,7 +378,12 @@ void BlotObject::render(BlotGL *sender)
 	glUseProgram(_program);
 	rebindProgram();
 	
-	mat3x3 aspect = sender->getAspectMatrix();
+	mat3x3 aspect = make_mat3x3();
+	if (!_ignoreAspectRatio)
+	{
+		aspect = sender->getAspectMatrix();
+	}
+
 	float *toFloat = mat3x3_malloc_float3x3(aspect);
 
 	const char *uniform_name = "aspect";
@@ -390,6 +404,11 @@ void BlotObject::render(BlotGL *sender)
 	checkErrors();
 	
 	free(toFloat);
+	
+	if (!shouldWipe())
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
 
 	glUseProgram(0);
 }
@@ -423,6 +442,7 @@ std::string BlotObject::getParserIdentifier()
 
 void BlotObject::addProperties()
 {
+	addBoolProperty("ignore_aspect", &_ignoreAspectRatio);
 	addStringProperty("random", &_random);
 	addReference("image", _image);
 }

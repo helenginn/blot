@@ -15,6 +15,7 @@
 #include "ImageAppear.h"
 #include "ImageHide.h"
 #include "ImageMove.h"
+#include "ChangeBackground.h"
 #include "WipeSlate.h"
 
 ParserMap BaseParser::_allParsers;
@@ -1260,6 +1261,10 @@ Parser *BaseParser::objectOfType(char *className)
 	else if (strcmp(className, "ImageMove") == 0)
 	{
 		object = static_cast<Parser *>(new ImageMove());
+	}
+	else if (strcmp(className, "ChangeBackground") == 0)
+	{
+		object = static_cast<Parser *>(new ChangeBackground());
 	}
 	else if (strcmp(className, "WipeSlate") == 0)
 	{

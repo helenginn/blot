@@ -302,7 +302,7 @@ void BlotGL::selectInstruction()
 	}
 }
 
-void BlotGL::addObject(BlotObject *obj)
+void BlotGL::addObject(BlotObject *obj, bool top)
 {
 	if (obj == NULL)
 	{
@@ -317,7 +317,14 @@ void BlotGL::addObject(BlotObject *obj)
 	
 	if (it == _objects.end())
 	{
-		_objects.push_back(obj);
+		if (!top)
+		{
+			_objects.push_back(obj);
+		}
+		else
+		{
+			_objects.insert(_objects.begin(), obj);
+		}
 	}
 }
 
@@ -517,9 +524,16 @@ void BlotGL::addInstruction(Instruction *inst, bool atRow)
 	{
 		_list->addItem(item);
 	}
+	
+	bool atTop = false;
+
+	if (inst->primaryLoad())
+	{
+		atTop = true;
+	}
 
 	inst->updateText();
-	addObject(inst->object());
+	addObject(inst->object(), atTop);
 }
 
 void BlotGL::keyReleaseEvent(QKeyEvent *event)
@@ -726,7 +740,10 @@ void BlotGL::clearAll()
 {
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
-		_objects[i]->setDisabled(true);
+		if (_objects[i]->shouldWipe())
+		{
+			_objects[i]->setDisabled(true);
+		}
 	}
 
 }
