@@ -589,7 +589,7 @@ void BlotGL::keyPressEvent(QKeyEvent *event)
 	}
 	else if (event->key() == Qt::Key_Left ||
 	         event->key() == Qt::Key_Up ||
-	         event->key() == Qt::Key_PageDown ||
+	         event->key() == Qt::Key_PageUp ||
 	         event->key() == Qt::Key_Backspace ||
 	         event->key() == Qt::Key_P)
 	{
