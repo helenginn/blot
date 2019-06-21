@@ -272,7 +272,7 @@ void BlotGL::selectInstruction()
 
 	for (int i = row - 1; i >= 0; i--)
 	{
-		Instruction *inst = instructionForItem(_list->item(row));
+		Instruction *inst = instructionForItem(_list->item(i));
 
 		if (inst->getClassName() == "WipeSlate")
 		{
