@@ -82,7 +82,16 @@ StartScreen::StartScreen(QWidget *parent,
 	connect(action, &QAction::triggered, 
 	        this, &StartScreen::moveInstToBottom);
 
+	action = instruction->addAction(tr("Move down to Wipe Slate"));
+	action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_W));
+	connect(action, &QAction::triggered, 
+	        this, &StartScreen::moveInstToWipe);
 } 
+
+void StartScreen::moveInstToWipe()
+{
+	_pres->moveInstToWipe();
+}
 
 void StartScreen::moveInstToBottom()
 {

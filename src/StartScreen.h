@@ -60,6 +60,7 @@ private slots:
 	void aspect16t9();
 	void changeClick();
 	void moveInstToBottom();
+	void moveInstToWipe();
 	
 private:
 	QAction *_waitClick;

@@ -175,6 +175,34 @@ void BlotGL::moveInstructionDown()
 	moveInstruction(1);
 }
 
+
+void BlotGL::moveInstToWipe()
+{
+	if (_list->currentItem() == NULL)
+	{
+		return;
+	}
+
+	int row = _list->currentRow();
+	int wipeRow = row;
+	
+	for (int i = row + 1; i < _list->count(); i++)
+	{
+		Instruction *inst = instructionForItem(_list->item(i));
+		if (inst->getClassName() == "WipeSlate")
+		{
+			wipeRow = i;
+			break;
+		}
+	}
+	
+	if (wipeRow > row)
+	{
+		QListWidgetItem *item = _list->takeItem(row);
+		_list->insertItem(wipeRow - 1, item);
+	}
+}
+
 void BlotGL::moveInstToBottom()
 {
 	if (_list->currentItem() == NULL)

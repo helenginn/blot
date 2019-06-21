@@ -97,6 +97,7 @@ public:
 	void updateDisplay();
 	
 	void moveInstToBottom();
+	void moveInstToWipe();
 	void changeClick(bool click);
 	virtual void addProperties();
 public slots:
