@@ -46,7 +46,6 @@ bool ImageHide::animateEffect()
 	}
 
 	setTime(_startTime);
-	std::cout << "Fade " << " " << _obj->isDisabled() << std::endl;
 	return true;
 }
 
