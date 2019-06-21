@@ -68,6 +68,7 @@ StartScreen::StartScreen(QWidget *parent,
 	action = insert->addAction(tr("Hide image"));
 	connect(action, &QAction::triggered, this, &StartScreen::addHide);
 	action = insert->addAction(tr("Move image"));
+	action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_M));
 	connect(action, &QAction::triggered, this, &StartScreen::addMove);
 
 	QMenu *instruction = menuBar()->addMenu(tr("&Instruction"));
