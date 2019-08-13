@@ -88,8 +88,6 @@ void ImageProc::process()
 
 void ImageProc::bindToTexture(BlotObject *sender)
 {
-//	std::cout << "Binding " << _text << " " << _image->width() << " " 
-//	<< _image->height() << std::endl;
 	glBindTexture(GL_TEXTURE_2D, sender->texture(0));
 	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _image->width(), _image->height(), 
@@ -99,17 +97,6 @@ void ImageProc::bindToTexture(BlotObject *sender)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	sender->glGenerateMipmap(GL_TEXTURE_2D);
-
-	/*
-	glBindTexture(GL_TEXTURE_2D, sender->texture(1));
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _image.width(), _image.height(), 
-	             0, GL_RGBA, GL_UNSIGNED_BYTE, _image.bits());
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	sender->glGenerateMipmap(GL_TEXTURE_2D);
-	*/
 }
 
 void ImageProc::addProperties()
