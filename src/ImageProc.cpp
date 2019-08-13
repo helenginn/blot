@@ -38,6 +38,12 @@ ImageProc::ImageProc(QImage *image)
 	_lastTop = FLT_MAX;
 }
 
+ImageProc::~ImageProc()
+{
+	delete _image;
+	_image = NULL;
+}
+
 void ImageProc::collapseToActiveCoordinate()
 {
 	size_t tot_pix = _image->height() * _image->width();

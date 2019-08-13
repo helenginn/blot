@@ -37,7 +37,7 @@ class ImageProc : public Parser
 {
 public:
 	ImageProc(QImage *image = NULL);
-	~ImageProc() {};
+	~ImageProc();
 	void process();
 	void bindToTexture(BlotObject *sender);
 
