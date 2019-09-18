@@ -98,6 +98,7 @@ public:
 	
 	void moveInstToBottom();
 	void moveInstToWipe();
+	void moveInstToIndex(int index);
 	void changeClick(bool click);
 	virtual void addProperties();
 public slots:
@@ -125,6 +126,7 @@ private:
 	void selectInstruction();
 	void goBackOneSlide();
 	void moveInstruction(int diff);
+	std::vector<unsigned int> getSortedIndices();
 	void initialisePrograms();
 	void findSelectedInstruction(double x, double y);
 	

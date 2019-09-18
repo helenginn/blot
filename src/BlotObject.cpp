@@ -277,6 +277,7 @@ void BlotObject::bindTextures()
 
 	_textures.resize(1);
 
+	glDeleteTextures(1, &_textures[0]);
 	glGenTextures(1, &_textures[0]);
 
 	getImage()->bindToTexture(this);

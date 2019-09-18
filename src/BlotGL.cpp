@@ -63,6 +63,7 @@ void BlotGL::makeList(QWidget *p)
 	_list = new QListWidget(p);
 	_list->setGeometry(0, MENU_HEIGHT, INSTRUCTION_WIDTH, 
 	                   p->height() - MENU_HEIGHT - QUICK_BUTTON_HEIGHT);
+	_list->setSelectionMode(QAbstractItemView::ContiguousSelection);
 	_list->show();
 
 	QIcon del = qApp->style()->standardIcon(QStyle::SP_TrashIcon);
@@ -198,21 +199,43 @@ void BlotGL::moveInstToWipe()
 	
 	if (wipeRow > row)
 	{
+		moveInstToIndex(wipeRow - 1);
+		/*
 		QListWidgetItem *item = _list->takeItem(row);
 		_list->insertItem(wipeRow - 1, item);
+		*/
 	}
 }
 
 void BlotGL::moveInstToBottom()
 {
-	if (_list->currentItem() == NULL)
-	{
-		return;
-	}
+	moveInstToIndex(_list->count());
+}
 
-	int row = _list->currentRow();
-	QListWidgetItem *item = _list->takeItem(row);
-	_list->addItem(item);
+std::vector<unsigned int> BlotGL::getSortedIndices()
+{
+	QList<QListWidgetItem *> list = _list->selectedItems();
+	std::vector<unsigned int> indices;
+	
+	for (int i = 0; i < list.size(); i++)
+	{
+		QListWidgetItem *item = list[i];
+		unsigned int row = _list->row(item);
+		indices.push_back(row);
+	}
+	
+	std::sort(indices.begin(), indices.end(), std::less<unsigned int>());
+	return indices;
+}
+
+void BlotGL::moveInstToIndex(int index)
+{
+	std::vector<unsigned int> indices = getSortedIndices();
+	int diff = index - indices.back();
+	
+	std::cout << "moving " << diff << std::endl;
+	
+	moveInstruction(diff);
 }
 
 void BlotGL::moveInstruction(int diff)
@@ -222,17 +245,44 @@ void BlotGL::moveInstruction(int diff)
 		return;
 	}
 
-	int row = _list->currentRow();
-	
-	if (row + diff < 0 || row + diff >= _list->count())
+	std::vector<unsigned int> indices = getSortedIndices();
+	if (indices.size() <= 0)
 	{
 		return;
 	}
 
-	QListWidgetItem *item = _list->takeItem(row);
-	row += diff;
-	_list->insertItem(row, item);
-	_list->setCurrentRow(row);
+	int min = indices[0];
+	int max = indices.back();
+	
+	int sign = (diff > 0) ? 1 : -1;
+	diff = abs(diff);
+	
+	for (int i = 0; i < diff; i++)
+	{
+		int from, to;
+		if (sign > 0)
+		{
+			from = max + 1;
+			to = min;
+		}
+		else
+		{
+			from = min - 1;
+			to = max;
+		}
+		
+		if (from < 0 || to < 0 || from > _list->count() 
+		    || to > _list->count())
+		{
+			break;
+		}
+
+		QListWidgetItem *item = _list->takeItem(from);
+		_list->insertItem(to, item);
+		
+		min += sign;
+		max += sign;
+	}
 }
 
 void BlotGL::setAspectRatio(double ratio)
