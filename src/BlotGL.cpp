@@ -721,46 +721,78 @@ bool isPossibleInstruction(Instruction *option, Instruction *old,
 	return cover;
 }
 
-void BlotGL::findSelectedInstruction(double x, double y)
+void BlotGL::selectInstruction(Instruction *inst, bool primary)
 {
+	if (inst == NULL)
+	{
+		return;
+	}
+
+	if (primary || _currInstruct == NULL)
+	{
+		if (_currInstruct != NULL)
+		{
+			_currInstruct->select(false);
+		}
+
+		_currInstruct = inst;
+		selectInstruction();
+	}
+	else
+	{
+		_otherInstruct.push_back(inst);
+	}
+
+	inst->select(true);
+}
+
+void BlotGL::deselectAll()
+{
+	for (size_t i = 0; i < _otherInstruct.size(); i++)
+	{
+		_otherInstruct[i]->select(false);
+	}
+	
+	_otherInstruct.clear();
+
 	if (_currInstruct != NULL)
 	{
 		_currInstruct->select(false);
 	}
-	
-	Instruction *old = _currInstruct;
+
 	_currInstruct = NULL;
+}
+
+void BlotGL::replaceSelectedInstruction(double x, double y)
+{
+	deselectAll();
+	Instruction *inst = findSelectedInstruction(x, y);
+	selectInstruction(inst, true);
+}
+
+Instruction *BlotGL::findSelectedInstruction(double x, double y)
+{
+	Instruction *old = _currInstruct;
 	
+	/* Prioritise instruction selected in menu */
 	Instruction *option = instructionForItem(_list->currentItem());
 	if (isPossibleInstruction(option, old, x, y))
 	{
-		_currInstruct = option;
+		return option;
 	}
 
-	for (int i = _list->count() - 1; i >= 0 && _currInstruct == NULL; i--)
+	/* Else, go through everything in reverse order */
+	for (int i = _list->count() - 1; i >= 0; i--)
 	{
 		Instruction *option = instructionForItem(_list->item(i));
 
 		if (isPossibleInstruction(option, old, x, y))
 		{
-			_currInstruct = option;
-			break;
+			return option;
 		}
 	}
 	
-
-	if (_currInstruct == NULL)
-	{
-		std::cout << "No selection" << std::endl;
-		return;
-	}
-	else
-	{
-		BlotObject *obj = _currInstruct->object();
-		std::cout << "Selected " << obj->getImage()->text() << std::endl;
-		_currInstruct->select(true);
-
-	}
+	return NULL;
 }
 
 void BlotGL::mouseMoveEvent(QMouseEvent *e)
@@ -811,7 +843,17 @@ void BlotGL::mouseReleaseEvent(QMouseEvent *e)
 		double x = (e->x() / (double)width()  * 2) - 1;
 		double y = (e->y() / (double)height() * 2) - 1;
 
-		findSelectedInstruction(x, y);
+		/* If we need to select a primary instruction */
+		if (!_shiftPressed || _currInstruct == NULL)
+		{
+			replaceSelectedInstruction(x, y);
+		}
+		/* If we are selecting additional instructions */
+		else if (_shiftPressed)
+		{
+			Instruction *inst = findSelectedInstruction(x, y);
+			selectInstruction(inst, false);
+		}
 	}
 }
 

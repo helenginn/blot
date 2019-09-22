@@ -128,7 +128,10 @@ private:
 	void moveInstruction(int diff);
 	std::vector<unsigned int> getSortedIndices();
 	void initialisePrograms();
-	void findSelectedInstruction(double x, double y);
+	void deselectAll();
+	Instruction *findSelectedInstruction(double x, double y);
+	void replaceSelectedInstruction(double x, double y);
+	void selectInstruction(Instruction *inst, bool primary);
 	
 	bool isFullScreen()
 	{
@@ -142,7 +145,10 @@ private:
 	QPushButton *_bView;
 	QPushButton *_bMore;
 	std::vector<QPushButton *> _buttons;
+
 	Instruction *_currInstruct;
+	std::vector<Instruction *> _otherInstruct;
+
 	std::vector<Instruction *> _animating;
 	Properties *_prop;
 	std::vector<BlotObject *> _objects;
