@@ -416,6 +416,9 @@ void BlotObject::render(BlotGL *sender)
 
 void BlotObject::select(bool sel, double red, double green, double blue)
 {
+	std::cout << (sel ? "Selecting " : "Deselecting ");
+	std::cout << getImage()->text() << std::endl;
+	
 	if (_vertices.size() == 0)
 	{
 		makeDummy();
