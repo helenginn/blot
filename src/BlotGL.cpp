@@ -368,7 +368,6 @@ void BlotGL::selectInstruction()
 		inst->makeEffect();
 	}
 
-
 	if (_currInstruct != NULL)
 	{
 		_currInstruct->select(false);
@@ -560,6 +559,7 @@ void BlotGL::setSmallWindow()
 {
 	std::cout << "Making small window" << std::endl;
 	hide();
+
 	StartScreen *w = static_cast<StartScreen *>(_parent);
 	_fullScreen = false;
 
@@ -596,6 +596,7 @@ void BlotGL::addInstruction(Instruction *inst, bool atRow)
 	if (atRow)
 	{
 		_list->insertItem(_list->currentRow() + 1, item);
+		_list->clearSelection();
 		_list->setCurrentRow(_list->currentRow() + 1);
 	}
 	else
