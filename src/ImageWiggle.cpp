@@ -20,29 +20,25 @@
 #include "Instruction.h"
 #include "src/maths.h"
 
-ImageWiggle::ImageWiggle(BlotGL *gl, Instruction *inst) : Instruction(gl)
+ImageWiggle::ImageWiggle(BlotGL *gl, Instruction *inst) : 
+ImageAnimated(gl, inst)
 {
-	_valid = true;
-	_endTime = 3;
-	_stepTime = 0.01;
 	_angle = 1;
-
-	if (inst == NULL || inst->object() == NULL)
-	{
-		_valid = false;
-		return;
-	}
-
-	_obj = inst->object();
+	_stepTime = 0.01;
 }
 
 void ImageWiggle::addProperties()
 {
-	Instruction::addProperties();
+	ImageAnimated::addProperties();
 	
-	addReference("blot_object", _obj);
 	addDoubleProperty("angle", &_angle);
 }
+
+void ImageWiggle::linkReference(BaseParser *child, std::string name)
+{
+	ImageAnimated::linkReference(child, name);
+}
+
 
 std::string ImageWiggle::instText()
 {
@@ -50,16 +46,6 @@ std::string ImageWiggle::instText()
 	start += (waitForClick() ? "" : "+ ");
 	start += "Wiggle " + object()->getImage()->text();
 	return start;
-}
-
-void ImageWiggle::linkReference(BaseParser *child, std::string name)
-{
-	if (name == "blot_object")
-	{
-		_obj = static_cast<BlotObject *>(child);
-	}
-	
-	Instruction::linkReference(child, name);
 }
 
 bool ImageWiggle::animateEffect()
@@ -91,18 +77,13 @@ bool ImageWiggle::animateStep()
 	
 	std::cout << _startTime << " " << _endTime << " " << _stepTime << 
 	std::endl;
-	std::cout << cycle << " " << " " << portion << " " << dir << std::endl;
+	std::cout << _angle << " " << cycle << " " << " " << portion << " " << dir << std::endl;
 	
 	double diffa = _angle * step * dir;
 
 	_obj->rotateVertices(diffa);
 
 	return keep_going;
-}
-
-void ImageWiggle::setTime(double time)
-{
-	_time = time;
 }
 
 void ImageWiggle::makeEffect()

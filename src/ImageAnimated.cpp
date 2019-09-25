@@ -16,41 +16,44 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __blot__ImageWiggle__
-#define __blot__ImageWiggle__
-
 #include "ImageAnimated.h"
 #include "BlotObject.h"
 
-class ImageWiggle : public ImageAnimated
+ImageAnimated::ImageAnimated(BlotGL *gl, Instruction *inst) : Instruction(gl)
 {
-public:
-	ImageWiggle(BlotGL *gl = NULL, Instruction *inst = NULL);
-	
-	virtual bool isCovered(double, double)
-	{
-		return false;
-	}
-	
-	virtual std::string getClassName()
-	{
-		return "ImageWiggle";
-	}
-	
-	virtual std::string getParserIdentifier()
-	{
-		return "ImageWiggle_" + _random;
-	}
+	_valid = true;
+	_endTime = 3;
+	_stepTime = 0.05;
 
-	virtual std::string instText();
-	virtual bool animateEffect();
-	virtual bool animateStep();
-	virtual void makeEffect();
-protected:
-	virtual void addProperties();
-	virtual void linkReference(BaseParser *child, std::string name);
-private:
-	double _angle;
-};
+	if (inst == NULL || inst->object() == NULL)
+	{
+		_valid = false;
+	}
+	else
+	{
+		_obj = inst->object();
+	}
+}
 
-#endif
+void ImageAnimated::setTime(double time)
+{
+	_time = time;
+}
+
+
+void ImageAnimated::linkReference(BaseParser *child, std::string name)
+{
+	if (name == "blot_object")
+	{
+		_obj = static_cast<BlotObject *>(child);
+	}
+	
+	Instruction::linkReference(child, name);
+}
+
+void ImageAnimated::addProperties()
+{
+	Instruction::addProperties();
+	
+	addReference("blot_object", _obj);
+}

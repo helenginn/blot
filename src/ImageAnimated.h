@@ -16,41 +16,37 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __blot__ImageWiggle__
-#define __blot__ImageWiggle__
+#ifndef __blot__ImageAnimated__
+#define __blot__ImageAnimated__
 
-#include "ImageAnimated.h"
-#include "BlotObject.h"
+#include "Instruction.h"
 
-class ImageWiggle : public ImageAnimated
+class ImageAnimated : public Instruction
 {
 public:
-	ImageWiggle(BlotGL *gl = NULL, Instruction *inst = NULL);
+	ImageAnimated(BlotGL *gl = NULL, Instruction *inst = NULL);
 	
-	virtual bool isCovered(double, double)
+	virtual BlotObject *object()
 	{
-		return false;
-	}
-	
-	virtual std::string getClassName()
-	{
-		return "ImageWiggle";
-	}
-	
-	virtual std::string getParserIdentifier()
-	{
-		return "ImageWiggle_" + _random;
+		return _obj;
 	}
 
-	virtual std::string instText();
+	/*
 	virtual bool animateEffect();
 	virtual bool animateStep();
-	virtual void makeEffect();
+	*/
 protected:
 	virtual void addProperties();
 	virtual void linkReference(BaseParser *child, std::string name);
+	void setTime(double time);
+
+	double _time;
+	bool _endTime;
+	BlotObject *_obj;
 private:
-	double _angle;
+	bool _valid;
+	
 };
+
 
 #endif
