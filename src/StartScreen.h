@@ -53,6 +53,7 @@ protected:
 private slots:
 	void newLibrary();
 	void openLibrary();
+	void selectAll();
 	void addWipe();
 	void addHide();
 	void addMove();

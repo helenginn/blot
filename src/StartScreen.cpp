@@ -56,6 +56,11 @@ StartScreen::StartScreen(QWidget *parent,
 
 	file->addSeparator();
 
+	QMenu *edit = menuBar()->addMenu(tr("&Edit"));
+	action = edit->addAction(tr("Select all"));
+	action->setShortcut(QKeySequence::SelectAll);
+	connect(action, &QAction::triggered, this, &StartScreen::selectAll);
+
 	QMenu *aspects = file->addMenu(tr("Choose aspect ratio"));
 	action = aspects->addAction(tr("4:3"));
 	connect(action, &QAction::triggered, this, &StartScreen::aspect4t3);
@@ -251,4 +256,8 @@ StartScreen::~StartScreen()
 {
 }
 
+void StartScreen::selectAll()
+{
+	_pres->selectAll();
+}
 

@@ -162,8 +162,11 @@ void BlotGL::deleteInstruction()
 		return;
 	}
 
+	int row = _list->currentRow();
 	_list->takeItem(_list->currentRow());
 	/* clears image if needed */
+	Instruction *inst = instructionForItem(_list->item(row));
+	selectInstruction(inst, true);
 	selectInEditMode();
 }
 
@@ -1043,5 +1046,28 @@ void BlotGL::addHideCurrentImage()
 	if (hide->isValid())
 	{
 		addInstruction(hide);
+	}
+}
+
+void BlotGL::selectAll()
+{
+	deselectAll();
+
+	for (int i = 0; i < _list->count(); i++)
+	{
+		QListWidgetItem *item = _list->item(i);
+		Instruction *inst = instructionForItem(item);
+
+		if (inst->object() == NULL)
+		{
+			continue;
+		}
+		
+		if (inst->object()->isDisabled())
+		{
+			continue;
+		}
+		
+		selectInstruction(inst, false);
 	}
 }

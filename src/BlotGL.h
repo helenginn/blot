@@ -97,6 +97,7 @@ public:
 	void removeImageReferences(ImageProc *image);
 	void updateDisplay();
 	
+	void selectAll();
 	void moveInstToBottom();
 	void moveInstToWipe();
 	void moveInstToIndex(int index);
