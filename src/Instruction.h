@@ -48,6 +48,9 @@ public:
 	virtual void moveFractional(double fx, double fy) {};
 	virtual void resizeFractional(double fx, double fy, bool aspect) {};
 	virtual void rotateFractional(float x0, float y0, float fx, float fy) {};
+	virtual void rotationalTranslate(float f, float mx, float my) {};
+	
+	virtual void position(double *x, double *y) {};
 	
 	void setOnClick(bool click)
 	{
@@ -77,6 +80,7 @@ public:
 	
 	void updateText();
 
+	/* can return NULL! */
 	virtual BlotObject *object()
 	{
 		return NULL;

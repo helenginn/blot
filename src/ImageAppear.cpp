@@ -91,6 +91,34 @@ void ImageAppear::addProperties()
 	addDoubleProperty("angle", &_angle);
 }
 
+void ImageAppear::position(double *x, double *y)
+{
+	*x = (_right + _left) / 2;
+	*y = (_bottom + _top) / 2;
+}
+
+void ImageAppear::rotationalTranslate(float f, float mx, float my)
+{
+	double x, y;
+	position(&x, &y);
+	
+	float dx = x - mx;
+	float dy = y - my;
+
+	float ndx = cos(f) * dx - sin(f) * dy;
+	float ndy = sin(f) * dx + cos(f) * dy;
+	std::cout << "dx " << dx << " " << ndx << std::endl;
+	std::cout << "dy " << dy << " " << ndy << std::endl;
+
+	ndx -= dx;
+	ndy -= dy;
+
+	std::cout << "diffx " << ndx << std::endl;
+	std::cout << "diffy " << ndy << std::endl;
+	
+	moveFractional(-ndx, ndy);
+}
+
 void ImageAppear::rotateFractional(float x0, float y0, float fx, float fy)
 {
 	float angle = fx;

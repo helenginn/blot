@@ -40,6 +40,8 @@ public:
 	virtual void moveFractional(double fx, double fy);
 	virtual void resizeFractional(double fx, double fy, bool aspect);
 	virtual void rotateFractional(float x0, float y0, float fx, float fy);
+	virtual void rotationalTranslate(float f, float mx, float my);
+	virtual void position(double *x, double *y);
 	virtual bool isCovered(double x, double y);
 
 	void setBlotObject(BlotObject *obj)
@@ -53,6 +55,14 @@ public:
 		_top = t;
 		_bottom = b;
 		_right = r;
+	}
+	
+	void getPosition(float *t, float *b, float *l, float *r)
+	{
+		*t = _top;
+		*l = _left;
+		*r = _right;
+		*b = _bottom;
 	}
 
 	virtual void makeEffect();
