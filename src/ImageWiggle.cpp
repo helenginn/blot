@@ -25,7 +25,7 @@ ImageWiggle::ImageWiggle(BlotGL *gl, Instruction *inst) : Instruction(gl)
 	_valid = true;
 	_endTime = 3;
 	_stepTime = 0.01;
-	_angle = 20;
+	_angle = 1;
 
 	if (inst == NULL || inst->object() == NULL)
 	{
