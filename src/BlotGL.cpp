@@ -943,9 +943,12 @@ void BlotGL::postParseTidy()
 
 bool BlotGL::imageInUse(ImageProc *image)
 {
-	for (size_t i = 0; i < _objects.size(); i++)
+	for (int i = 0; i < _list->count(); i++)
 	{
-		if (_objects[i]->getImage() == image)
+		Instruction *inst = instructionForItem(_list->item(i));
+		BlotObject *obj = inst->object();
+
+		if (obj && obj->getImage() && obj->getImage() == image)
 		{
 			return true;
 		}
