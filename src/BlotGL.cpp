@@ -19,6 +19,7 @@
 #include "BlotGL.h"
 #include "Properties.h"
 #include "BlotObject.h"
+#include "EditGroup.h"
 #include "ImageProc.h"
 #include "ImageMove.h"
 #include "ImageHide.h"
@@ -801,6 +802,13 @@ Instruction *BlotGL::findSelectedInstruction(double x, double y)
 	return NULL;
 }
 
+EditGroup BlotGL::editGroup()
+{
+	EditGroup group(_currInstruct, _otherInstruct);
+
+	return group;
+}
+
 void BlotGL::mouseMoveEvent(QMouseEvent *e)
 {
 	if (_currInstruct == NULL)
@@ -821,11 +829,14 @@ void BlotGL::mouseMoveEvent(QMouseEvent *e)
 	{
 		double from_x = _lastX * 2 / (double)width() - 1;
 		double from_y = _lastY * 2 / (double)width() - 1;
-		_currInstruct->rotateFractional(from_x, -from_y, frac_x, -frac_y);
+		EditGroup group = editGroup();
+		group.rotateFractional(from_x, -from_y, frac_x, -frac_y);
 	}
 	else if (!_shiftPressed)
 	{
-		_currInstruct->moveFractional(-frac_y, frac_x);
+//		_currInstruct->moveFractional(-frac_y, frac_x);
+		EditGroup group = editGroup();
+		group.moveFractional(-frac_y, frac_x);
 	}
 	else if (_shiftPressed)
 	{

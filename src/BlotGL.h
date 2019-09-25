@@ -28,6 +28,7 @@
 #include "mat3x3.h"
 
 class BlotObject;
+class EditGroup;
 class ImageProc;
 class Instruction;
 class Properties;
@@ -123,6 +124,7 @@ protected:
 	virtual void addObject(Parser *child, std::string name);
 	virtual void postParseTidy();
 private:
+	EditGroup editGroup();
 	void selectInstruction();
 	void goBackOneSlide();
 	void moveInstruction(int diff);
