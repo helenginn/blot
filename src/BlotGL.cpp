@@ -723,7 +723,7 @@ bool isPossibleInstruction(Instruction *option, Instruction *old,
 
 void BlotGL::selectInstruction(Instruction *inst, bool primary)
 {
-	if (inst == NULL)
+	if (inst == NULL || inst == _currInstruct)
 	{
 		return;
 	}
@@ -740,6 +740,12 @@ void BlotGL::selectInstruction(Instruction *inst, bool primary)
 	}
 	else
 	{
+		if (std::find(_otherInstruct.begin(), _otherInstruct.end(),
+		              inst) != _otherInstruct.end())
+		{
+			return;
+		}
+		
 		_otherInstruct.push_back(inst);
 	}
 
