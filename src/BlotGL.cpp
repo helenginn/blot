@@ -16,6 +16,7 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
+#include "ImageWiggle.h"
 #include "BlotGL.h"
 #include "Properties.h"
 #include "BlotObject.h"
@@ -1030,6 +1031,19 @@ void BlotGL::addMoveCurrentImage()
 
 	ImageMove *move = new ImageMove(this, curr);
 	addInstruction(move);
+}
+
+void BlotGL::addWiggleCurrentImage()
+{
+	Instruction *curr = instructionForItem(_list->currentItem());
+
+	if (!curr || curr->object() == NULL)
+	{
+		return;
+	}
+
+	ImageWiggle *wiggle = new ImageWiggle(this, curr);
+	addInstruction(wiggle);
 }
 
 void BlotGL::addHideCurrentImage()

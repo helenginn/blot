@@ -75,6 +75,8 @@ StartScreen::StartScreen(QWidget *parent,
 	action = insert->addAction(tr("Move image"));
 	action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_M));
 	connect(action, &QAction::triggered, this, &StartScreen::addMove);
+	action = insert->addAction(tr("Wiggle image"));
+	connect(action, &QAction::triggered, this, &StartScreen::addWiggle);
 
 	QMenu *instruction = menuBar()->addMenu(tr("&Instruction"));
 	_waitClick = instruction->addAction(tr("Wait for click"));
@@ -250,6 +252,11 @@ void StartScreen::addHide()
 void StartScreen::addMove()
 {
 	_pres->addMoveCurrentImage();
+}
+
+void StartScreen::addWiggle()
+{
+	_pres->addWiggleCurrentImage();
 }
 
 StartScreen::~StartScreen()

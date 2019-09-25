@@ -57,6 +57,7 @@ private slots:
 	void addWipe();
 	void addHide();
 	void addMove();
+	void addWiggle();
 	void aspect4t3();
 	void aspect16t9();
 	void changeClick();
