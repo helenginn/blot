@@ -372,12 +372,9 @@ void Library::deleteFromLibrary()
 		{
 			return;
 		}
-		else
-		{
-			_pres->removeImageReferences(proc);
-		}
 	}
 	
+	_pres->removeImageReferences(proc);
 	_list->takeItem(_list->currentRow());
 }
 
