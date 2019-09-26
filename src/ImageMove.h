@@ -19,12 +19,12 @@
 #ifndef __Blot__ImageMove__
 #define __Blot__ImageMove__
 
-#include "Instruction.h"
+#include "ImageAnimated.h"
 
 class BlotGL;
 class BlotObject;
 
-class ImageMove : public Instruction
+class ImageMove : public ImageAnimated
 {
 public:
 	ImageMove(BlotGL *pres = NULL, Instruction *inst = NULL);
@@ -37,11 +37,6 @@ public:
 	bool canMove()
 	{
 		return true;
-	}
-
-	virtual BlotObject *object()
-	{
-		return _obj;
 	}
 	
 	virtual std::string getClassName()
@@ -63,17 +58,13 @@ public:
 	virtual bool animateEffect();
 	virtual bool animateStep();
 protected:
-	void setTime(double time);
 	virtual void addProperties();
 	virtual void linkReference(BaseParser *child, std::string name);
 private:
-	BlotObject *_obj;
 	double _oldx, _oldy;
 	double _newx, _newy;
-	double _time;
 	double _angle;
 	bool _fade;
-	bool _valid;
 
 };
 

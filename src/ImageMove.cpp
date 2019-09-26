@@ -20,7 +20,8 @@
 #include "BlotGL.h"
 #include "ImageMove.h"
 
-ImageMove::ImageMove(BlotGL *pres, Instruction *inst) : Instruction(pres)
+ImageMove::ImageMove(BlotGL *pres, Instruction *inst) 
+: ImageAnimated(pres, inst)
 {
 	if (inst == NULL || inst->object() == NULL)
 	{
@@ -83,11 +84,6 @@ bool ImageMove::animateStep()
 	return keep_going;
 }
 
-void ImageMove::setTime(double time)
-{
-	_time = time;
-}
-
 void ImageMove::select(bool sel)
 {
 	if (!_obj)
@@ -124,9 +120,8 @@ void ImageMove::makeEffect()
 
 void ImageMove::addProperties()
 {
-	Instruction::addProperties();
+	ImageAnimated::addProperties();
 	
-	addReference("blot_object", _obj);
 	addBoolProperty("fade", &_fade);
 	addDoubleProperty("angle", &_angle);
 	addDoubleProperty("oldx", &_oldx);
@@ -137,12 +132,7 @@ void ImageMove::addProperties()
 
 void ImageMove::linkReference(BaseParser *child, std::string name)
 {
-	if (name == "blot_object")
-	{
-		_obj = static_cast<BlotObject *>(child);
-	}
-	
-	Instruction::linkReference(child, name);
+	ImageAnimated::linkReference(child, name);
 }
 
 std::string ImageMove::instText()

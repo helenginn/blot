@@ -42,9 +42,9 @@ protected:
 
 	double _time;
 	bool _endTime;
+	bool _valid;
 	BlotObject *_obj;
 private:
-	bool _valid;
 	
 };
 
