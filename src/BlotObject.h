@@ -134,7 +134,7 @@ protected:
 
 private:
 	GLuint addShaderFromString(GLuint program, GLenum type, std::string str);
-	void checkErrors();
+	void checkErrors(std::string message);
 	void rebindProgram();
 	void deletePrograms();
 	void bindTextures();

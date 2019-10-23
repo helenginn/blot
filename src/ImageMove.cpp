@@ -63,7 +63,6 @@ bool ImageMove::animateStep()
 	double newTime = _time + _stepTime;
 	bool keep_going = true;
 	
-	std::cout << "Start" << std::endl;
 	if (newTime > _endTime)
 	{
 		keep_going = false;

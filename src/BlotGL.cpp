@@ -46,13 +46,10 @@ void BlotGL::initializeGL()
 	double val = 1.0;//rand() / (double)RAND_MAX;
 	glClearColor(val, 1.0, 1.0, 1.0);
 
-//	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	initialisePrograms();
 }
 
 void BlotGL::makeList(QWidget *p)
@@ -418,6 +415,7 @@ void BlotGL::resizeGL(int w, int h)
 void BlotGL::paintGL()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
 		_objects[i]->render(this);
@@ -426,9 +424,12 @@ void BlotGL::paintGL()
 
 void BlotGL::initialisePrograms()
 {
+	initializeGL();
+
 	std::cout << "Every init" << std::endl;
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
+		_objects[i]->initializeOpenGLFunctions();
 		_objects[i]->initialisePrograms();
 	}
 }
@@ -555,15 +556,14 @@ void BlotGL::setFullScreen()
 	
 	windowHandle()->setScreen(screens.last());
 	setGeometry(screens.last()->geometry());
-	
 
 	windowHandle()->showFullScreen();
+	initialisePrograms();
 }
 
 void BlotGL::setSmallWindow()
 {
 	std::cout << "Making small window" << std::endl;
-	hide();
 
 	StartScreen *w = static_cast<StartScreen *>(_parent);
 	_fullScreen = false;
@@ -579,10 +579,14 @@ void BlotGL::setSmallWindow()
 	}
 	
 	QWidget::setParent(w);
+	if (!isVisible())
+	{
+		show();
+	}
 	makeList(w);
 	setEditMode(true);
-	show();
 	w->resizeWidgets();
+	initialisePrograms();
 }
 
 void BlotGL::addImage(ImageProc *proc)

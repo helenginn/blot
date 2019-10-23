@@ -178,6 +178,7 @@ GLuint BlotObject::addShaderFromString(GLuint program, GLenum type,
 
 	GLint result;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+	checkErrors("compile shader");
 
 	if (result == GL_FALSE)
 	{
@@ -199,17 +200,30 @@ GLuint BlotObject::addShaderFromString(GLuint program, GLenum type,
 	}
 
 	glAttachShader(_program, shader);
+	checkErrors("attach shader");
 	return shader;
 }
 
 void BlotObject::deletePrograms()
 {
+	GLuint shaders[10];
+	int count = 0;
+	glGetAttachedShaders(_program, 10, &count, shaders);
+	
+	for (int i = 0; i < count; i++)
+	{
+		glDetachShader(_program, shaders[i]);
+		glDeleteShader(shaders[i]);
+	}
+
 	glDeleteProgram(_program);
 	_program = 0;
 }
 
 void BlotObject::initialisePrograms(std::string *v, std::string *f)
 {
+	deletePrograms();
+
 	if (v == NULL)
 	{
 		v = &vImage;
@@ -220,7 +234,7 @@ void BlotObject::initialisePrograms(std::string *v, std::string *f)
 		f = &fImage;
 	}
 	
-	initializeOpenGLFunctions();
+	checkErrors("initialised");
 	bindTextures();
 
 	GLint result;
@@ -230,6 +244,8 @@ void BlotObject::initialisePrograms(std::string *v, std::string *f)
 
 	addShaderFromString(_program, GL_VERTEX_SHADER, *v);
 	addShaderFromString(_program, GL_FRAGMENT_SHADER, *f);
+
+	checkErrors("shaders");
 
 	glBindAttribLocation(_program, 0, "position");
 	glBindAttribLocation(_program, 1, "normal");
@@ -249,10 +265,12 @@ void BlotObject::initialisePrograms(std::string *v, std::string *f)
 		glBindAttribLocation(_program, 4, "tex");
 	}
 
+	checkErrors("prog attributes");
+
 	/* link the program and make sure that there were no errors */
 	glLinkProgram(_program);
 	glGetProgramiv(_program, GL_LINK_STATUS, &result);
-	checkErrors();
+	checkErrors("link program");
 
 	if (result == GL_FALSE)
 	{
@@ -265,6 +283,9 @@ void BlotObject::initialisePrograms(std::string *v, std::string *f)
 
 	glGenBuffers(1, &_bufferID);
 	glGenBuffers(1, &_vbo);
+	
+	std::cout << "Initialised " << getImage()->text() << " "
+	<< _program << std::endl;
 	rebindProgram();
 }
 
@@ -275,12 +296,16 @@ void BlotObject::bindTextures()
 		return;
 	}
 
-	_textures.resize(1);
-
-	glDeleteTextures(1, &_textures[0]);
-	glGenTextures(1, &_textures[0]);
+	if (_textures.size() == 0)
+	{
+		_textures.resize(1);
+		glGenTextures(1, &_textures[0]);
+		checkErrors("textures");
+	}
 
 	getImage()->bindToTexture(this);
+//	glDeleteTextures(1, &_textures[0]);
+
 }
 
 void BlotObject::rebindProgram()
@@ -291,7 +316,7 @@ void BlotObject::rebindProgram()
 	glBufferData(GL_ARRAY_BUFFER, vSize(), vPointer(), GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize(), iPointer(), GL_STATIC_DRAW);
 
-	checkErrors();
+	checkErrors("buffer binding");
 
 	/* Vertices */
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
@@ -307,14 +332,14 @@ void BlotObject::rebindProgram()
 	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
 	                      (void *)(10 * sizeof(float)));
 
-	checkErrors();
+	checkErrors("attribute pointers");
 
 	if (_textures.size())
 	{
 		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(14 * sizeof(float)));
 	}
 
-	checkErrors();
+	checkErrors("textures");
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
@@ -327,13 +352,13 @@ void BlotObject::rebindProgram()
 	}
 }
 
-void BlotObject::checkErrors()
+void BlotObject::checkErrors(std::string message)
 {
 	GLenum err = glGetError();
 
 	if (err != 0)
 	{
-		std::cout << "OUCH " << err << std::endl;
+		std::cout << "OUCH " << message << " " << err << std::endl;
 		
 		switch (err)
 		{
@@ -376,6 +401,8 @@ void BlotObject::render(BlotGL *sender)
 		return;
 	}
 	
+	initializeOpenGLFunctions();
+
 	glUseProgram(_program);
 	rebindProgram();
 	
@@ -390,7 +417,7 @@ void BlotObject::render(BlotGL *sender)
 	const char *uniform_name = "aspect";
 	_uAspect = glGetUniformLocation(_program, uniform_name);
 	glUniformMatrix3fv(_uAspect, 1, GL_FALSE, toFloat);
-	checkErrors();
+	checkErrors("aspect");
 
 	const char *time_name = "time";
 	_uTime = glGetUniformLocation(_program, time_name);
@@ -402,7 +429,7 @@ void BlotObject::render(BlotGL *sender)
 	}
 	
 	glDrawElements(_renderType, indexCount(), GL_UNSIGNED_INT, 0);
-	checkErrors();
+	checkErrors("draw elements");
 	
 	free(toFloat);
 	
