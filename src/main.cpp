@@ -23,6 +23,11 @@ int main(int argc, char * argv[])
 	start.show();
 	
 	std::cout << "Blot version: " << BLOT_VERSION_COMMIT_ID << std::endl;
+	
+	if (argc > 1)
+	{
+		start.openLibraryFile(argv[1]);
+	}
 
 	int status = app.exec();
 	

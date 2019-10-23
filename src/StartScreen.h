@@ -46,6 +46,7 @@ public:
 		resizeEvent(NULL);
 	}
 
+	void openLibraryFile(std::string lib);
 	void setClick(Instruction *inst);
 protected:
 	virtual void resizeEvent(QResizeEvent *event);

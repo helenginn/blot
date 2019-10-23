@@ -172,28 +172,9 @@ void StartScreen::resizeEvent(QResizeEvent *event)
 	}
 }
 
-void StartScreen::openLibrary()
+void StartScreen::openLibraryFile(std::string lib)
 {
-	QString types = "Blot files (*.blot)";
-	QFileDialog *fileDialogue = new QFileDialog(this, "Choose library", 
-	                                            types);
-	
-	fileDialogue->setNameFilter(types);
-	fileDialogue->setFileMode(QFileDialog::AnyFile);
-	fileDialogue->show();
-
-	QStringList fileNames;
-	if (fileDialogue->exec())
-	{
-		fileNames = fileDialogue->selectedFiles();
-	}
-
-	if (fileNames.size() <= 0)
-	{
-		return;
-	}
-
-	std::string contents = get_file_contents(fileNames[0].toStdString());
+	std::string contents = get_file_contents(lib);
 	const char *block = contents.c_str();
 	char *dup = strdup(block);
 	Parser *p = Parser::processBlock(dup);
@@ -211,7 +192,7 @@ void StartScreen::openLibrary()
 	}
 
 	_lib = static_cast<Library *>(p);
-	_lib->setFilename(fileNames[0].toStdString());
+	_lib->setFilename(lib);
 	_lib->show();
 	_pres = _lib->presentation();
 	_pres->QWidget::setParent(this);
@@ -219,6 +200,36 @@ void StartScreen::openLibrary()
 	_pres->setSmallWindow();
 	_pres->setFocus();
 	_pres->setFocusPolicy(Qt::StrongFocus);
+}
+
+void StartScreen::openLibrary()
+{
+	std::cout << "We open a library" << std::endl;
+	QString types = "Blot files (*.blot)";
+	QFileDialog *fileDialogue = new QFileDialog(this, "Choose library", 
+	                                            types);
+	
+	fileDialogue->setNameFilter(types);
+	fileDialogue->setFileMode(QFileDialog::AnyFile);
+//	fileDialogue->show();
+
+	QStringList fileNames;
+	if (fileDialogue->exec())
+	{
+		fileNames = fileDialogue->selectedFiles();
+	}
+
+	std::cout << "Finished dialogue box" << std::endl;
+
+	if (fileNames.size() <= 0)
+	{
+		std::cout << "No filenames" << std::endl;
+		return;
+	}
+
+	std::cout << "Parsing" << std::endl;
+
+	openLibraryFile(fileNames[0].toStdString());
 }
 
 void StartScreen::newLibrary()
