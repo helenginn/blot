@@ -367,7 +367,7 @@ void BlotGL::selectInstruction()
 	{
 		Instruction *inst = instructionForItem(_list->item(i));
 		
-		inst->makeEffect();
+		inst->instantEffect();
 	}
 
 	if (_currInstruct != NULL)
@@ -389,7 +389,6 @@ void BlotGL::addObject(BlotObject *obj, bool top)
 	}
 
 	std::cout << "Single init" << std::endl;
-	obj->initialisePrograms();
 	
 	std::vector<BlotObject *>::iterator it;
 	it = std::find(_objects.begin(), _objects.end(), obj);
@@ -404,6 +403,9 @@ void BlotGL::addObject(BlotObject *obj, bool top)
 		{
 			_objects.insert(_objects.begin(), obj);
 		}
+
+		obj->initializeOpenGLFunctions();
+		obj->initialisePrograms();
 	}
 }
 
@@ -492,7 +494,7 @@ void BlotGL::advancePresentation(bool clicked)
 		
 		if (_editMode)
 		{
-			inst->makeEffect();
+			inst->instantEffect();
 		}
 		else
 		{
@@ -576,6 +578,11 @@ void BlotGL::setSmallWindow()
 	if (w == NULL)
 	{
 		return;
+	}
+	
+	if (windowHandle())
+	{
+		windowHandle()->showNormal();
 	}
 	
 	QWidget::setParent(w);
@@ -797,7 +804,16 @@ Instruction *BlotGL::findSelectedInstruction(double x, double y)
 	}
 
 	/* Else, go through everything in reverse order */
-	for (int i = _list->count() - 1; i >= 0; i--)
+	for (int i = _list->currentRow(); i >= 0; i--)
+	{
+		Instruction *option = instructionForItem(_list->item(i));
+
+		if (isPossibleInstruction(option, old, x, y))
+		{
+			return option;
+		}
+	}
+	for (int i = _list->currentRow(); i < _list->count(); i++)
 	{
 		Instruction *option = instructionForItem(_list->item(i));
 

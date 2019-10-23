@@ -91,9 +91,8 @@ public:
 		_item = item;
 	}
 	
-	virtual void makeEffect() = 0;
-
-	virtual bool animateEffect();
+	virtual void instantEffect() = 0;
+	virtual bool animateEffect(); 
 	virtual bool animateStep() 
 	{ 
 		return false; 
@@ -105,10 +104,6 @@ public:
 protected:
 	BlotGL *_presentation;
 	std::string _random;
-	double _time;
-	double _startTime;
-	double _endTime;
-	double _stepTime;
 
 private:
 	bool _onClick;

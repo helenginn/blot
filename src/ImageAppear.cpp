@@ -20,70 +20,43 @@
 #include "maths.h"
 #include <float.h>
 
-ImageAppear::ImageAppear(BlotGL *pres) : Instruction(pres)
+ImageAppear::ImageAppear(BlotGL *pres) : ImageAnimated(pres)
 {
 	_left = -0.3;
 	_right = 0.3;
 	_top = 0.3;
 	_bottom = -0.3;
 	_angle = deg2rad(0);
-	_fade = true;
+	_endTime = 1;
 }
 
-
-bool ImageAppear::animateEffect()
+void ImageAppear::instantEffect()
 {
-	if (!_fade)
-	{
-		makeEffect();
-		setTime(1);
-		return false;
-	}
+	prepareEffect();
+	setTime(_endTime);
+	_obj->setTime(_endTime);
+}
 
-	setTime(_startTime);
-	makeEffect();
-	return true;
+void ImageAppear::prepareEffect()
+{
+	std::string text = _obj->getImage()->text();
+	std::cout << "Show effect for " << text << std::endl;
+	_obj->setVertices(_top, _bottom, _left, _right);
+	_obj->rotateVertices(_angle);
+	_presentation->update();
 }
 
 bool ImageAppear::animateStep()
 {
-	double newTime = _time + _stepTime;
-	bool keep_going = true;
-	
-	if (newTime > _endTime)
-	{
-		keep_going = false;
-		newTime = _endTime;
-	}
-
-	setTime(newTime);
-
+	bool keep_going = incrementTime();
+	_obj->setTime(_time);
 	return keep_going;
-}
-
-void ImageAppear::setTime(double time)
-{
-	_time = time;
-	_obj->setTime(time);
-}
-
-void ImageAppear::makeEffect()
-{
-	std::string text = _obj->getImage()->text();
-	std::cout << "Show effect for " << text << std::endl;
-	_obj->setDisabled(false);
-	_obj->setVertices(_top, _bottom, _left, _right);
-	_obj->rotateVertices(_angle);
-
-	_presentation->update();
 }
 
 void ImageAppear::addProperties()
 {
-	Instruction::addProperties();
+	ImageAnimated::addProperties();
 	
-	addReference("blot_object", _obj);
-	addBoolProperty("fade", &_fade);
 	addDoubleProperty("left", &_left);
 	addDoubleProperty("right", &_right);
 	addDoubleProperty("top", &_top);
@@ -104,18 +77,12 @@ void ImageAppear::rotationalTranslate(float f, float mx, float my)
 	
 	float dx = x - mx;
 	float dy = y - my;
-
+	
 	float ndx = cos(f) * dx - sin(f) * dy;
 	float ndy = sin(f) * dx + cos(f) * dy;
-	std::cout << "dx " << dx << " " << ndx << std::endl;
-	std::cout << "dy " << dy << " " << ndy << std::endl;
-
 	ndx -= dx;
 	ndy -= dy;
 
-	std::cout << "diffx " << ndx << std::endl;
-	std::cout << "diffy " << ndy << std::endl;
-	
 	moveFractional(-ndx, ndy);
 }
 
@@ -154,12 +121,7 @@ void ImageAppear::rotateFractional(float x0, float y0, float fx, float fy)
 
 void ImageAppear::linkReference(BaseParser *child, std::string name)
 {
-	if (name == "blot_object")
-	{
-		_obj = static_cast<BlotObject *>(child);
-	}
-	
-	Instruction::linkReference(child, name);
+	ImageAnimated::linkReference(child, name);
 }
 
 void ImageAppear::setNewImage(ImageProc *proc)
@@ -224,27 +186,6 @@ void ImageAppear::resizeFractional(double fx, double fy, bool aspect)
 	_obj->rotateVertices(_angle);
 	_obj->getImage()->setLastDims((_left - _right) / 2, 
 	                              (_top - _bottom) / 2, _angle);
-}
-
-bool ImageAppear::isCovered(double x, double y)
-{
-	return _obj->isCovered(x, y);
-	if (_obj->isDisabled())
-	{
-		return false;
-	}
-
-	if (y < _bottom || y > _top)
-	{
-		return false;
-	}
-
-	if (x < _left || x > _right)
-	{
-		return false;
-	}
-
-	return true;
 }
 
 void ImageAppear::select(bool sel)

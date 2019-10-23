@@ -19,12 +19,12 @@
 #ifndef __Blot__ImageAppear__
 #define __Blot__ImageAppear__
 
-#include "Instruction.h"
+#include "ImageAnimated.h"
 #include "BlotObject.h"
 
 class BlotGL;
 
-class ImageAppear : public Instruction
+class ImageAppear : public ImageAnimated
 {
 public:
 	ImageAppear(BlotGL *pres = NULL);
@@ -42,12 +42,6 @@ public:
 	virtual void rotateFractional(float x0, float y0, float fx, float fy);
 	virtual void rotationalTranslate(float f, float mx, float my);
 	virtual void position(double *x, double *y);
-	virtual bool isCovered(double x, double y);
-
-	void setBlotObject(BlotObject *obj)
-	{
-		_obj = obj;
-	}
 	
 	void setPosition(float t, float b, float l, float r)
 	{
@@ -65,14 +59,9 @@ public:
 		*b = _bottom;
 	}
 
-	virtual void makeEffect();
-	virtual bool animateEffect();
 	virtual bool animateStep();
-	
-	virtual BlotObject *object()
-	{
-		return _obj;
-	}
+	virtual void instantEffect();
+	virtual void prepareEffect();
 	
 	virtual std::string getClassName()
 	{
@@ -89,17 +78,13 @@ public:
 	virtual void addProperties();
 	virtual void linkReference(BaseParser *child, std::string name);
 protected:
-	void setTime(double time);
+
 private:
-	BlotObject *_obj;
-	
 	double _left;
 	double _right;
 	double _bottom;
 	double _top;
 	double _angle;
-
-	bool _fade;
 };
 
 

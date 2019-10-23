@@ -23,7 +23,7 @@ WipeSlate::WipeSlate(BlotGL *pres) : Instruction(pres)
 
 }
 
-void WipeSlate::makeEffect()
+void WipeSlate::instantEffect()
 {
 	_presentation->clearAll();
 }

@@ -22,7 +22,10 @@
 ImageAnimated::ImageAnimated(BlotGL *gl, Instruction *inst) : Instruction(gl)
 {
 	_valid = true;
+	_startTime = 0;
 	_endTime = 3;
+	_time = _endTime;
+	_fade = true;
 	_stepTime = 0.05;
 
 	if (inst == NULL || inst->object() == NULL)
@@ -34,12 +37,6 @@ ImageAnimated::ImageAnimated(BlotGL *gl, Instruction *inst) : Instruction(gl)
 		_obj = inst->object();
 	}
 }
-
-void ImageAnimated::setTime(double time)
-{
-	_time = time;
-}
-
 
 void ImageAnimated::linkReference(BaseParser *child, std::string name)
 {
@@ -55,5 +52,47 @@ void ImageAnimated::addProperties()
 {
 	Instruction::addProperties();
 	
+	addBoolProperty("fade", &_fade);
+	addDoubleProperty("end_time", &_endTime);
 	addReference("blot_object", _obj);
+}
+
+bool ImageAnimated::animateEffect()
+{
+	if (!_fade)
+	{
+		instantEffect();
+		setTime(1);
+		return false;
+	}
+
+	prepareEffect();
+	setTime(_startTime);
+	return true;
+}
+
+bool ImageAnimated::isCovered(double x, double y)
+{
+	return _obj->isCovered(x, y);
+}
+
+bool ImageAnimated::incrementTime()
+{
+	double newTime = _time + _stepTime;
+	bool keep_going = true;
+	
+	if (newTime > _endTime)
+	{
+		keep_going = false;
+		newTime = _endTime;
+	}
+
+	setTime(newTime);
+
+	return keep_going;
+}
+
+void ImageAnimated::setTime(double time)
+{
+	_time = time;
 }

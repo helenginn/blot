@@ -515,3 +515,9 @@ void BlotObject::midpoint(double *x, double *y)
 	*x /= (double)_vertices.size();
 	*y /= (double)_vertices.size();
 }
+
+void BlotObject::setTime(float time)
+{
+	_time = time;
+	setDisabled((_time <= 0));
+}

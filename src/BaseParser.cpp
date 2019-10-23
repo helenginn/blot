@@ -1036,7 +1036,8 @@ void BaseParser::setProperty(std::string property, std::string value)
 		}
 	}
 
-	std::cout << "Unhandled thing: " << property << " = " << value << "." << std::endl;
+	std::cout << "Unhandled thing: " << property << " = " << value << " "
+	<< " for class " << getClassName() << std::endl;
 }
 
 char *BaseParser::parseNextProperty(std::string property, char *block)

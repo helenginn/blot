@@ -99,10 +99,7 @@ public:
 		return _image;
 	}
 	
-	void setTime(float time)
-	{
-		_time = time;
-	}
+	void setTime(float time);
 	
 	void ignoreAspectRatio(bool ignore = true)
 	{

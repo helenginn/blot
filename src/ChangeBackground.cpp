@@ -31,7 +31,7 @@ ChangeBackground::ChangeBackground(BlotGL *pres, ImageProc *proc)
 	}
 }
 
-void ChangeBackground::makeEffect()
+void ChangeBackground::instantEffect()
 {
 	_obj->setDisabled(false);
 	_obj->setVertices(1, -1, -1, 1);

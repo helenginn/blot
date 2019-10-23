@@ -39,6 +39,16 @@ void ImageWiggle::linkReference(BaseParser *child, std::string name)
 	ImageAnimated::linkReference(child, name);
 }
 
+void ImageWiggle::instantEffect()
+{
+
+}
+
+void ImageWiggle::prepareEffect()
+{
+	std::string text = _obj->getImage()->text();
+	std::cout << "Wiggle effect for " << text << std::endl;
+}
 
 std::string ImageWiggle::instText()
 {
@@ -46,12 +56,6 @@ std::string ImageWiggle::instText()
 	start += (waitForClick() ? "" : "+ ");
 	start += "Wiggle " + object()->getImage()->text();
 	return start;
-}
-
-bool ImageWiggle::animateEffect()
-{
-	setTime(_startTime);
-	return true;
 }
 
 bool ImageWiggle::animateStep()
@@ -83,9 +87,4 @@ bool ImageWiggle::animateStep()
 	_obj->rotateVertices(diffa);
 
 	return keep_going;
-}
-
-void ImageWiggle::makeEffect()
-{
-
 }

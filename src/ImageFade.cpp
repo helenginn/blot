@@ -1,5 +1,5 @@
 // Blot
-// Copyright (C) 2017-2018 Helen Ginn
+// Copyright (C) 2017-2019 Helen Ginn
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,34 +16,27 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#ifndef __Blot__WipeSlate__
-#define __Blot__WipeSlate__
+#include "ImageFade.h"
 
-#include "Instruction.h"
-
-class WipeSlate : public Instruction
+ImageFade::ImageFade(BlotGL *pres) : ImageAppear(pres)
 {
-public:
-	WipeSlate(BlotGL *pres = NULL);
-	virtual ~WipeSlate() {};
+	_valid = true;
+	_endTime = 3;
+	_stepTime = 0.05;
+}
 
-	virtual std::string getClassName()
-	{
-		return "WipeSlate";
-	}
-	
-	virtual std::string getParserIdentifier()
-	{
-		return "WipeSlate" + _random;
-	}
-	
-	virtual std::string instText()
-	{
-		return "Wipe slate";
-	}
-	
-	virtual void instantEffect();
-private:
-};
+std::string ImageFade::instText()
+{
+	std::string start = "";
+	start += (waitForClick() ? "" : "+ ");
+	start += "Fade " + object()->getImage()->text();
+	return start;
+}
 
-#endif
+bool ImageFade::animateStep()
+{
+	bool keep_going = incrementTime();
+	object()->setTime(rand() / (double)RAND_MAX);
+
+	return keep_going;
+}

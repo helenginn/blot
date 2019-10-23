@@ -19,7 +19,7 @@
 #include "ImageHide.h"
 #include "BlotObject.h"
 
-ImageHide::ImageHide(BlotGL *pres, Instruction *inst) : Instruction(pres)
+ImageHide::ImageHide(BlotGL *pres, Instruction *inst) : ImageAnimated(pres)
 {
 	if (inst == NULL || inst->object() == NULL)
 	{
@@ -28,57 +28,38 @@ ImageHide::ImageHide(BlotGL *pres, Instruction *inst) : Instruction(pres)
 	}
 
 	_valid = true;
-	_startTime = 1;
-	_endTime = 0;
+	_startTime = _endTime;
+	_endTime = -0.1;
 	_stepTime *= -1;
 	_obj = inst->object();
 	_fade = true;
 }
 
-bool ImageHide::animateEffect()
-{
-	if (!_fade)
-	{
-		std::cout << "Instant " << " " << _obj->isDisabled() << std::endl;
-		makeEffect();
-		setTime(1);
-		return false;
-	}
-
-	setTime(_startTime);
-	return true;
-}
-
 bool ImageHide::animateStep()
 {
-	double newTime = _time + _stepTime;
-	bool keep_going = true;
-	
-	if (newTime < _endTime)
-	{
-		keep_going = false;
-		newTime = _endTime;
-		makeEffect();
-	}
-
-	setTime(newTime);
-
+	bool keep_going = incrementTime();
+	_obj->setTime(_time);
 	return keep_going;
 }
 
-
-void ImageHide::makeEffect()
+void ImageHide::instantEffect()
 {
-	std::string text = _obj->getImage()->text();
-	std::cout << "Hide effect for " << text << std::endl;
-	_obj->setDisabled(true);
+	prepareEffect();
+	_obj->setTime(_endTime);
 
 	_presentation->update();
 }
 
+void ImageHide::prepareEffect()
+{
+	std::string text = _obj->getImage()->text();
+	std::cout << "Hide effect for " << text << std::endl;
+
+}
+
 void ImageHide::addProperties()
 {
-	Instruction::addProperties();
+	ImageAnimated::addProperties();
 	
 	addReference("blot_object", _obj);
 	addBoolProperty("fade", &_fade);
@@ -86,12 +67,7 @@ void ImageHide::addProperties()
 
 void ImageHide::linkReference(BaseParser *child, std::string name)
 {
-	if (name == "blot_object")
-	{
-		_obj = static_cast<BlotObject *>(child);
-	}
-	
-	Instruction::linkReference(child, name);
+	ImageAnimated::linkReference(child, name);
 }
 
 std::string ImageHide::instText()
@@ -100,10 +76,4 @@ std::string ImageHide::instText()
 	start += (waitForClick() ? "" : "+ ");
 	start += "Hide " + object()->getImage()->text();
 	return start;
-}
-
-void ImageHide::setTime(double time)
-{
-	_time = time;
-	_obj->setTime(time);
 }

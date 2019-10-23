@@ -135,6 +135,7 @@ void StartScreen::resizeEvent(QResizeEvent *event)
 {
 	if (_pres)
 	{
+		std::cout << "Resizing widgets" << std::endl;
 		double asp = _pres->aspectRatio();
 		int plus_x = 0;
 		int plus_y = 0;
@@ -170,6 +171,7 @@ void StartScreen::resizeEvent(QResizeEvent *event)
 			}
 		}
 	}
+	std::cout << "No presentation; not resizing" << std::endl;
 }
 
 void StartScreen::openLibraryFile(std::string lib)

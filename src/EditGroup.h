@@ -34,8 +34,8 @@ private:
 
 	std::vector<Instruction *> _instructions;
 
-	int _lrMiddle;
-	int _tbMiddle;
+	double _lrMiddle;
+	double _tbMiddle;
 	
 	bool _onlyMove;
 

@@ -31,6 +31,7 @@
 #include "StartScreen.h"
 #include "ImageProc.h"
 #include "ImageAppear.h"
+#include "ImageFade.h"
 #include "ChangeBackground.h"
 
 Library *Library::_lib = NULL;
@@ -227,10 +228,11 @@ void Library::clearElaboration()
 void Library::addToPresentation()
 {
 	ImageProc *proc = imageProcForItem(_list->currentItem());
-	ImageAppear *appear = new ImageAppear(_pres);
+//	ImageAppear *appear = new ImageAppear(_pres);
+	ImageFade *appear = new ImageFade(_pres);
 	appear->setNewImage(proc);
 	_pres->addInstruction(appear);
-	appear->makeEffect();
+	appear->instantEffect();
 }
 
 void Library::changeBackground()
@@ -238,7 +240,7 @@ void Library::changeBackground()
 	ImageProc *proc = imageProcForItem(_list->currentItem());
 	ChangeBackground *change = new ChangeBackground(_pres, proc);
 	_pres->addInstruction(change);
-	change->makeEffect();
+	change->instantEffect();
 }
 
 void Library::elaborateItem(QListWidgetItem *item)

@@ -25,10 +25,6 @@ Instruction::Instruction(BlotGL *pres)
 	_onClick = true;
 	_presentation = pres;
 	_random = i_to_str(rand());
-	_time = 1;
-	_startTime = 0;
-	_endTime = 1;
-	_stepTime = 0.05;
 }
 
 void Instruction::addProperties()
@@ -58,6 +54,6 @@ void Instruction::updateText()
 
 bool Instruction::animateEffect()
 {
-	makeEffect();
+	instantEffect();
 	return false;
 }

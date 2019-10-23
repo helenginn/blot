@@ -31,7 +31,6 @@ ImageMove::ImageMove(BlotGL *pres, Instruction *inst)
 
 	_valid = true;
 	_obj = inst->object();
-	_fade = true;
 	_endTime = 3;
 	_angle = 0;
 	_obj->midpoint(&_newx, &_newy);
@@ -40,36 +39,9 @@ ImageMove::ImageMove(BlotGL *pres, Instruction *inst)
 	_newy += 0.05;
 }
 
-bool ImageMove::isCovered(double x, double y)
-{
-	return _obj->isCovered(x, y);
-}
-
-bool ImageMove::animateEffect()
-{
-	if (!_fade)
-	{
-		makeEffect();
-		setTime(1);
-		return false;
-	}
-
-	setTime(_startTime);
-	return true;
-}
-
 bool ImageMove::animateStep()
 {
-	double newTime = _time + _stepTime;
-	bool keep_going = true;
-	
-	if (newTime > _endTime)
-	{
-		keep_going = false;
-		newTime = _endTime;
-	}
-
-	setTime(newTime);
+	bool keep_going = incrementTime();
 	
 	double portion = _stepTime / (_endTime - _startTime);
 	
@@ -108,10 +80,15 @@ void ImageMove::rotateFractional(float x0, float y0, float fx, float fy)
 	_obj->rotateVertices(fy);
 }
 
-void ImageMove::makeEffect()
+void ImageMove::prepareEffect()
 {
 	std::string text = _obj->getImage()->text();
 	std::cout << "Move effect for " << text << std::endl;
+}
+
+void ImageMove::instantEffect()
+{
+	prepareEffect();
 	_obj->addToVertices(_newx - _oldx, _newy - _oldy);
 	_obj->rotateVertices(_angle);
 	_presentation->update();
@@ -121,7 +98,6 @@ void ImageMove::addProperties()
 {
 	ImageAnimated::addProperties();
 	
-	addBoolProperty("fade", &_fade);
 	addDoubleProperty("angle", &_angle);
 	addDoubleProperty("oldx", &_oldx);
 	addDoubleProperty("oldy", &_oldy);

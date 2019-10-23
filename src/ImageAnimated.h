@@ -31,18 +31,29 @@ public:
 		return _obj;
 	}
 
-	/*
-	virtual bool animateEffect();
-	virtual bool animateStep();
-	*/
+	void setBlotObject(BlotObject *obj)
+	{
+		_obj = obj;
+	}
+
+	virtual bool isCovered(double x, double y);
+
+	bool animateEffect();
+	virtual void prepareEffect() = 0;
+	virtual bool animateStep() = 0;
 protected:
+	virtual bool incrementTime();
 	virtual void addProperties();
 	virtual void linkReference(BaseParser *child, std::string name);
 	void setTime(double time);
 
 	double _time;
-	bool _endTime;
+	double _stepTime;
+	double _endTime;
+	double _startTime;
+	bool _fade;
 	bool _valid;
+
 	BlotObject *_obj;
 private:
 	

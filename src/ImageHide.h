@@ -19,12 +19,12 @@
 #ifndef __Blot__ImageHide__
 #define __Blot__ImageHide__
 
-#include "Instruction.h"
+#include "ImageAnimated.h"
 
 class BlotGL;
 class BlotObject;
 
-class ImageHide : public Instruction
+class ImageHide : public ImageAnimated
 {
 public:
 	ImageHide(BlotGL *pres = NULL, Instruction *inst = NULL);
@@ -32,16 +32,6 @@ public:
 	bool isValid()
 	{
 		return _valid;
-	}
-	
-	void setBlotObject(BlotObject *obj)
-	{
-		_obj = obj;
-	}
-
-	virtual BlotObject *object()
-	{
-		return _obj;
 	}
 
 	virtual std::string getClassName()
@@ -56,15 +46,13 @@ public:
 
 	virtual std::string instText();
 
-	virtual void makeEffect();
-	virtual bool animateEffect();
+	virtual void instantEffect();
+	virtual void prepareEffect();
 	virtual bool animateStep();
 protected:
 	virtual void addProperties();
 	virtual void linkReference(BaseParser *child, std::string name);
-	void setTime(double time);
 private:
-	BlotObject *_obj;
 	bool _valid;
 	bool _fade;
 };

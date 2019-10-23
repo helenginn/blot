@@ -50,7 +50,7 @@ public:
 	}
 
 	virtual std::string instText();
-	virtual void makeEffect();
+	virtual void instantEffect();
 
 	virtual void addProperties();
 	virtual void linkReference(BaseParser *child, std::string name);
