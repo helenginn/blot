@@ -46,6 +46,7 @@ void ImageHide::instantEffect()
 {
 	prepareEffect();
 	_obj->setTime(_endTime);
+	_obj->setDisabled(true);
 
 	_presentation->update();
 }
