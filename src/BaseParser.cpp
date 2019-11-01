@@ -14,6 +14,7 @@
 #include "BlotObject.h"
 #include "ImageAppear.h"
 #include "ImageHide.h"
+#include "ImageFade.h"
 #include "ImageMove.h"
 #include "ImageWiggle.h"
 #include "ChangeBackground.h"
@@ -1255,6 +1256,10 @@ Parser *BaseParser::objectOfType(char *className)
 	else if (strcmp(className, "ImageAppear") == 0)
 	{
 		object = static_cast<Parser *>(new ImageAppear());
+	}
+	else if (strcmp(className, "ImageFade") == 0)
+	{
+		object = static_cast<Parser *>(new ImageFade());
 	}
 	else if (strcmp(className, "ImageWiggle") == 0)
 	{
