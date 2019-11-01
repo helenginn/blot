@@ -25,6 +25,8 @@
 #define MENU_HEIGHT 25
 #endif
 
+#include <QGraphicsScene>
+#include <QGraphicsView>
 #include <QMainWindow>
 #include <QListWidget>
 #include <QPushButton>
@@ -82,11 +84,14 @@ public slots:
 	void elaborate();
 	void updateTitle();
 	void addToPresentation();
+	void fadeToPresentation();
 	void deleteFromLibrary();
 	void updatePaste();
 	void changeBackground();
+	void changeProcessing();
 	void copyToClipboard();
 
+	virtual void mousePressEvent(QMouseEvent *event);
 private:
 	ImageProc *imageProcForItem(QListWidgetItem *item);
 	void getImageFromClipboard(QImage *im);
@@ -94,14 +99,20 @@ private:
 	void clearElaboration();
 	QListWidget *_list;	
 	QLabel *_imageLabel;
+	QGraphicsView *_pointView;
 	QPushButton *_addToPres;
+	QPushButton *_addFade;
 	QPushButton *_bDelete;
 	QPushButton *_bCopy;
 	QPushButton *_bUpdate;
 	QPushButton *_bChange;
+	QPushButton *_bProcess;
 	QLineEdit *_edit;
+	QGraphicsScene *_graphics;
 	std::string _filename;
 	BlotGL *_pres;
+	bool _seeding;
+	std::vector<vec3> _points;
 
 	static Library *_lib;
 };

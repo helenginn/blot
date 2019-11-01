@@ -18,9 +18,11 @@
 
 #include <QClipboard>
 #include <QMimeData>
+#include <QMouseEvent>
 #include <QMessageBox>
 #include <QMenuBar>
 #include <QApplication>
+#include <QGraphicsItem>
 #include <iostream>
 #include <cstdio>
 #include <fstream>
@@ -50,9 +52,13 @@ Library *Library::_lib = NULL;
 
 void Library::initialise()
 {
+	_graphics = NULL;
 	_imageLabel = NULL;
 	_edit = NULL;
 	_addToPres = NULL;
+	_addFade = NULL;
+	_bProcess = NULL;
+	_seeding = false;
 
 	this->resize(DEFAULT_LIBRARY_WIDTH, DEFAULT_LIBRARY_HEIGHT);
 	this->setWindowTitle("Blot Library");
@@ -225,11 +231,58 @@ void Library::clearElaboration()
 	}
 }
 
+void Library::mousePressEvent(QMouseEvent *event)
+{
+	if (!_seeding)
+	{
+		return;
+	}
+
+	double x = event->x();
+	double y = event->y();
+
+	if (x < _imageLabel->geometry().left() || 
+	    x > _imageLabel->geometry().right())
+	{
+		return;
+	}
+
+	if (y < _imageLabel->geometry().top() || 
+	    y > _imageLabel->geometry().bottom())
+	{
+		return;
+	}
+	
+	x -= _imageLabel->geometry().left();
+	y -= _imageLabel->geometry().top();
+	
+	QBrush brush(QColor(255, 255, 255, 255));
+	QPen pen(QColor(255, 255, 255, 255));
+	
+	_graphics->addEllipse(x - 5, y - 5, 10, 10, pen, brush);
+	
+	ImageProc *proc = imageProcForItem(_list->currentItem());
+	x *= proc->getImage()->width() / _imageLabel->width();
+	y *= proc->getImage()->height() / _imageLabel->height();
+	vec3 centre = make_vec3(x, y, 0);
+	_points.push_back(centre);
+
+	_bProcess->setText("Click when done");
+}
+
 void Library::addToPresentation()
 {
 	ImageProc *proc = imageProcForItem(_list->currentItem());
-//	ImageAppear *appear = new ImageAppear(_pres);
-	ImageFade *appear = new ImageFade(_pres);
+	ImageAppear *appear = new ImageAppear(_pres);
+	appear->setNewImage(proc);
+	_pres->addInstruction(appear);
+	appear->instantEffect();
+}
+
+void Library::fadeToPresentation()
+{
+	ImageProc *proc = imageProcForItem(_list->currentItem());
+	ImageAppear *appear = new ImageFade(_pres);
 	appear->setNewImage(proc);
 	_pres->addInstruction(appear);
 	appear->instantEffect();
@@ -241,6 +294,45 @@ void Library::changeBackground()
 	ChangeBackground *change = new ChangeBackground(_pres, proc);
 	_pres->addInstruction(change);
 	change->instantEffect();
+}
+
+void Library::changeProcessing()
+{
+	if (_seeding == false)
+	{
+		_bProcess->setText("Click image");
+		_seeding = true;
+		setFocus();
+		
+		QBrush trans(Qt::transparent);
+		
+		_pointView = new QGraphicsView(this);
+		_pointView->setGeometry(_imageLabel->geometry());
+		_graphics = new QGraphicsScene(_imageLabel);
+		_graphics->setSceneRect(_imageLabel->rect());
+		_pointView->setBackgroundBrush(trans);
+		_pointView->setStyleSheet("background-color: transparent;");
+		_pointView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		_pointView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		_pointView->setScene(_graphics);
+		_pointView->show();
+
+		return;
+	}
+	else
+	{
+		delete _graphics;
+		_graphics = NULL;
+		_bProcess->setText("Change fade");
+
+		ImageProc *proc = imageProcForItem(_list->currentItem());
+		proc->prepareProcessArray();
+		proc->setSeeds(_points);
+		proc->preprocess(false);
+
+		_seeding = false;
+	}
+
 }
 
 void Library::elaborateItem(QListWidgetItem *item)
@@ -302,6 +394,10 @@ void Library::elaborateItem(QListWidgetItem *item)
 		connect(_addToPres, &QPushButton::clicked, 
 		        this, &Library::addToPresentation);
 
+		_addFade  = new QPushButton(this);
+		connect(_addFade, &QPushButton::clicked, 
+		        this, &Library::fadeToPresentation);
+
 		_bDelete = new QPushButton(this);
 		connect(_bDelete, &QPushButton::clicked, 
 		        this, &Library::deleteFromLibrary);
@@ -317,16 +413,25 @@ void Library::elaborateItem(QListWidgetItem *item)
 		_bChange = new QPushButton(this);
 		connect(_bChange, &QPushButton::clicked, 
 		        this, &Library::changeBackground);
+
+		_bProcess = new QPushButton(this);
+		connect(_bProcess, &QPushButton::clicked, 
+		        this, &Library::changeProcessing);
 	}
 	
 	int y = MENU_HEIGHT + IMAGE_TITLE_HEIGHT + IMAGE_HEIGHT;
 
 	y += BUTTON_HEIGHT * 0.2;
 	
-	_addToPres->setGeometry(ELABORATION_MIDPOINT - BUTTON_WIDTH / 2,
+	_addToPres->setGeometry(ELABORATION_MIDPOINT - BUTTON_WIDTH * 1.2,
 	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	_addToPres->setText("Add to presentation");
 	_addToPres->show();
+	
+	_addFade->setGeometry(ELABORATION_MIDPOINT + BUTTON_WIDTH * 0.2,
+	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	_addFade->setText("Add special fade");
+	_addFade->show();
 	
 	y += BUTTON_HEIGHT * 1.2;
 	
@@ -355,6 +460,13 @@ void Library::elaborateItem(QListWidgetItem *item)
 	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
 	_bChange->setText("Change background");
 	_bChange->show();
+	
+	y += BUTTON_HEIGHT * 1.2;
+	
+	_bProcess->setGeometry(ELABORATION_MIDPOINT - BUTTON_WIDTH / 2,
+	                        y, BUTTON_WIDTH, BUTTON_HEIGHT);
+	_bProcess->setText("Change fade");
+	_bProcess->show();
 }
 
 void Library::deleteFromLibrary()
