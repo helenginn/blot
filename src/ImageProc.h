@@ -39,6 +39,7 @@ public:
 	ImageProc(QImage *image = NULL);
 	~ImageProc();
 	void process();
+	void preprocess(bool scratch = true);
 	void bindToTexture(BlotObject *sender);
 
 	virtual std::string getClassName()
@@ -75,6 +76,25 @@ public:
 		return _text;
 	}
 	
+	bool hasPreprocessing()
+	{
+		return (_processed.size() > 0);
+	}
+	
+	void deletePreprocessing()
+	{
+		_processed.clear();
+	}
+	
+	void prepareProcessArray();
+	void prepareSeeds();
+	void chooseSeeds();
+	
+	void setSeeds(std::vector<vec3> points)
+	{
+		_points = points;
+	}
+
 	void getLastDims(double *left, double *top, double *angle)
 	{
 		*left = _lastLeft;
@@ -99,6 +119,8 @@ private:
 	double _lastTop;
 	double _angle;
 	QImage *_image;
+	std::vector<vec3> _points;
+	std::vector<unsigned char> _processed;
 	std::vector<ImageVal> _values;
 
 };

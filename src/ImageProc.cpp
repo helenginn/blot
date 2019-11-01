@@ -79,6 +79,7 @@ void ImageProc::setImage(QImage &im)
 	QImage rgba = im.convertToFormat(QImage::Format_RGBA8888);
 	_image = new QImage(rgba);
 	process();
+	deletePreprocessing();
 }
 
 void ImageProc::process()
@@ -86,15 +87,218 @@ void ImageProc::process()
 	collapseToActiveCoordinate();
 }
 
+int roundup(int val, int num = 4)
+{
+	if ((val % num) == 0)
+	{
+		return val;
+	}
+	
+	val += (num - (val % num));
+	return val;
+}
+
+void ImageProc::prepareSeeds()
+{
+	/* go through and find all alpha values > 0 or on border of image */
+	
+	int image_width = roundup(_image->width());
+
+	for (int y = 0; y < _image->height(); y++)
+	{
+		for (int x = 0; x < _image->width(); x++)
+		{
+			QColor colour = _image->pixelColor(x, y);
+			int alpha = colour.alpha();
+
+			/* if we are in the centre */
+			if ((x > 0 && y > 0 && x < _image->width() - 1
+			     && y < _image->height() - 1) && alpha > 0)
+			{
+				continue;
+			}
+			
+			int index = y * image_width + x;
+			_processed[index]++;
+		}
+	}
+}
+
+void ImageProc::chooseSeeds()
+{
+	if (_points.size() == 0)
+	{
+		prepareSeeds();
+		return;
+	}
+	
+	int image_width = roundup(_image->width());
+
+	for (int i = 0; i < _points.size(); i++)
+	{
+		vec3 point = _points[i];
+
+		for (int sy = -5; sy < 5; sy++)
+		{
+			for (int sx = -5; sx < 5; sx++)
+			{
+				int index = point.x + point.y * image_width;
+				_processed[index]++;
+			}
+		}
+		std::cout << "Added one" << std::endl;
+	}
+	
+}
+
+void ImageProc::prepareProcessArray()
+{
+	if (hasPreprocessing())
+	{
+		memset(&_processed[0], '\0', 
+		       _processed.size() * sizeof(unsigned char));
+		return;
+	}
+
+	int image_width = roundup(_image->width());
+	int image_height = roundup(_image->height());
+
+	_processed.resize(image_width * image_height);
+}
+
+void ImageProc::preprocess(bool scratch)
+{
+	if (scratch && hasPreprocessing())
+	{
+		return;
+	}
+
+	prepareProcessArray();
+	chooseSeeds();
+	
+	int image_width = roundup(_image->width());
+
+	/* first build up a list of points to check */
+	std::vector<vec3> prevPoints;
+	std::vector<int> tmp = std::vector<int>(_processed.size(), 0);
+
+	for (int y = 0; y < _image->height(); y++)
+	{
+		for (int x = 0; x < _image->width(); x++)
+		{
+			int index = y * image_width + x;
+			tmp[index] = _processed[index];
+			
+			if (_processed[index] > 0)
+			{
+				vec3 vec = make_vec3(x, y, 0);
+				prevPoints.push_back(vec);
+			}
+		}
+	}
+	
+	/* Now we iteratively go through and build up the processed indices
+	 * of all pixels where alpha > 1 */
+
+	int max = 0;
+
+	while (true)
+	{
+		std::vector<vec3> newPoints;
+		std::vector<int> old = tmp;
+		bool changed = false;
+		
+		max++;
+		
+		for (int i = 0; i < prevPoints.size(); i++)
+		{
+			int x = prevPoints[i].x;
+			int y = prevPoints[i].y;
+
+			int index = y * image_width + x;
+			
+			if (old[index] == 0)
+			{
+				continue;
+			}
+			
+			old[index] = 0;
+
+			for (int sy = -1; sy < 2; sy++)
+			{
+				for (int sx = -1; sx < 2; sx++)
+				{
+					if (sx + x < 0 || sx + x >= _image->width())
+					{
+						continue;
+					}
+
+					if (sy + y < 0 || sy + y >= _image->height())
+					{
+						continue;
+					}
+
+					QColor colour = _image->pixel(x + sx, y + sy);
+					int alpha = colour.alpha();
+
+					if (alpha == 0)
+					{
+						continue;
+					}
+
+					int check = (y + sy) * image_width + (x + sx);
+
+					if (tmp[check] == 0)
+					{
+						tmp[check] = max;
+						vec3 vec = make_vec3(x + sx, y + sy, 0);
+						newPoints.push_back(vec);
+						changed = true;
+					}
+				}
+			}
+		}
+
+		if (!changed)
+		{
+			break;
+		}
+		
+		prevPoints = newPoints;
+	}
+	
+	max++;
+	
+	for (int i = 0; i < _processed.size(); i++)
+	{
+		if (_points.size() == 0)
+		{
+			_processed[i] = (max - tmp[i]) * 255 / max;
+		}
+		else
+		{
+			_processed[i] = tmp[i] * (double)255 / (double)max;
+		}
+	}
+}
+
 void ImageProc::bindToTexture(BlotObject *sender)
 {
 	glBindTexture(GL_TEXTURE_2D, sender->texture(0));
-	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _image->width(), _image->height(), 
 	             0, GL_RGBA, GL_UNSIGNED_BYTE, _image->bits());
-
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	
+	if (hasPreprocessing())
+	{
+		glBindTexture(GL_TEXTURE_2D, sender->texture(1));
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, _image->width(), 
+		             _image->height(), 0, GL_RED, 
+		             GL_UNSIGNED_BYTE, &_processed[0]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
 
 	sender->glGenerateMipmap(GL_TEXTURE_2D);
 }
@@ -109,10 +313,10 @@ void ImageProc::addProperties()
 		_base64 = QString::fromLatin1(byteArray.toBase64().data()).toStdString();
 	}
 
-
 	addStringProperty("id", &_randomID);
 	addStringProperty("title", &_text);
 	addStringProperty("base64", &_base64);
+	addVec3ArrayProperty("seeds", &_points);
 }
 
 void ImageProc::postParseTidy()
