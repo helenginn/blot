@@ -42,8 +42,11 @@ public:
 		return "ImageFade_" + _random;
 	}
 
+	virtual void setBlotObject(BlotObject *obj);
+
 	virtual std::string instText();
-	virtual bool animateStep();
+protected:
+	virtual void postParseTidy();
 private:
 
 };

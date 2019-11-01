@@ -34,10 +34,13 @@ std::string ImageFade::instText()
 	return start;
 }
 
-bool ImageFade::animateStep()
+void ImageFade::setBlotObject(BlotObject *obj)
 {
-	bool keep_going = incrementTime();
-	object()->setTime(rand() / (double)RAND_MAX);
+	_obj = obj;
+	_obj->preprocessImage();
+}
 
-	return keep_going;
+void ImageFade::postParseTidy()
+{
+	_obj->preprocessImage();
 }

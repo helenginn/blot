@@ -31,7 +31,7 @@ public:
 		return _obj;
 	}
 
-	void setBlotObject(BlotObject *obj)
+	virtual void setBlotObject(BlotObject *obj)
 	{
 		_obj = obj;
 	}

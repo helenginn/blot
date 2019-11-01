@@ -130,7 +130,8 @@ void ImageAppear::linkReference(BaseParser *child, std::string name)
 
 void ImageAppear::setNewImage(ImageProc *proc)
 {
-	_obj = new BlotObject(proc);
+	BlotObject *obj = new BlotObject(proc);
+	setBlotObject(obj);
 	
 	double l, t, a;
 	proc->getLastDims(&l, &t, &a);
