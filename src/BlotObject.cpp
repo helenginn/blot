@@ -546,5 +546,12 @@ void BlotObject::midpoint(double *x, double *y)
 void BlotObject::setTime(float time)
 {
 	_time = time;
-	setDisabled((_time <= 0));
+}
+
+void BlotObject::preprocessImage()
+{
+	std::cout << "We preprocess" << std::endl;
+	getImage()->preprocess();
+	_vShader = vImage;
+	_fShader = fpImage;
 }
