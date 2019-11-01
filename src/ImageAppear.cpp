@@ -34,14 +34,18 @@ void ImageAppear::instantEffect()
 {
 	prepareEffect();
 	setTime(_endTime);
+	_obj->setDisabled(false);
 	_obj->setTime(_endTime);
 }
 
 void ImageAppear::prepareEffect()
 {
+	setTime(_startTime);
+	_obj->setTime(_time);
 	std::string text = _obj->getImage()->text();
 	std::cout << "Show effect for " << text << std::endl;
 	_obj->setVertices(_top, _bottom, _left, _right);
+	_obj->setDisabled(false);
 	_obj->rotateVertices(_angle);
 	_presentation->update();
 }
