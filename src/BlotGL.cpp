@@ -302,7 +302,7 @@ void BlotGL::setAspectRatio(double ratio)
 BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 {
 	_timer = new QTimer();
-	_timer->setInterval(20);
+	_timer->setInterval(5);
 	connect(_timer, &QTimer::timeout, this, &BlotGL::progressAnimations);
 
 	_prop = NULL;
