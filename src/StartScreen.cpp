@@ -71,6 +71,7 @@ StartScreen::StartScreen(QWidget *parent,
 	action = insert->addAction(tr("Wipe slate"));
 	connect(action, &QAction::triggered, this, &StartScreen::addWipe);
 	action = insert->addAction(tr("Hide image"));
+	action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_H));
 	connect(action, &QAction::triggered, this, &StartScreen::addHide);
 	action = insert->addAction(tr("Move image"));
 	action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_M));
