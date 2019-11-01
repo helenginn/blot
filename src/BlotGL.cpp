@@ -246,6 +246,8 @@ void BlotGL::moveInstruction(int diff)
 	{
 		return;
 	}
+	
+	int row = _list->currentRow();
 
 	std::vector<unsigned int> indices = getSortedIndices();
 	if (indices.size() <= 0)
@@ -285,6 +287,9 @@ void BlotGL::moveInstruction(int diff)
 		min += sign;
 		max += sign;
 	}
+	
+	_list->clearSelection();
+	_list->setCurrentRow(row);
 }
 
 void BlotGL::setAspectRatio(double ratio)
