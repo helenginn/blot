@@ -21,8 +21,9 @@
 ImageFade::ImageFade(BlotGL *pres) : ImageAppear(pres)
 {
 	_valid = true;
-	_endTime = 3;
 	_stepTime = 0.05;
+	_startTime = 0.0;
+	_endTime = 1;
 }
 
 std::string ImageFade::instText()

@@ -29,7 +29,7 @@ ImageHide::ImageHide(BlotGL *pres, Instruction *inst) : ImageAnimated(pres)
 
 	_valid = true;
 	_startTime = _endTime;
-	_endTime = -0.1;
+	_endTime = 0.0;
 	_stepTime *= -1;
 	_obj = inst->object();
 	_fade = true;
