@@ -24,6 +24,7 @@
 #include <QImage>
 #include "shaders/vImage.h"
 #include "shaders/fImage.h"
+#include "shaders/fpImage.h"
 #include "shaders/fWipe.h"
 
 void BlotObject::addToVertices(float x, float y)
@@ -224,14 +225,22 @@ void BlotObject::initialisePrograms(std::string *v, std::string *f)
 {
 	deletePrograms();
 
-	if (v == NULL)
+	if (v == NULL && _vShader.length() == 0)
 	{
 		v = &vImage;
 	}
+	else if (v == NULL)
+	{
+		v = &_vShader;
+	}
 
-	if (f == NULL)
+	if (f == NULL && _fShader.length() == 0)
 	{
 		f = &fImage;
+	}
+	else if (f == NULL)
+	{
+		f = &_fShader;
 	}
 	
 	checkErrors("initialised");
@@ -296,15 +305,21 @@ void BlotObject::bindTextures()
 		return;
 	}
 
-	if (_textures.size() == 0)
+	int num = 1;
+	if (getImage()->hasPreprocessing())
 	{
-		_textures.resize(1);
-		glGenTextures(1, &_textures[0]);
+		num = 2;
+	}
+
+	if (_textures.size() < num)
+	{
+
+		_textures.resize(num);
+		glGenTextures(num, &_textures[0]);
 		checkErrors("textures");
 	}
 
 	getImage()->bindToTexture(this);
-//	glDeleteTextures(1, &_textures[0]);
 
 }
 
@@ -425,9 +440,20 @@ void BlotObject::render(BlotGL *sender)
 
 	if (_textures.size())
 	{
+		GLint baseImageLoc = glGetUniformLocation(_program, "pic_tex");
+		glUniform1i(baseImageLoc, 0);
+		glActiveTexture(GL_TEXTURE0 + 0);
 		glBindTexture(GL_TEXTURE_2D, _textures[0]);
+
+		if (getImage()->hasPreprocessing())
+		{
+			GLint procImageLoc = glGetUniformLocation(_program, "proc_tex");
+			glUniform1i(procImageLoc, 1);
+			glActiveTexture(GL_TEXTURE0 + 1);
+			glBindTexture(GL_TEXTURE_2D, _textures[1]);
+		}
 	}
-	
+
 	glDrawElements(_renderType, indexCount(), GL_UNSIGNED_INT, 0);
 	checkErrors("draw elements");
 	
@@ -463,6 +489,8 @@ void BlotObject::select(bool sel, double red, double green, double blue)
 void BlotObject::changeProgram(std::string &v, std::string &f)
 {
 	deletePrograms();
+	_vShader = v;
+	_fShader = f;
 	initialisePrograms(&v, &f);
 }
 
@@ -495,7 +523,6 @@ void BlotObject::postParseTidy()
 {
 
 }
-
 
 void BlotObject::setDisabled(bool dis)
 {

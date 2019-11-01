@@ -137,6 +137,8 @@ private:
 	void bindTextures();
 	void makeDummy();
 
+	std::string _vShader;
+	std::string _fShader;
 	std::string _random;
 	GLuint _program;
 	GLuint _bufferID;
