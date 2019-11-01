@@ -172,7 +172,10 @@ void StartScreen::resizeEvent(QResizeEvent *event)
 			}
 		}
 	}
-	std::cout << "No presentation; not resizing" << std::endl;
+	else
+	{
+		std::cout << "No presentation; not resizing" << std::endl;
+	}
 }
 
 void StartScreen::openLibraryFile(std::string lib)
