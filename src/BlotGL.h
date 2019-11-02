@@ -90,6 +90,7 @@ public:
 	void clearAll();
 	void setFullScreen();
 	void setSmallWindow();
+	void initialisePrograms();
 	
 	bool imageInUse(ImageProc *image);
 	void addHideCurrentImage();
@@ -114,7 +115,6 @@ public slots:
 	void toggleVKey();
 	
 protected:
-	virtual void initializeGL();
 	virtual void paintGL();
 	virtual void resizeGL(int w, int h);
 	virtual void keyPressEvent(QKeyEvent *event);
@@ -122,6 +122,7 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void mouseMoveEvent(QMouseEvent *e);
+	virtual void initializeGL();
 
 	virtual void addObject(Parser *child, std::string name);
 	virtual void postParseTidy();
@@ -131,7 +132,6 @@ private:
 	void goBackOneSlide();
 	void moveInstruction(int diff);
 	std::vector<unsigned int> getSortedIndices();
-	void initialisePrograms();
 	void deselectAll();
 	Instruction *findSelectedInstruction(double x, double y);
 	void replaceSelectedInstruction(double x, double y);

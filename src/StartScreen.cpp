@@ -204,6 +204,7 @@ void StartScreen::openLibraryFile(std::string lib)
 	_pres->QWidget::setParent(this);
 
 	_pres->setSmallWindow();
+	_pres->initialisePrograms();
 	_pres->setFocus();
 	_pres->setFocusPolicy(Qt::StrongFocus);
 }
@@ -251,6 +252,7 @@ void StartScreen::newLibrary()
 	_pres = _lib->presentation();
 	_pres->QWidget::setParent(this);
 	_pres->setSmallWindow();
+	_pres->initialisePrograms();
 	_pres->setFocus();
 	_pres->setFocusPolicy(Qt::StrongFocus);
 }

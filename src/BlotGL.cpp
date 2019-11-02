@@ -431,8 +431,6 @@ void BlotGL::paintGL()
 
 void BlotGL::initialisePrograms()
 {
-	initializeGL();
-
 	std::cout << "Every init" << std::endl;
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
@@ -598,7 +596,6 @@ void BlotGL::setSmallWindow()
 	makeList(w);
 	setEditMode(true);
 	w->resizeWidgets();
-	initialisePrograms();
 }
 
 void BlotGL::addImage(ImageProc *proc)
