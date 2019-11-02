@@ -550,7 +550,6 @@ void BlotObject::setTime(float time)
 
 void BlotObject::preprocessImage()
 {
-	std::cout << "We preprocess" << std::endl;
 	getImage()->preprocess();
 	_vShader = vImage;
 	_fShader = fpImage;
