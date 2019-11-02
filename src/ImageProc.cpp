@@ -98,6 +98,11 @@ int roundup(int val, int num = 4)
 	return val;
 }
 
+bool within_bounds(int x, int y, int w, int h)
+{
+	return (x >= 0 && y >= 0 && x < w && y < h);
+}
+
 void ImageProc::prepareSeeds()
 {
 	/* go through and find all alpha values > 0 or on border of image */
@@ -111,9 +116,10 @@ void ImageProc::prepareSeeds()
 			QColor colour = _image->pixelColor(x, y);
 			int alpha = colour.alpha();
 
-			/* if we are in the centre */
+			/* if we are right on the border, or not transparent enough,
+			 * we don't set as a seed */
 			if ((x > 0 && y > 0 && x < _image->width() - 1
-			     && y < _image->height() - 1) && alpha > 0)
+			    && y < _image->height() - 1) || alpha > 5)
 			{
 				continue;
 			}
@@ -142,13 +148,22 @@ void ImageProc::chooseSeeds()
 		{
 			for (int sx = -5; sx < 5; sx++)
 			{
-				int index = point.x + point.y * image_width;
+				int px = point.x + sx;
+				int py = point.y + sy;
+
+				if (!within_bounds(px, py, 
+				                  _image->width(), _image->height()))
+				{
+					continue;
+				}
+
+				int index = px + py * image_width;
 				_processed[index]++;
 			}
 		}
-		std::cout << "Added one" << std::endl;
 	}
 	
+	std::cout << "Added " << _points.size() << " points." << std::endl;
 }
 
 void ImageProc::prepareProcessArray()
@@ -215,46 +230,27 @@ void ImageProc::preprocess(bool scratch)
 			int x = prevPoints[i].x;
 			int y = prevPoints[i].y;
 
-			int index = y * image_width + x;
-			
-			if (old[index] == 0)
-			{
-				continue;
-			}
-			
-			old[index] = 0;
-
 			for (int sy = -1; sy < 2; sy++)
 			{
 				for (int sx = -1; sx < 2; sx++)
 				{
-					if (sx + x < 0 || sx + x >= _image->width())
-					{
-						continue;
-					}
-
-					if (sy + y < 0 || sy + y >= _image->height())
-					{
-						continue;
-					}
-
-					QColor colour = _image->pixel(x + sx, y + sy);
-					int alpha = colour.alpha();
-
-					if (alpha == 0)
+					if (!within_bounds(sx + x, sy + y, 
+					                   _image->width(), _image->height()))
 					{
 						continue;
 					}
 
 					int check = (y + sy) * image_width + (x + sx);
 
-					if (tmp[check] == 0)
+					if (tmp[check] > 0)
 					{
-						tmp[check] = max;
-						vec3 vec = make_vec3(x + sx, y + sy, 0);
-						newPoints.push_back(vec);
-						changed = true;
+						continue;
 					}
+
+					tmp[check] = max;
+					vec3 vec = make_vec3(x + sx, y + sy, 0);
+					newPoints.push_back(vec);
+					changed = true;
 				}
 			}
 		}
@@ -280,6 +276,8 @@ void ImageProc::preprocess(bool scratch)
 			_processed[i] = tmp[i] * (double)255 / (double)max;
 		}
 	}
+	
+	std::cout << "Preprocessed in " << max << " steps." << std::endl;
 }
 
 void ImageProc::bindToTexture(BlotObject *sender)
