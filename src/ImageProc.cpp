@@ -140,7 +140,7 @@ void ImageProc::chooseSeeds()
 	
 	int image_width = roundup(_image->width());
 
-	for (int i = 0; i < _points.size(); i++)
+	for (size_t i = 0; i < _points.size(); i++)
 	{
 		vec3 point = _points[i];
 
@@ -225,7 +225,7 @@ void ImageProc::preprocess(bool scratch)
 		
 		max++;
 		
-		for (int i = 0; i < prevPoints.size(); i++)
+		for (size_t i = 0; i < prevPoints.size(); i++)
 		{
 			int x = prevPoints[i].x;
 			int y = prevPoints[i].y;
@@ -265,7 +265,7 @@ void ImageProc::preprocess(bool scratch)
 	
 	max++;
 	
-	for (int i = 0; i < _processed.size(); i++)
+	for (size_t i = 0; i < _processed.size(); i++)
 	{
 		if (_points.size() == 0)
 		{
