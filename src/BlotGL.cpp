@@ -1120,6 +1120,8 @@ void BlotGL::copyToGL(BlotGL *another)
 			continue;
 		}
 		
+		inst->setPresentation(another);
+		inst->reloadParser();
 		another->addInstruction(inst, false);
 	}
 }

@@ -585,6 +585,12 @@ void BaseParser::privateSaveState(int aim)
 	_states.push_back(list);
 }
 
+void BaseParser::reloadParser()
+{
+	clearContents();
+	setup();
+}
+
 void BaseParser::clearContents()
 {
 	_setup = false;

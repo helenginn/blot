@@ -102,6 +102,8 @@ public:
 		
 		return _allClasses[name];
 	}
+	
+	void reloadParser();
 protected:
 	/**
 	* 	Implementation of the parser identifier should return a name of the

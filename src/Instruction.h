@@ -101,6 +101,11 @@ public:
 	virtual void select(bool sel) {};
 	virtual void addProperties();
 	virtual void linkReference(BaseParser *child, std::string name);
+	
+	void setPresentation(BlotGL *newGL)
+	{
+		_presentation = newGL;
+	}
 protected:
 	BlotGL *_presentation;
 	std::string _random;
