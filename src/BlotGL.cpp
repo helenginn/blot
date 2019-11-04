@@ -159,13 +159,19 @@ void BlotGL::deleteInstruction()
 	{
 		return;
 	}
+	
+	std::vector<unsigned int> indices = getSortedIndices();
+	int row = indices[0];
+	
+	for (int i = indices.size() - 1; i >= 0; i--)
+	{
+		_list->takeItem(_list->currentRow());
+	}
 
-	int row = _list->currentRow();
-	_list->takeItem(_list->currentRow());
-	/* clears image if needed */
 	Instruction *inst = instructionForItem(_list->item(row));
 	selectInstruction(inst, true);
 	selectInEditMode();
+	_list->setCurrentRow(row);
 }
 
 void BlotGL::moveInstructionUp()
