@@ -99,6 +99,7 @@ public:
 	void removeImageReferences(ImageProc *image);
 	void updateDisplay();
 	
+	void copyToGL(BlotGL *another);
 	void selectAll();
 	void moveInstToBottom();
 	void moveInstToWipe();

@@ -48,6 +48,11 @@ public:
 
 	void openLibraryFile(std::string lib);
 	void setClick(Instruction *inst);
+	
+	Library *getLibrary()
+	{
+		return _lib;
+	}
 protected:
 	virtual void resizeEvent(QResizeEvent *event);
 

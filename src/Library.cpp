@@ -34,9 +34,8 @@
 #include "ImageProc.h"
 #include "ImageAppear.h"
 #include "ImageFade.h"
+#include "charmanip.h"
 #include "ChangeBackground.h"
-
-Library *Library::_lib = NULL;
 
 #define DEFAULT_LIBRARY_HEIGHT 800
 #define DEFAULT_LIBRARY_WIDTH 1000
@@ -78,6 +77,9 @@ void Library::initialise()
 	action->setShortcut(QKeySequence::SaveAs);
 	connect(action, &QAction::triggered, this, &Library::saveAs);
 
+	action = file->addAction(tr("Merge with library..."));
+	connect(action, &QAction::triggered, this, &Library::mergeWith);
+
 	QMenu *edit = menuBar()->addMenu(tr("&Edit"));
 	action = edit->addAction(tr("Copy image"));
 	action->setShortcut(QKeySequence::Copy);
@@ -92,6 +94,38 @@ Library::Library(StartScreen *scr)
 {
 	initialise();
 	_pres = new BlotGL(scr);
+}
+
+void Library::mergeWith()
+{
+	QString types = "Blot files (*.blot)";
+	QFileDialog *fileDialogue = new QFileDialog(this, "Choose library", 
+	                                            types);
+	
+	fileDialogue->setNameFilter(types);
+	fileDialogue->setFileMode(QFileDialog::AnyFile);
+
+	QStringList fileNames;
+	if (fileDialogue->exec())
+	{
+		fileNames = fileDialogue->selectedFiles();
+	}
+
+	if (fileNames.size() <= 0)
+	{
+		std::cout << "No filenames" << std::endl;
+		return;
+	}
+
+	StartScreen *current = StartScreen::startScreenPtr;
+	StartScreen start;
+	start.openLibraryFile(fileNames[0].toStdString());
+	
+	Library *extra = start.getLibrary();
+	extra->copyToLibrary(this);
+	extra->hide();
+	
+	StartScreen::startScreenPtr = current;
 }
 
 void Library::saveAs()
@@ -198,11 +232,6 @@ void Library::updatePaste()
 	ImageProc *proc = imageProcForItem(item);
 	proc->setImage(image);
 	elaborate();
-}
-
-void Library::setCurrentLibrary(Library *lib)
-{
-	_lib = lib;
 }
 
 void Library::elaborate()
@@ -520,6 +549,18 @@ void Library::addProperties()
 	addChild("presentation", _pres);
 }
 
+void Library::copyToLibrary(Library *another)
+{
+	for (int i = 0; i < _list->count(); i++)
+	{
+		QListWidgetItem *item = _list->item(i);
+		Parser *proc = imageProcForItem(item);
+		another->addObject(proc, "image_proc");
+	}
+	
+	_pres->copyToGL(another->presentation());
+}
+
 void Library::addObject(Parser *child, std::string name)
 {
 	if (name == "image_proc")
@@ -552,5 +593,4 @@ Library::~Library()
 	}
 	
 	delete _list;
-	_lib = NULL;
 }

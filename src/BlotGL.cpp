@@ -1107,3 +1107,19 @@ void BlotGL::selectAll()
 		selectInstruction(inst, false);
 	}
 }
+
+void BlotGL::copyToGL(BlotGL *another)
+{
+	for (int i = 0; i < _list->count(); i++)
+	{
+		QListWidgetItem *item = _list->item(i);
+		Instruction *inst = instructionForItem(item);
+		
+		if (inst->primaryLoad())
+		{
+			continue;
+		}
+		
+		another->addInstruction(inst, false);
+	}
+}

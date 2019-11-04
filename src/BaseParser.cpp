@@ -1239,7 +1239,6 @@ Parser *BaseParser::objectOfType(char *className)
 	if (strcmp(className, "Library") == 0) 
 	{
 		object = static_cast<Parser *>(new Library(StartScreen::startScreenPtr));
-		Library::setCurrentLibrary(static_cast<Library *>(&*object));
 	}
 	else if (strcmp(className, "ImageProc") == 0)
 	{

@@ -46,7 +46,6 @@ public:
 	Library(StartScreen *scr = NULL);
 	virtual ~Library();
 	
-	static void setCurrentLibrary(Library *lib);
 	void initialise();
 	
 	virtual std::string getClassName()
@@ -80,6 +79,7 @@ public:
 public slots:
 	void save();
 	void saveAs();
+	void mergeWith();
 	void paste();
 	void elaborate();
 	void updateTitle();
@@ -94,6 +94,7 @@ public slots:
 	virtual void mousePressEvent(QMouseEvent *event);
 private:
 	ImageProc *imageProcForItem(QListWidgetItem *item);
+	void copyToLibrary(Library *another);
 	void getImageFromClipboard(QImage *im);
 	void elaborateItem(QListWidgetItem *item);
 	void clearElaboration();
@@ -113,8 +114,6 @@ private:
 	BlotGL *_pres;
 	bool _seeding;
 	std::vector<vec3> _points;
-
-	static Library *_lib;
 };
 
 #endif
