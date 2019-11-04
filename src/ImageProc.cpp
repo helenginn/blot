@@ -310,10 +310,20 @@ void ImageProc::addProperties()
 		_image->save(&buffer, "PNG");
 		_base64 = QString::fromLatin1(byteArray.toBase64().data()).toStdString();
 	}
+	
+	if (_processed.size() > 0)
+	{
+		void *ptr = &_processed[0];
+		QByteArray byteArray((const char *)ptr, 
+		                     _processed.size() * sizeof(unsigned char));
+		QBuffer buffer(&byteArray);
+		_proc64 = QString::fromLatin1(byteArray.toBase64().data()).toStdString();
+	}
 
 	addStringProperty("id", &_randomID);
 	addStringProperty("title", &_text);
 	addStringProperty("base64", &_base64);
+	addStringProperty("proc64", &_proc64);
 	addVec3ArrayProperty("seeds", &_points);
 }
 
@@ -330,4 +340,16 @@ void ImageProc::postParseTidy()
 	_image = new QImage();
 	_image->loadFromData(QByteArray::fromBase64(b64), "PNG");
 
+	if (_proc64.length() == 0)
+	{
+		return;
+	}
+
+	str = QString::fromStdString(_proc64);
+	b64 = str.toLatin1();
+	QByteArray p64 = QByteArray::fromBase64(b64);
+	int size = p64.size();
+	_processed.resize(size);
+
+	memcpy(&_processed[0], &*p64.begin(), size);
 }

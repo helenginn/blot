@@ -121,6 +121,7 @@ private:
 	QImage *_image;
 	std::vector<vec3> _points;
 	std::vector<unsigned char> _processed;
+	std::string _proc64;
 	std::vector<ImageVal> _values;
 
 };
