@@ -35,7 +35,7 @@ void ChangeBackground::instantEffect()
 {
 	_obj->setDisabled(false);
 	_obj->setVertices(1, -1, -1, 1);
-	_obj->setZCoord(-0.99);
+	_obj->setZCoord(0.99);
 	std::cout << "Changing background" << std::endl;
 
 	_presentation->update();

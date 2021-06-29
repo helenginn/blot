@@ -23,6 +23,7 @@
 #include <QtGui/qopengl.h>
 #include <QtGui/qopenglfunctions.h>
 #include <QListWidget>
+#include <h3dsrc/SlipGL.h>
 #include <vector>
 #include "Parser.h"
 #include "mat3x3.h"
@@ -34,7 +35,7 @@ class Instruction;
 class Properties;
 class QPushButton;
 
-class BlotGL : public QOpenGLWidget, QOpenGLFunctions, public Parser
+class BlotGL : public SlipGL, public Parser
 {
 	Q_OBJECT
 	
@@ -42,7 +43,7 @@ public:
 	BlotGL(QWidget *parent = NULL);
 	
 	void makeList(QWidget *p);
-	void addObject(BlotObject *obj, bool top = false);
+	void addObject(SlipObject *obj, bool top = false);
 	void addImage(ImageProc *proc);
 	void addInstruction(Instruction *inst, bool atRow = true);
 	void advancePresentation(bool clicked = false);
@@ -75,8 +76,6 @@ public:
 		return _aspectRatio;
 	}
 	
-	mat3x3 getAspectMatrix();
-	
 	QPushButton *button(int i)
 	{
 		return _buttons[i];
@@ -90,7 +89,6 @@ public:
 	void clearAll();
 	void setFullScreen();
 	void setSmallWindow();
-	void initialisePrograms();
 	
 	bool imageInUse(ImageProc *image);
 	void addHideCurrentImage();
@@ -106,6 +104,8 @@ public:
 	void moveInstToIndex(int index);
 	void changeClick(bool click);
 	virtual void addProperties();
+	
+	virtual void updateProjection(double side = 0.5);
 public slots:
 	void selectInEditMode();
 	void moveInstructionUp();
@@ -116,14 +116,11 @@ public slots:
 	void toggleVKey();
 	
 protected:
-	virtual void paintGL();
-	virtual void resizeGL(int w, int h);
 	virtual void keyPressEvent(QKeyEvent *event);
 	virtual void keyReleaseEvent(QKeyEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void mouseMoveEvent(QMouseEvent *e);
-	virtual void initializeGL();
 
 	virtual void addObject(Parser *child, std::string name);
 	virtual void postParseTidy();
@@ -156,19 +153,14 @@ private:
 
 	std::vector<Instruction *> _animating;
 	Properties *_prop;
-	std::vector<BlotObject *> _objects;
 	QObject *_parent;
 	bool _editMode;
 	bool _fullScreen;
-	bool _shiftPressed;
-	bool _controlPressed;
 	bool _altPressed;
 	int _currPos;
 	int _startX;
 	int _startY;
-	int _lastX;
-	int _lastY;
-	mat3x3 _aspect;
+	mat4x4 _aspect;
 	double _aspectRatio;
 	QTimer *_timer;
 };

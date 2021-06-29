@@ -4,6 +4,8 @@ qt5 = import('qt5')
 qt5_dep = dependency('qt5', modules: ['Core', 'Gui', 'Widgets'], required : true)
 dep_gl = dependency('gl', required : true)
 png_dep = dependency('libpng')
+helen3d_dep = dependency('helen3d')
+helencore_dep = dependency('helencore')
 
 cc = meson.get_compiler('c')
 m_dep = cc.find_library('m', required : false)
@@ -54,5 +56,5 @@ executable('blot', gen_src, moc_files,
 'src/StartScreen.cpp', 
 'src/StateValue.cpp', 
 'src/WipeSlate.cpp', 
-cpp_args: ['-std=c++11'], dependencies : [ qt5_dep, dep_gl, png_dep ], install: true)
+cpp_args: ['-std=c++11'], dependencies : [ qt5_dep, dep_gl, png_dep, helen3d_dep, helencore_dep ], install: true)
 

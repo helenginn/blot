@@ -22,27 +22,17 @@
 #include <QtGui/qopengl.h>
 #include <QtGui/qopenglfunctions.h>
 #include "ImageProc.h"
+#include <h3dsrc/SlipObject.h>
 #include "Parser.h"
-
-typedef struct
-{
-	GLfloat pos[3];
-	GLfloat normal[3];
-	GLfloat color[4];
-	GLfloat extra[4];
-	GLfloat tex[2];
-} Vertex;
 
 class ImageProc;
 class BlotGL;
 
-class BlotObject : public QOpenGLFunctions, public Parser
+class BlotObject : public SlipObject, public Parser
 {
 public:
 	BlotObject(ImageProc *proc = NULL);
 	virtual ~BlotObject() {};
-	void initialisePrograms(std::string *v = NULL, std::string *f = NULL);
-	void render(BlotGL *sender);
 	
 	virtual std::string getClassName()
 	{
@@ -51,43 +41,7 @@ public:
 	
 	virtual std::string getParserIdentifier();
 	
-	Vertex *vPointer()
-	{
-		return &_vertices[0];
-	}
-
-	size_t vSize()
-	{
-		return sizeof(Vertex) * _vertices.size();
-	}
-
-	GLuint *iPointer()
-	{
-		return &_indices[0];
-	}
-
-	size_t iSize()
-	{
-		return sizeof(GLuint) * _indices.size();
-	}
-	
-	GLuint texture(size_t i)
-	{
-		return _textures[i];
-	}
-	
-	size_t indexCount()
-	{
-		return _indices.size();
-	}
-	
-	bool isDisabled()
-	{
-		return _disabled;
-	}
-	
 	void midpoint(double *x, double *y);
-	void setDisabled(bool dis);
 	
 	bool hasImage()
 	{
@@ -120,39 +74,25 @@ public:
 	void rotateVertices(double angle);
 	
 	void select(bool sel, double red, double green, double blue);
-	void changeProgram(std::string &v, std::string &f);
 	void wipeEffect();
 	void preprocessImage();
 	
 	void setZCoord(float z);
+	void prepareTextures();
 protected:
-	std::vector<Vertex> _vertices;
-	std::vector<GLuint> _indices;
+	virtual void render(SlipGL *gl);
+	virtual void extraUniforms();
 	virtual void linkReference(BaseParser *child, std::string name);
 
 private:
-	GLuint addShaderFromString(GLuint program, GLenum type, std::string str);
-	void checkErrors(std::string message);
-	void rebindProgram();
-	void deletePrograms();
-	void bindTextures();
 	void makeDummy();
 
-	std::string _vShader;
-	std::string _fShader;
 	std::string _random;
-	GLuint _program;
-	GLuint _bufferID;
-	GLuint _vbo;
-	GLuint _renderType;
-	GLuint _uAspect;
 	GLuint _uTime;
 	ImageProc *_image;
-	std::vector<GLuint> _textures;
 	
+	float *_aspectFloat;
 	float _time;
-	bool _extra;
-	bool _disabled;
 	bool _ignoreAspectRatio;
 };
 

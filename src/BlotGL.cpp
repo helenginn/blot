@@ -39,19 +39,6 @@
 #include <QTimer>
 #include <iostream>
 
-void BlotGL::initializeGL()
-{
-	initializeOpenGLFunctions();
-
-	double val = 1.0;//rand() / (double)RAND_MAX;
-	glClearColor(val, 1.0, 1.0, 1.0);
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
-
 void BlotGL::makeList(QWidget *p)
 {
 	if (_list)
@@ -298,14 +285,18 @@ void BlotGL::moveInstruction(int diff)
 	_list->setCurrentRow(row);
 }
 
+void BlotGL::updateProjection(double side)
+{
+	_proj = make_mat4x4();
+	_aspect.vals[0] = 1 / _aspectRatio;
+}
+
 void BlotGL::setAspectRatio(double ratio)
 {
 	_aspectRatio = ratio;
-	_aspect = make_mat3x3();
-	_aspect.vals[0] = 1 / (ratio);
 }
 
-BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
+BlotGL::BlotGL(QWidget *p) : SlipGL(p)
 {
 	_timer = new QTimer();
 	_timer->setInterval(5);
@@ -317,12 +308,10 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 	_currPos = 0;
 	_editMode = true;
 	_fullScreen = false;
-	_controlPressed = false;
-	_shiftPressed = false;
 	_altPressed = false;
 	_currInstruct = NULL;
 	_aspectRatio = 1;
-	_aspect = make_mat3x3();
+	_aspect = make_mat4x4();
 	
 	if (p == NULL)
 	{
@@ -335,6 +324,9 @@ BlotGL::BlotGL(QWidget *p) : QOpenGLWidget(p)
 	        this, &BlotGL::selectInEditMode);
 
 	advancePresentation();
+	_r = 1;
+	_g = 1;
+	_b = 1;
 }
 
 void BlotGL::selectInEditMode()
@@ -392,7 +384,7 @@ void BlotGL::selectInstruction()
 	}
 }
 
-void BlotGL::addObject(BlotObject *obj, bool top)
+void BlotGL::addObject(SlipObject *obj, bool top)
 {
 	if (obj == NULL)
 	{
@@ -401,7 +393,7 @@ void BlotGL::addObject(BlotObject *obj, bool top)
 
 	std::cout << "Single init" << std::endl;
 	
-	std::vector<BlotObject *>::iterator it;
+	std::vector<SlipObject *>::iterator it;
 	it = std::find(_objects.begin(), _objects.end(), obj);
 	
 	if (it == _objects.end())
@@ -417,31 +409,6 @@ void BlotGL::addObject(BlotObject *obj, bool top)
 
 		obj->initializeOpenGLFunctions();
 		obj->initialisePrograms();
-	}
-}
-
-void BlotGL::resizeGL(int w, int h)
-{
-
-}
-
-void BlotGL::paintGL()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	for (size_t i = 0; i < _objects.size(); i++)
-	{
-		_objects[i]->render(this);
-	}
-}
-
-void BlotGL::initialisePrograms()
-{
-	std::cout << "Every init" << std::endl;
-	for (size_t i = 0; i < _objects.size(); i++)
-	{
-		_objects[i]->initializeOpenGLFunctions();
-		_objects[i]->initialisePrograms();
 	}
 }
 
@@ -569,6 +536,7 @@ void BlotGL::setFullScreen()
 	setGeometry(screens.last()->geometry());
 
 	windowHandle()->showFullScreen();
+	glDisable(GL_DEPTH_TEST);
 	initialisePrograms();
 }
 
@@ -910,9 +878,10 @@ void BlotGL::clearAll()
 {
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
-		if (_objects[i]->shouldWipe())
+		BlotObject *bo = dynamic_cast<BlotObject *>(_objects[i]);
+		if (bo && bo->shouldWipe())
 		{
-			_objects[i]->setDisabled(true);
+			bo->setDisabled(true);
 		}
 	}
 
@@ -924,7 +893,12 @@ void BlotGL::addProperties()
 	
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
-		addChild("blot_object", _objects[i]);
+		BlotObject *bo = dynamic_cast<BlotObject *>(_objects[i]);
+		
+		if (bo)
+		{
+			addChild("blot_object", bo);
+		}
 	}
 
 	if (_list == NULL)
@@ -1007,7 +981,8 @@ void BlotGL::removeImageReferences(ImageProc *image)
 
 	for (size_t i = 0; i < _objects.size(); i++)
 	{
-		if (_objects[i]->getImage() == image)
+		BlotObject *bo = dynamic_cast<BlotObject *>(_objects[i]);
+		if (bo && bo->getImage() == image)
 		{
 			_objects.erase(_objects.begin() + i);
 			i--;
@@ -1015,16 +990,6 @@ void BlotGL::removeImageReferences(ImageProc *image)
 	}
 	
 	selectInEditMode();
-}
-
-mat3x3 BlotGL::getAspectMatrix()
-{
-	if (parent() == NULL)
-	{
-		return _aspect;
-	}
-	
-	return make_mat3x3();
 }
 
 void BlotGL::progressAnimations()

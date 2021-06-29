@@ -21,7 +21,7 @@
 ImageFade::ImageFade(BlotGL *pres) : ImageAppear(pres)
 {
 	_valid = true;
-	_stepTime = 0.05;
+	_stepTime = 0.01;
 	_startTime = 0.0;
 	_endTime = 1;
 }

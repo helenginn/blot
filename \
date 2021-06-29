@@ -163,14 +163,15 @@ BlotObject::BlotObject(ImageProc *proc) : SlipObject()
 	makeDummy();
 	setDisabled(true);
 	_ignoreAspectRatio = false;
+	_program = 0;
 	setNeedsExtra(true);
-	_textured = true;
-	_handleOwnTextures = true;
 	_vString = vImage;
 	_fString = fpImage;
+	_textured = true;
+	_handleOwnTextures = true;
 }
 
-void BlotObject::prepareTextures()
+void BlotObject::bindTextures()
 {
 	if (!hasImage())
 	{
@@ -182,53 +183,44 @@ void BlotObject::prepareTextures()
 	{
 		num = 2;
 	}
-	
 
 	if (_textures.size() < num)
 	{
 		_textures.resize(num);
 		glGenTextures(num, &_textures[0]);
 		checkErrors("textures");
-		bindOneTexture(getImage()->getImage(), true);
-		getImage()->bindToTexture(this);
 	}
-}
 
-void BlotObject::render(SlipGL *gl)
-{
-	initializeOpenGLFunctions();
-	prepareTextures();
-
-	SlipObject::render(gl);
+	getImage()->bindToTexture(this);
 }
 
 void BlotObject::extraUniforms()
 {	
 	const char *time_name = "time";
-	_uTime = glGetUniformLocation(_usingProgram, time_name);
+	_uTime = glGetUniformLocation(_program, time_name);
 	glUniform1fv(_uTime, 1, &_time);
-	
-	if (!shouldWipe())
-	{
-		glClear(GL_DEPTH_BUFFER_BIT);
-	}
 
 	if (_textures.size())
 	{
-		{
-			glActiveTexture(GL_TEXTURE0 + 0);
-			glBindTexture(GL_TEXTURE_2D, texture(0));
-			GLuint uTex = glGetUniformLocation(_usingProgram, "pic_tex");
-			glUniform1i(uTex, 0);
-		}
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, texture(0));
+		GLint baseImageLoc = glGetUniformLocation(_program, "pic_tex");
+		glUniform1i(baseImageLoc, 0);
 
 		if (getImage()->hasPreprocessing())
 		{
 			glActiveTexture(GL_TEXTURE0 + 1);
 			glBindTexture(GL_TEXTURE_2D, texture(1));
-			GLuint uTex = glGetUniformLocation(_usingProgram, "proc_tex");
-			glUniform1i(uTex, 1);
+			GLint procImageLoc = glGetUniformLocation(_program, "proc_tex");
+			glUniform1i(procImageLoc, 1);
 		}
+		
+		checkErrors("texture");
+	}
+	
+	if (!shouldWipe())
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 }
 

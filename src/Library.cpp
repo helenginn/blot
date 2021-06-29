@@ -330,6 +330,7 @@ void Library::changeProcessing()
 	if (_seeding == false)
 	{
 		_bProcess->setText("Click image");
+		_points.clear();
 		_seeding = true;
 		setFocus();
 		

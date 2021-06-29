@@ -247,6 +247,11 @@ void ImageProc::preprocess(bool scratch)
 						continue;
 					}
 
+					if (_image->constBits()[check * 4 + 3] <= 100)
+					{
+						continue;
+					}
+
 					tmp[check] = max;
 					vec3 vec = make_vec3(x + sx, y + sy, 0);
 					newPoints.push_back(vec);
@@ -282,23 +287,17 @@ void ImageProc::preprocess(bool scratch)
 
 void ImageProc::bindToTexture(BlotObject *sender)
 {
-	glBindTexture(GL_TEXTURE_2D, sender->texture(0));
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _image->width(), _image->height(), 
-	             0, GL_RGBA, GL_UNSIGNED_BYTE, _image->bits());
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	
 	if (hasPreprocessing())
 	{
-		glBindTexture(GL_TEXTURE_2D, sender->texture(1));
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, _image->width(), 
-		             _image->height(), 0, GL_RED, 
-		             GL_UNSIGNED_BYTE, &_processed[0]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		sender->glBindTexture(GL_TEXTURE_2D, sender->texture(1));
+		sender->glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, _image->width(), 
+		                     _image->height(), 0, GL_RED, 
+		                     GL_UNSIGNED_BYTE, &_processed[0]);
+		sender->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		sender->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		sender->glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
-	sender->glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 void ImageProc::addProperties()
