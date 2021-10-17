@@ -26,7 +26,7 @@ std::string fpImage =
 "	}\n"\
 "	if (FragColor[3] < 0.01)\n"\
 "	{\n"\
-"		discard;\n"\
+"//		discard;\n"\
 "	}\n"\
 "\n"\
 "\n"\

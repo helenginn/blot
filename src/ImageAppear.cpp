@@ -27,7 +27,7 @@ ImageAppear::ImageAppear(BlotGL *pres) : ImageAnimated(pres)
 	_top = 0.3;
 	_bottom = -0.3;
 	_angle = deg2rad(0);
-	_endTime = 1;
+	_endTime = 1.0;
 }
 
 void ImageAppear::instantEffect()

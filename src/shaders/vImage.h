@@ -20,7 +20,7 @@ std::string vImage =
 "\n"\
 "void main()\n"\
 "{\n"\
-"    vec4 pos = model * vec4(position, 1.0);\n"\
+"    vec4 pos = projection * model * vec4(position, 1.0);\n"\
 "    vPos = pos;\n"\
 "    gl_Position = pos;\n"\
 "	 vColor = color;\n"\

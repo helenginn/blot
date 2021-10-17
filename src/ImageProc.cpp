@@ -31,6 +31,7 @@ ImageProc::ImageProc(QImage *image)
 	{
 		QImage rgba = image->convertToFormat(QImage::Format_RGBA8888);
 		_image = new QImage(rgba);
+		base64();
 	}
 
 	_randomID = i_to_str(rand());
@@ -80,6 +81,7 @@ void ImageProc::setImage(QImage &im)
 	_image = new QImage(rgba);
 	process();
 	deletePreprocessing();
+	
 }
 
 void ImageProc::process()
@@ -281,6 +283,9 @@ void ImageProc::preprocess(bool scratch)
 			_processed[i] = tmp[i] * (double)255 / (double)max;
 		}
 	}
+
+	base64();
+
 	
 	std::cout << "Preprocessed in " << max << " steps." << std::endl;
 }
@@ -300,7 +305,7 @@ void ImageProc::bindToTexture(BlotObject *sender)
 
 }
 
-void ImageProc::addProperties()
+void ImageProc::base64()
 {
 	if (_image != NULL && !_image->isNull())
 	{
@@ -309,7 +314,7 @@ void ImageProc::addProperties()
 		_image->save(&buffer, "PNG");
 		_base64 = QString::fromLatin1(byteArray.toBase64().data()).toStdString();
 	}
-	
+
 	if (_processed.size() > 0)
 	{
 		void *ptr = &_processed[0];
@@ -319,6 +324,10 @@ void ImageProc::addProperties()
 		_proc64 = QString::fromLatin1(byteArray.toBase64().data()).toStdString();
 	}
 
+}
+
+void ImageProc::addProperties()
+{
 	addStringProperty("id", &_randomID);
 	addStringProperty("title", &_text);
 	addStringProperty("base64", &_base64);

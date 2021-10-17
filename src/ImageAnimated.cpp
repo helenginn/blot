@@ -26,7 +26,7 @@ ImageAnimated::ImageAnimated(BlotGL *gl, Instruction *inst) : Instruction(gl)
 	_endTime = 3;
 	_time = _endTime;
 	_fade = true;
-	_stepTime = 0.02;
+	_stepTime = 0.03;
 
 	if (inst == NULL || inst->object() == NULL)
 	{

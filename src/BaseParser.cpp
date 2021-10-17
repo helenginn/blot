@@ -893,8 +893,9 @@ char *BaseParser::parseNextObject(char *block)
 
 		if (_allParsers.count(path) > 0)
 		{
+			path += "_" + i_to_str(_allParsers.count(path));
 			std::cout << "Already have a parser with " << path << std::endl;
-			return NULL;
+//			return NULL;
 		}
 
 		addToAllParsers(path, object);

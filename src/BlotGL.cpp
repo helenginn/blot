@@ -384,6 +384,12 @@ void BlotGL::selectInstruction()
 	}
 }
 
+void BlotGL::initializeGL()
+{
+	SlipGL::initializeGL();
+	glDisable(GL_DEPTH_TEST);
+}
+
 void BlotGL::addObject(SlipObject *obj, bool top)
 {
 	if (obj == NULL)

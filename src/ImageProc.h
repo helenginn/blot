@@ -111,6 +111,7 @@ public:
 private:
 	void collapseToActiveCoordinate();
 	void postParseTidy();
+	void base64();
 
 	std::string _text;
 	std::string _randomID;

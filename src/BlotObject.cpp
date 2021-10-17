@@ -20,6 +20,7 @@
 #include "BlotGL.h"
 #include "charmanip.h"
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <QImage>
 #include "shaders/vImage.h"
@@ -156,6 +157,7 @@ void BlotObject::makeDummy()
 
 BlotObject::BlotObject(ImageProc *proc) : SlipObject()
 {
+	_transform = NULL;
 	_aspectFloat = NULL;
 	_time = 1;
 	_random = i_to_str(rand());
@@ -167,7 +169,7 @@ BlotObject::BlotObject(ImageProc *proc) : SlipObject()
 	_textured = true;
 	_handleOwnTextures = true;
 	_vString = vImage;
-	_fString = fpImage;
+	_fString = fImage;
 }
 
 void BlotObject::prepareTextures()

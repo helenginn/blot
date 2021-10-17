@@ -116,6 +116,8 @@ public slots:
 	void toggleVKey();
 	
 protected:
+	virtual void initializeGL();
+
 	virtual void keyPressEvent(QKeyEvent *event);
 	virtual void keyReleaseEvent(QKeyEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);

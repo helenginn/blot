@@ -91,6 +91,7 @@ private:
 	GLuint _uTime;
 	ImageProc *_image;
 	
+	float *_transform;
 	float *_aspectFloat;
 	float _time;
 	bool _ignoreAspectRatio;

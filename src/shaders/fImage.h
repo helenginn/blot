@@ -15,10 +15,14 @@ std::string fImage =
 "void main()\n"\
 "{\n"\
 "	vec2 tex = vec2(vTex[0], vTex[1]);\n"\
-"	vec4 temp = texture2D(pic_tex, tex);\n"\
+"	vec4 temp = texture(pic_tex, tex);\n"\
 "	FragColor = vec4(temp[2], temp[1], temp[0], temp[3]);\n"\
 "	FragColor += vColor;\n"\
 "	FragColor[3] *= vTime;\n"\
+"	if (FragColor[3] < 0.01)\n"\
+"	{\n"\
+"//		discard;\n"\
+"	}\n"\
 "\n"\
 "\n"\
 "\n"\
