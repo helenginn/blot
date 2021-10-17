@@ -46,8 +46,8 @@ void Instruction::updateText()
 {
 	if (_item)
 	{
-		_item->setText(qText());
-		_item->listWidget()->repaint();
+		_item->setText(0, qText());
+		_item->treeWidget()->repaint();
 	}
 
 }

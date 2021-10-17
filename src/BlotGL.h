@@ -22,7 +22,7 @@
 #include <QtWidgets/qopenglwidget.h>
 #include <QtGui/qopengl.h>
 #include <QtGui/qopenglfunctions.h>
-#include <QListWidget>
+#include <QTreeWidget>
 #include <h3dsrc/SlipGL.h>
 #include <vector>
 #include "Parser.h"
@@ -47,7 +47,7 @@ public:
 	void addImage(ImageProc *proc);
 	void addInstruction(Instruction *inst, bool atRow = true);
 	void advancePresentation(bool clicked = false);
-	Instruction *instructionForItem(QListWidgetItem *item);
+	Instruction *instructionForItem(QTreeWidgetItem *item);
 	
 	void setEditMode(bool edit)
 	{
@@ -64,7 +64,7 @@ public:
 		return "MainPresentation";
 	}
 	
-	virtual QListWidget *list()
+	virtual QTreeWidget *list()
 	{
 		return _list;
 	}
@@ -142,7 +142,7 @@ private:
 		return _fullScreen;
 	}
 	
-	QListWidget *_list;
+	QTreeWidget *_list;
 	QPushButton *_bDelete;
 	QPushButton *_bUp;
 	QPushButton *_bDown;

@@ -86,7 +86,7 @@ public:
 		return NULL;
 	}
 	
-	void setListItem(QListWidgetItem *item)
+	void setTreeItem(QTreeWidgetItem *item)
 	{
 		_item = item;
 	}
@@ -112,7 +112,7 @@ protected:
 
 private:
 	bool _onClick;
-	QListWidgetItem *_item;
+	QTreeWidgetItem *_item;
 
 };
 

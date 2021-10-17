@@ -46,7 +46,7 @@ void BlotGL::makeList(QWidget *p)
 		return;
 	}
 
-	_list = new QListWidget(p);
+	_list = new QTreeWidget(p);
 	_list->setGeometry(0, MENU_HEIGHT, INSTRUCTION_WIDTH, 
 	                   p->height() - MENU_HEIGHT - QUICK_BUTTON_HEIGHT);
 	_list->setSelectionMode(QAbstractItemView::ContiguousSelection);
@@ -124,7 +124,7 @@ void BlotGL::changeInstruction()
 		_prop = NULL;
 	}
 	
-	QListWidgetItem *item = _list->currentItem();
+	QTreeWidgetItem *item = _list->currentItem();
 
 	if (item == NULL)
 	{
@@ -146,19 +146,25 @@ void BlotGL::deleteInstruction()
 	{
 		return;
 	}
+
+	QList<QTreeWidgetItem *> list = _list->selectedItems();
 	
-	std::vector<unsigned int> indices = getSortedIndices();
-	int row = indices[0];
-	
-	for (int i = indices.size() - 1; i >= 0; i--)
+	int min = _list->topLevelItemCount();
+	for (int i = 0; i < list.size(); i++)
 	{
-		_list->takeItem(_list->currentRow());
+		int idx = _list->indexOfTopLevelItem(list[i]);
+		_list->takeTopLevelItem(idx);
+		if (idx < min)
+		{
+			min = idx;
+		}
 	}
 
-	Instruction *inst = instructionForItem(_list->item(row));
+	QTreeWidgetItem *current = _list->topLevelItem(min);
+	Instruction *inst = instructionForItem(current);
 	selectInstruction(inst, true);
 	selectInEditMode();
-	_list->setCurrentRow(row);
+	_list->setCurrentItem(current);
 }
 
 void BlotGL::moveInstructionUp()
@@ -179,12 +185,12 @@ void BlotGL::moveInstToWipe()
 		return;
 	}
 
-	int row = _list->currentRow();
+	int row = _list->indexOfTopLevelItem(_list->currentItem());
 	int wipeRow = row;
 	
-	for (int i = row + 1; i < _list->count(); i++)
+	for (int i = row + 1; i < _list->topLevelItemCount(); i++)
 	{
-		Instruction *inst = instructionForItem(_list->item(i));
+		Instruction *inst = instructionForItem(_list->topLevelItem(i));
 		if (inst->getClassName() == "WipeSlate")
 		{
 			wipeRow = i;
@@ -196,26 +202,26 @@ void BlotGL::moveInstToWipe()
 	{
 		moveInstToIndex(wipeRow - 1);
 		/*
-		QListWidgetItem *item = _list->takeItem(row);
-		_list->insertItem(wipeRow - 1, item);
+		QTreeWidgetItem *item = _list->takeTopLevelItem(row);
+		_list->insertTopLevelItem(wipeRow - 1, item);
 		*/
 	}
 }
 
 void BlotGL::moveInstToBottom()
 {
-	moveInstToIndex(_list->count());
+	moveInstToIndex(_list->topLevelItemCount());
 }
 
 std::vector<unsigned int> BlotGL::getSortedIndices()
 {
-	QList<QListWidgetItem *> list = _list->selectedItems();
+	QList<QTreeWidgetItem *> list = _list->selectedItems();
 	std::vector<unsigned int> indices;
 	
 	for (int i = 0; i < list.size(); i++)
 	{
-		QListWidgetItem *item = list[i];
-		unsigned int row = _list->row(item);
+		QTreeWidgetItem *item = list[i];
+		unsigned int row = _list->indexOfTopLevelItem(item);
 		indices.push_back(row);
 	}
 	
@@ -240,7 +246,7 @@ void BlotGL::moveInstruction(int diff)
 		return;
 	}
 	
-	int row = _list->currentRow();
+	int row = _list->indexOfTopLevelItem(_list->currentItem());
 
 	std::vector<unsigned int> indices = getSortedIndices();
 	if (indices.size() <= 0)
@@ -252,6 +258,12 @@ void BlotGL::moveInstruction(int diff)
 	int max = indices.back();
 	
 	int sign = (diff > 0) ? 1 : -1;
+
+	if (abs(diff) <= 1)
+	{
+		row += diff;
+	}
+
 	diff = abs(diff);
 	
 	for (int i = 0; i < diff; i++)
@@ -268,21 +280,22 @@ void BlotGL::moveInstruction(int diff)
 			to = max;
 		}
 		
-		if (from < 0 || to < 0 || from > _list->count() 
-		    || to > _list->count())
+		if (from < 0 || to < 0 || from > _list->topLevelItemCount() 
+		    || to > _list->topLevelItemCount())
 		{
 			break;
 		}
 
-		QListWidgetItem *item = _list->takeItem(from);
-		_list->insertItem(to, item);
+		QTreeWidgetItem *item = _list->takeTopLevelItem(from);
+		_list->insertTopLevelItem(to, item);
 		
 		min += sign;
 		max += sign;
 	}
 	
 	_list->clearSelection();
-	_list->setCurrentRow(row);
+
+	_list->setCurrentItem(_list->topLevelItem(row));
 }
 
 void BlotGL::updateProjection(double side)
@@ -320,7 +333,7 @@ BlotGL::BlotGL(QWidget *p) : SlipGL(p)
 
 	makeList(p);
 	
-	connect(_list, &QListWidget::currentRowChanged, 
+	connect(_list, &QTreeWidget::currentItemChanged, 
 	        this, &BlotGL::selectInEditMode);
 
 	advancePresentation();
@@ -339,23 +352,24 @@ void BlotGL::selectInEditMode()
 
 void BlotGL::selectInstruction()
 {
-	if (_list->count() == 0)
+	if (_list->topLevelItemCount() == 0)
 	{
 		return;
 	}
 
-	QListWidgetItem *item = _list->currentItem();
-	int row = _list->row(item);
+	QTreeWidgetItem *item = _list->currentItem();
+	int row = _list->indexOfTopLevelItem(item);
 	_currPos = row;
 
 	Instruction *myInst = instructionForItem(item);
 	StartScreen::startScreenPtr->setClick(myInst);
+	std::cout << "Here" << std::endl;
 	
 	int lastWipe = 0;
 
 	for (int i = row - 1; i >= 0; i--)
 	{
-		Instruction *inst = instructionForItem(_list->item(i));
+		Instruction *inst = instructionForItem(_list->topLevelItem(i));
 
 		if (inst->getClassName() == "WipeSlate")
 		{
@@ -368,7 +382,7 @@ void BlotGL::selectInstruction()
 
 	for (int i = lastWipe; i <= row; i++)
 	{
-		Instruction *inst = instructionForItem(_list->item(i));
+		Instruction *inst = instructionForItem(_list->topLevelItem(i));
 		
 		inst->instantEffect();
 	}
@@ -420,13 +434,13 @@ void BlotGL::addObject(SlipObject *obj, bool top)
 
 void BlotGL::goBackOneSlide()
 {
-	int row = _list->currentRow() - 1;
+	int row = _list->indexOfTopLevelItem(_list->currentItem()) - 1;
 	
-	if (!instructionForItem(_list->item(row + 1))->waitForClick())
+	if (!instructionForItem(_list->topLevelItem(row + 1))->waitForClick())
 	{
 		while (true)
 		{
-			Instruction *inst = instructionForItem(_list->item(row - 1));
+			Instruction *inst = instructionForItem(_list->topLevelItem(row - 1));
 			row--;
 			if (inst->waitForClick())
 			{
@@ -436,9 +450,9 @@ void BlotGL::goBackOneSlide()
 		}
 	}
 	
-	if (row >= 0 && row < _list->count())
+	if (row >= 0 && row < _list->topLevelItemCount())
 	{
-		_list->setCurrentRow(row);
+		_list->setCurrentItem(_list->topLevelItem(row));
 		selectInstruction();
 		_currPos = row + 1;
 	}
@@ -460,12 +474,12 @@ void BlotGL::advancePresentation(bool clicked)
 
 	while (true)
 	{
-		if ((int)_list->count() <= _currPos)
+		if ((int)_list->topLevelItemCount() <= _currPos)
 		{
 			break;
 		}
 		
-		Instruction *inst = instructionForItem(_list->item(_currPos));
+		Instruction *inst = instructionForItem(_list->topLevelItem(_currPos));
 		
 		if (inst->waitForClick() && !clicked)
 		{
@@ -492,7 +506,7 @@ void BlotGL::advancePresentation(bool clicked)
 
 		update();
 		clicked = false;
-		_list->setCurrentRow(_currPos);
+		_list->setCurrentItem(_list->topLevelItem(_currPos));
 		_currPos++;
 	}
 	
@@ -586,20 +600,21 @@ void BlotGL::addImage(ImageProc *proc)
 
 void BlotGL::addInstruction(Instruction *inst, bool atRow)
 {
-	QListWidgetItem *item = new QListWidgetItem();
-	inst->setListItem(item);
+	QTreeWidgetItem *item = new QTreeWidgetItem();
+	inst->setTreeItem(item);
 	QVariant var = QVariant::fromValue<Instruction *>(inst);
-	item->setData(Qt::UserRole, var);
+	item->setData(0, Qt::UserRole, var);
 
 	if (atRow)
 	{
-		_list->insertItem(_list->currentRow() + 1, item);
+		int idx = _list->indexOfTopLevelItem(_list->currentItem()) + 1;
+		_list->insertTopLevelItem(idx, item);
 		_list->clearSelection();
-		_list->setCurrentRow(_list->currentRow() + 1);
+		_list->setCurrentItem(_list->topLevelItem(idx));
 	}
 	else
 	{
-		_list->addItem(item);
+		_list->addTopLevelItem(item);
 	}
 	
 	bool atTop = false;
@@ -683,14 +698,14 @@ void BlotGL::mousePressEvent(QMouseEvent *e)
 
 }
 
-Instruction *BlotGL::instructionForItem(QListWidgetItem *item)
+Instruction *BlotGL::instructionForItem(QTreeWidgetItem *item)
 {
 	if (item == NULL)
 	{
 		return NULL;
 	}
 
-	QVariant var = item->data(Qt::UserRole);
+	QVariant var = item->data(0, Qt::UserRole);
 	Instruction *inst = qvariant_cast<Instruction *>(var);
 	
 	return inst;
@@ -786,18 +801,20 @@ Instruction *BlotGL::findSelectedInstruction(double x, double y)
 	}
 
 	/* Else, go through everything in reverse order */
-	for (int i = _list->currentRow(); i >= 0; i--)
+	for (int i = _list->indexOfTopLevelItem(_list->currentItem()); i >= 0; i--)
 	{
-		Instruction *option = instructionForItem(_list->item(i));
+		Instruction *option = instructionForItem(_list->topLevelItem(i));
 
 		if (isPossibleInstruction(option, old, x, y))
 		{
 			return option;
 		}
 	}
-	for (int i = _list->currentRow(); i < _list->count(); i++)
+
+	int start = _list->indexOfTopLevelItem(_list->currentItem());
+	for (int i = start; i < _list->topLevelItemCount(); i++)
 	{
-		Instruction *option = instructionForItem(_list->item(i));
+		Instruction *option = instructionForItem(_list->topLevelItem(i));
 
 		if (isPossibleInstruction(option, old, x, y))
 		{
@@ -912,9 +929,9 @@ void BlotGL::addProperties()
 		return;
 	}
 
-	for (int i = 0; i < _list->count(); i++)
+	for (int i = 0; i < _list->topLevelItemCount(); i++)
 	{
-		QListWidgetItem *item = _list->item(i);
+		QTreeWidgetItem *item = _list->topLevelItem(i);
 		Instruction *inst = instructionForItem(item);
 		addChild("instruction", inst);
 	}
@@ -929,24 +946,24 @@ void BlotGL::addObject(Parser *child, std::string name)
 
 	if (name == "instruction")
 	{
-		QListWidgetItem *item = new QListWidgetItem();
+		QTreeWidgetItem *item = new QTreeWidgetItem();
 		Instruction *inst = static_cast<Instruction *>(child);
 		QVariant var = QVariant::fromValue<Instruction *>(inst);
 
-		item->setData(Qt::UserRole, var);
-		item->setText("Temp");
+		item->setData(0, Qt::UserRole, var);
+		item->setText(0, "Temp");
 		
-		_list->addItem(item);
+		_list->addTopLevelItem(item);
 	}
 }
 
 void BlotGL::postParseTidy()
 {
-	for (int i = 0; i < _list->count(); i++)
+	for (int i = 0; i < _list->topLevelItemCount(); i++)
 	{
-		QListWidgetItem *item = _list->item(i);
+		QTreeWidgetItem *item = _list->topLevelItem(i);
 		Instruction *inst = instructionForItem(item);
-		inst->setListItem(item);
+		inst->setTreeItem(item);
 		inst->updateText();
 	}
 
@@ -955,9 +972,9 @@ void BlotGL::postParseTidy()
 
 bool BlotGL::imageInUse(ImageProc *image)
 {
-	for (int i = 0; i < _list->count(); i++)
+	for (int i = 0; i < _list->topLevelItemCount(); i++)
 	{
-		Instruction *inst = instructionForItem(_list->item(i));
+		Instruction *inst = instructionForItem(_list->topLevelItem(i));
 		BlotObject *obj = inst->object();
 
 		if (obj && obj->getImage() && obj->getImage() == image)
@@ -972,13 +989,13 @@ bool BlotGL::imageInUse(ImageProc *image)
 void BlotGL::removeImageReferences(ImageProc *image)
 {
 	/* remove instructions first */
-	for (int i = 0; i < _list->count(); i++)
+	for (int i = 0; i < _list->topLevelItemCount(); i++)
 	{
-		Instruction *inst = instructionForItem(_list->item(i));
+		Instruction *inst = instructionForItem(_list->topLevelItem(i));
 		
 		if (inst->object() && inst->object()->getImage() == image)
 		{
-			_list->takeItem(i);
+			_list->takeTopLevelItem(i);
 			i--;
 		}
 	}
@@ -1066,9 +1083,9 @@ void BlotGL::selectAll()
 {
 	deselectAll();
 
-	for (int i = 0; i < _list->count(); i++)
+	for (int i = 0; i < _list->topLevelItemCount(); i++)
 	{
-		QListWidgetItem *item = _list->item(i);
+		QTreeWidgetItem *item = _list->topLevelItem(i);
 		Instruction *inst = instructionForItem(item);
 
 		if (inst->object() == NULL)
@@ -1087,9 +1104,9 @@ void BlotGL::selectAll()
 
 void BlotGL::copyToGL(BlotGL *another)
 {
-	for (int i = 0; i < _list->count(); i++)
+	for (int i = 0; i < _list->topLevelItemCount(); i++)
 	{
-		QListWidgetItem *item = _list->item(i);
+		QTreeWidgetItem *item = _list->topLevelItem(i);
 		Instruction *inst = instructionForItem(item);
 		
 		if (inst->primaryLoad())
