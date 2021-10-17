@@ -84,11 +84,6 @@ public:
 		return NULL;
 	}
 	
-	void setTreeItem(QTreeWidgetItem *item)
-	{
-		_item = item;
-	}
-	
 	virtual void instantEffect() = 0;
 	virtual bool animateEffect(); 
 	virtual bool animateStep() 
@@ -110,7 +105,6 @@ protected:
 
 private:
 	bool _onClick;
-	QTreeWidgetItem *_item;
 
 };
 

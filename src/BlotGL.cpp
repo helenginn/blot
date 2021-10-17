@@ -950,7 +950,6 @@ void BlotGL::postParseTidy()
 	{
 		QTreeWidgetItem *item = _list->topLevelItem(i);
 		Instruction *inst = instructionForItem(item);
-		inst->setTreeItem(item);
 		inst->updateText();
 	}
 
