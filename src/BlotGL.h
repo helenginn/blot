@@ -91,6 +91,7 @@ public:
 	void setSmallWindow();
 	
 	bool imageInUse(ImageProc *image);
+	void addSet();
 	void addHideCurrentImage();
 	void addMoveCurrentImage();
 	void addWiggleCurrentImage();

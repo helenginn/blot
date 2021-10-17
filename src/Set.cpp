@@ -22,3 +22,11 @@ Set::Set(BlotGL *pres) : Instruction(pres)
 {
 
 }
+
+void Set::setInstructions(std::vector<Instruction *> insts)
+{
+	for (size_t i = 0; i < insts.size(); i++)
+	{
+	}
+
+}

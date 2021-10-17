@@ -21,10 +21,14 @@
 
 #include "Instruction.h"
 
+class Instruction;
+
 class Set : public Instruction
 {
 public:
 	Set(BlotGL *pres);
+	
+	void setInstructions(std::vector<Instruction *> insts);
 
 	virtual std::string getClassName()
 	{

@@ -16,6 +16,7 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
+#include "Set.h"
 #include "ImageWiggle.h"
 #include "BlotGL.h"
 #include "Properties.h"
@@ -1020,6 +1021,28 @@ void BlotGL::progressAnimations()
 	}
 	
 	update();
+}
+
+void BlotGL::addSet()
+{
+	QList<QTreeWidgetItem *> list = _list->selectedItems();
+
+	if (list.size() == 0)
+	{
+		return;
+	}
+	
+	std::vector<Instruction *> insts;
+	
+	for (int i = 0; i < list.size(); i++)
+	{
+		Instruction *curr = instructionForItem(list[i]);
+		insts.push_back(curr);
+	}
+
+	Set *set = new Set(this);
+	addInstruction(set);
+	set->setInstructions(insts);
 }
 
 void BlotGL::addMoveCurrentImage()
