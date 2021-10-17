@@ -44,11 +44,8 @@ void Instruction::linkReference(BaseParser *child, std::string name)
 
 void Instruction::updateText()
 {
-	if (_item)
-	{
-		_item->setText(0, qText());
-		_item->treeWidget()->repaint();
-	}
+	setText(0, qText());
+	treeWidget()->repaint();
 
 }
 

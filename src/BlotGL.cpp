@@ -600,21 +600,16 @@ void BlotGL::addImage(ImageProc *proc)
 
 void BlotGL::addInstruction(Instruction *inst, bool atRow)
 {
-	QTreeWidgetItem *item = new QTreeWidgetItem();
-	inst->setTreeItem(item);
-	QVariant var = QVariant::fromValue<Instruction *>(inst);
-	item->setData(0, Qt::UserRole, var);
-
 	if (atRow)
 	{
 		int idx = _list->indexOfTopLevelItem(_list->currentItem()) + 1;
-		_list->insertTopLevelItem(idx, item);
+		_list->insertTopLevelItem(idx, inst);
 		_list->clearSelection();
 		_list->setCurrentItem(_list->topLevelItem(idx));
 	}
 	else
 	{
-		_list->addTopLevelItem(item);
+		_list->addTopLevelItem(inst);
 	}
 	
 	bool atTop = false;
@@ -704,10 +699,8 @@ Instruction *BlotGL::instructionForItem(QTreeWidgetItem *item)
 	{
 		return NULL;
 	}
-
-	QVariant var = item->data(0, Qt::UserRole);
-	Instruction *inst = qvariant_cast<Instruction *>(var);
 	
+	Instruction *inst = dynamic_cast<Instruction *>(item);
 	return inst;
 }
 
@@ -946,14 +939,8 @@ void BlotGL::addObject(Parser *child, std::string name)
 
 	if (name == "instruction")
 	{
-		QTreeWidgetItem *item = new QTreeWidgetItem();
 		Instruction *inst = static_cast<Instruction *>(child);
-		QVariant var = QVariant::fromValue<Instruction *>(inst);
-
-		item->setData(0, Qt::UserRole, var);
-		item->setText(0, "Temp");
-		
-		_list->addTopLevelItem(item);
+		_list->addTopLevelItem(inst);
 	}
 }
 

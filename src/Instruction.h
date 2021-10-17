@@ -21,9 +21,7 @@
 
 #include "BlotGL.h"
 
-class QListWidgetItem;
-
-class Instruction : public Parser
+class Instruction : public Parser, public QTreeWidgetItem
 {
 public:
 	Instruction(BlotGL *pres);
