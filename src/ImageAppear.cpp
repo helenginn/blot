@@ -31,6 +31,16 @@ ImageAppear::ImageAppear(BlotGL *pres) : ImageAnimated(pres)
 	_endTime = 1.0;
 }
 
+ImageAppear::ImageAppear(ImageAppear &other) : ImageAnimated(other)
+{
+	_left = other._left;
+	_right = other._right;
+	_top = other._top;
+	_bottom = other._bottom;
+	_angle = other._angle;
+	_endTime = other._endTime;
+}
+
 void ImageAppear::instantEffect()
 {
 	prepareEffect();
@@ -172,22 +182,34 @@ void ImageAppear::moveFractional(double fx, double fy)
 void ImageAppear::resizeFractional(double fx, double fy, bool aspect)
 {
 	double ratio = (_bottom - _top) / (_right - _left);
-
+	
 	_left -= fx;
 	_right += fx;
 	_top += fy;
 	_bottom -= fy;
 	
+	double sideways = fabs(_right - _left);
+	double upways = fabs(_top - _bottom);
+	
 	if (aspect)
 	{
 		double new_ratio = (_bottom - _top) / (_right - _left);
 		double fix = ratio / new_ratio;
-		double diff = (_bottom - _top) * (fix - 1) / 2;
 		
-		_bottom += diff;
-		_top -= diff;
+		if (upways > sideways)
+		{
+			double diff = (_bottom - _top) * (fix - 1) / 2;
+			_bottom += diff;
+			_top -= diff;
+		}
+		else
+		{
+			double diff = (_right - _left) * (1/fix - 1) / 2;
+			_right += diff;
+			_left -= diff;
+		}
 	}
-
+	
 	_obj->setVertices(_top, _bottom, _left, _right);
 	_obj->rotateVertices(_angle);
 	_obj->getImage()->setLastDims((_left - _right) / 2, 

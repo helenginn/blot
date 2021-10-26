@@ -30,6 +30,7 @@ class Instruction : public Parser, virtual public QTreeWidgetItem
 {
 public:
 	Instruction(BlotGL *pres);
+	Instruction(Instruction &other);
 	virtual ~Instruction() {};
 	
 	virtual std::string getClassName()
@@ -96,6 +97,7 @@ public:
 		return NULL;
 	}
 	
+	virtual void prepareEffect() {};
 	virtual void instantEffect() = 0;
 	virtual bool animateEffect(); 
 	virtual bool animateStep() 

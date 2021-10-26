@@ -20,7 +20,7 @@
 #include "BlotGL.h"
 #include "ImageMove.h"
 
-ImageMove::ImageMove(BlotGL *pres, Instruction *inst) 
+ImageMove::ImageMove(BlotGL *pres, Instruction *inst, double fraction) 
 : ImageAnimated(pres, inst)
 {
 	if (inst == NULL || inst->object() == NULL)
@@ -30,13 +30,29 @@ ImageMove::ImageMove(BlotGL *pres, Instruction *inst)
 	}
 
 	_valid = true;
+	_master = inst;
 	_obj = inst->object();
+	_resize = 0;
 	_endTime = 3;
 	_angle = 0;
 	_obj->midpoint(&_newx, &_newy);
 	_obj->midpoint(&_oldx, &_oldy);
 	_newx += 0.05;
 	_newy += 0.05;
+	
+	ImageMove *other = dynamic_cast<ImageMove *>(inst);
+	if (other)
+	{
+		_newx = other->_oldx;
+		_newy = other->_oldy;
+		_oldx = other->_newx;
+		_oldy = other->_newy;
+		_angle = -other->_angle;
+	}
+	
+	_oldx = _oldx + fraction * (_newx - _oldx);
+	_oldy = _oldy + fraction * (_newy - _oldy);
+	_angle *= fraction;
 }
 
 bool ImageMove::animateStep()
@@ -48,9 +64,12 @@ bool ImageMove::animateStep()
 	double diffx = (_newx - _oldx) * portion;
 	double diffy = (_newy - _oldy) * portion;
 	double diffa = _angle * portion;
+	double dresize = _resize * portion;
 
 	_obj->addToVertices(diffx, diffy);
 	_obj->rotateVertices(diffa);
+
+	_obj->resize(1 + dresize);
 
 	return keep_going;
 }
@@ -80,10 +99,22 @@ void ImageMove::rotateFractional(float x0, float y0, float fx, float fy)
 	_obj->rotateVertices(fy);
 }
 
+void ImageMove::resizeFractional(double fx, double fy, bool aspect)
+{
+	if (aspect)
+	{
+		fy = fx;
+	}
+
+	_resize += fy;
+	_obj->resize(1 + fy);
+}
+
 void ImageMove::prepareEffect()
 {
 	std::string text = _obj->getImage()->text();
 	std::cout << "Move effect for " << text << std::endl;
+//	_master->prepareEffect();
 }
 
 void ImageMove::instantEffect()
@@ -91,6 +122,9 @@ void ImageMove::instantEffect()
 	prepareEffect();
 	_obj->addToVertices(_newx - _oldx, _newy - _oldy);
 	_obj->rotateVertices(_angle);
+
+	_obj->resize(1 + _resize);
+
 	_presentation->update();
 }
 
@@ -103,6 +137,7 @@ void ImageMove::addProperties()
 	addDoubleProperty("oldy", &_oldy);
 	addDoubleProperty("newx", &_newx);
 	addDoubleProperty("newy", &_newy);
+	addDoubleProperty("resizex", &_resize);
 }
 
 void ImageMove::linkReference(BaseParser *child, std::string name)

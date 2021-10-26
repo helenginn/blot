@@ -32,6 +32,17 @@ Instruction::Instruction(BlotGL *pres)
 	         Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 }
 
+Instruction::Instruction(Instruction &other)
+{
+	_onClick = other._onClick;
+	_presentation = other._presentation;
+	_random = i_to_str(rand());
+	_delay = other._delay;
+
+	setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled | 
+	         Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
+}
+
 void Instruction::addProperties()
 {
 	addDoubleProperty("delay", &_delay);

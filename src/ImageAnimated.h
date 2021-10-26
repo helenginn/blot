@@ -25,6 +25,7 @@ class ImageAnimated : public Instruction
 {
 public:
 	ImageAnimated(BlotGL *gl = NULL, Instruction *inst = NULL);
+	ImageAnimated(ImageAnimated &other);
 	
 	virtual BlotObject *object()
 	{
@@ -47,6 +48,9 @@ protected:
 	virtual void addProperties();
 	virtual void linkReference(BaseParser *child, std::string name);
 	void setTime(double time);
+	
+	void resize(double *left, double *right, double *top,
+	            double *bottom, double fx, double fy, bool aspect);
 
 	double _time;
 	double _stepTime;

@@ -32,6 +32,8 @@ class BlotObject : public SlipObject, public Parser
 {
 public:
 	BlotObject(ImageProc *proc = NULL);
+	BlotObject(BlotObject &other);
+
 	virtual ~BlotObject() {};
 	
 	virtual std::string getClassName()
@@ -70,6 +72,7 @@ public:
 
 	bool isCovered(double x, double y);
 	void setVertices(float t, float b, float l, float r);
+	void getVertices(double *t, double *b, double *l, double *r);
 	void addToVertices(float x, float y);
 	void rotateVertices(double angle);
 	

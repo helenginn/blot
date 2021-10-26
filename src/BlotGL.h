@@ -118,8 +118,11 @@ public:
 	void selectInstruction(Instruction *inst);
 	Instruction *currentInstruction();
 	
-	virtual void addSet();
+	void makeSet();
+	virtual void addSet(QList<QTreeWidgetItem *> list =
+	                    QList<QTreeWidgetItem *>());
 	virtual Set *instructionParent(); 
+	void deselectAll();
 public slots:
 	void selectInEditMode();
 	void moveInstructionUp();
@@ -127,8 +130,6 @@ public slots:
 	void deleteInstructions();
 	void progressAnimations();
 	void toggleVKey();
-	void rightClickMenu(const QPoint &p);
-	void setDelay();
 	
 protected:
 	virtual void initializeGL();
@@ -148,7 +149,6 @@ private:
 	void goBackOneSlide();
 	void moveInstruction(int diff);
 	std::vector<unsigned int> getSortedIndices();
-	void deselectAll();
 	Instruction *findSelectedInstruction(double x, double y);
 	void replaceSelectedInstruction(double x, double y);
 	void selectInstruction(Instruction *inst, bool primary);

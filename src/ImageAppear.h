@@ -28,6 +28,7 @@ class ImageAppear : public ImageAnimated
 {
 public:
 	ImageAppear(BlotGL *pres = NULL);
+	ImageAppear(ImageAppear &other);
 	virtual ~ImageAppear() {};
 	
 	virtual bool canMove()

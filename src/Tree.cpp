@@ -17,17 +17,27 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "Tree.h"
-#include "Instruction.h"
+#include "BlotGL.h"
+#include "ImageMove.h"
+#include "ImageHide.h"
+#include "ImageAppear.h"
 #include <QHeaderView>
+#include <QInputDialog>
+#include <QMenu>
 
-Tree::Tree(QWidget *p) : QTreeWidget(p)
+Tree::Tree(QWidget *p, BlotGL *pres) : QTreeWidget(p)
 {
+	_pres = pres;
+
 	setDragEnabled(true);
 	setDropIndicatorShown(true);
     setDragDropMode(QAbstractItemView::InternalMove);
 	setSelectionMode(QAbstractItemView::ContiguousSelection);
 	setColumnCount(2);
 	setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(this, &QTreeWidget::customContextMenuRequested,
+	        this, &Tree::rightClickMenu);
+
 	
 	QStringList labels;
 	labels.push_back("Instruction");
@@ -45,4 +55,99 @@ Qt::DropActions Tree::supportedDropActions() const
 Qt::ItemFlags Tree::getTreeItemFlags() const
 {
     return (Qt::ItemIsDragEnabled | Qt::ItemIsSelectable);
+}
+
+void Tree::rightClickMenu(const QPoint &p)
+{
+	std::cout << "here" << std::endl;
+	QMenu *m = new QMenu();
+	QPoint pos = mapToGlobal(p);
+	
+	QAction *a = m->addAction("Set delay");
+	connect(a, &QAction::triggered, this, &Tree::setDelay);
+	a = m->addAction("Move");
+	connect(a, &QAction::triggered, this, &Tree::makeMoves);
+	a = m->addAction("Hide");
+	connect(a, &QAction::triggered, this, &Tree::makeHides);
+	a = m->addAction("Duplicate");
+	connect(a, &QAction::triggered, this, &Tree::duplicate);
+	a = m->addAction("Make set");
+	connect(a, &QAction::triggered, _pres, &BlotGL::makeSet);
+
+	m->exec(pos);
+}
+
+void Tree::setDelay()
+{
+	bool ok;
+	double d;
+	d = QInputDialog::getDouble(this, tr("Delay after previous instruction"),
+	                            tr("Set value:"), 0, 0, 100, 1, &ok);
+
+	if (ok)
+	{
+		QList<QTreeWidgetItem *> selected = selectedItems();
+		for (size_t i = 0; i < selected.size(); i++)
+		{
+			Instruction *inst = dynamic_cast<Instruction *>(selected[i]);
+			if (inst)
+			{
+				inst->setDelay(d);
+			}
+		}
+	}
+}
+
+void Tree::duplicate()
+{
+	QList<QTreeWidgetItem *> selected = selectedItems();
+	QList<QTreeWidgetItem *> replacement;
+	int count = 0;
+
+	for (size_t i = 0; i < selected.size(); i++)
+	{
+		ImageAppear *inst = dynamic_cast<ImageAppear *>(selected[i]);
+		
+		if (inst)
+		{
+			ImageAppear *dupl = new ImageAppear(*inst);
+			_pres->addInstruction(dupl);
+			replacement.push_back(dupl);
+		}
+	}
+	
+	if (replacement.size() >= 5)
+	{
+		_pres->addSet(replacement);
+	}
+	
+	_pres->deselectAll();
+}
+
+void Tree::makeHides()
+{
+	QList<QTreeWidgetItem *> selected = selectedItems();
+	for (size_t i = 0; i < selected.size(); i++)
+	{
+		Instruction *inst = dynamic_cast<Instruction *>(selected[i]);
+		ImageHide *hide = new ImageHide(_pres, inst);
+		_pres->addInstruction(hide);
+	}
+}
+
+void Tree::makeMoves()
+{
+	bool ok;
+	double d;
+	d = QInputDialog::getDouble(this, tr("Percentage of default motion"),
+	                            tr("Set value:"), 0, 0, 1, 2, &ok);
+
+	QList<QTreeWidgetItem *> selected = selectedItems();
+	for (size_t i = 0; i < selected.size(); i++)
+	{
+		Instruction *inst = dynamic_cast<Instruction *>(selected[i]);
+		ImageMove *move = new ImageMove(_pres, inst, d);
+		_pres->addInstruction(move);
+	}
+
 }

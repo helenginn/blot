@@ -27,7 +27,8 @@ class BlotObject;
 class ImageMove : public ImageAnimated
 {
 public:
-	ImageMove(BlotGL *pres = NULL, Instruction *inst = NULL);
+	ImageMove(BlotGL *pres = NULL, Instruction *inst = NULL,
+	          double fraction = 1);
 
 	bool isValid()
 	{
@@ -52,6 +53,7 @@ public:
 	virtual void select(bool sel);
 	virtual void moveFractional(double fx, double fy);
 	virtual void rotateFractional(float x0, float y0, float fx, float fy);
+	virtual void resizeFractional(double fx, double fy, bool aspect);
 	virtual std::string instText();
 	virtual void instantEffect();
 	virtual void prepareEffect();
@@ -62,7 +64,9 @@ protected:
 private:
 	double _oldx, _oldy;
 	double _newx, _newy;
+	double _resize;
 	double _angle;
+	Instruction *_master;
 
 };
 

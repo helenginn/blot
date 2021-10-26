@@ -65,7 +65,8 @@ public:
 	virtual void displayToInstruction(Instruction *inst);
 	virtual void addInstruction(Instruction *inst, bool atRow = true);
 	void addInstruction(Instruction *inst, int idx);
-	virtual void addSet();
+	virtual void addSet(QList<QTreeWidgetItem *> list = 
+	                    QList<QTreeWidgetItem *>());
 protected:
 	int _currPos;
 	Instruction *_currInstruct;

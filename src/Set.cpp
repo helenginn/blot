@@ -251,9 +251,12 @@ Instruction *Set::displayableInstruction()
 	return instruction(0);
 }
 
-void Set::addSet()
+void Set::addSet(QList<QTreeWidgetItem *> list)
 {
-	QList<QTreeWidgetItem *> list = _presentation->list()->selectedItems();
+	if (list.size() == 0)
+	{
+		_presentation->list()->selectedItems();
+	}
 
 	if (list.size() == 0)
 	{

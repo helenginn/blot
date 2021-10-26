@@ -30,8 +30,6 @@
 #include "Library.h"
 #include "StartScreen.h"
 #include "Tree.h"
-#include <QInputDialog>
-#include <QMenu>
 #include <QApplication>
 #include <algorithm>
 #include <QMouseEvent>
@@ -51,14 +49,11 @@ void BlotGL::makeList(QWidget *p)
 		return;
 	}
 
-	_list = new Tree(p);
+	_list = new Tree(p, this);
 	_list->setGeometry(0, MENU_HEIGHT, INSTRUCTION_WIDTH, 
 	                   p->height() - MENU_HEIGHT - QUICK_BUTTON_HEIGHT);
 	_list->show();
 	
-	connect(_list, &QTreeWidget::customContextMenuRequested,
-	        this, &BlotGL::rightClickMenu);
-
 	QIcon del = qApp->style()->standardIcon(QStyle::SP_TrashIcon);
 	QIcon up = qApp->style()->standardIcon(QStyle::SP_ArrowUp);
 	QIcon down = qApp->style()->standardIcon(QStyle::SP_ArrowDown);
@@ -119,39 +114,6 @@ void BlotGL::makeList(QWidget *p)
 	_buttons.push_back(_bDelete);
 	_buttons.push_back(_bMore);
 	_buttons.push_back(_bView);
-}
-
-void BlotGL::rightClickMenu(const QPoint &p)
-{
-	std::cout << "here" << std::endl;
-	QMenu *m = new QMenu();
-	QPoint pos = _list->mapToGlobal(p);
-	
-	QAction *a = m->addAction("Set delay");
-	connect(a, &QAction::triggered, this, &BlotGL::setDelay);
-
-	m->exec(pos);
-}
-
-void BlotGL::setDelay()
-{
-	bool ok;
-	double d;
-	d = QInputDialog::getDouble(this, tr("Delay after previous instruction"),
-	                            tr("Set value:"), 0, 0, 100, 1, &ok);
-
-	if (ok)
-	{
-		QList<QTreeWidgetItem *> selected = _list->selectedItems();
-		for (size_t i = 0; i < selected.size(); i++)
-		{
-			Instruction *inst = dynamic_cast<Instruction *>(selected[i]);
-			if (inst)
-			{
-				inst->setDelay(d);
-			}
-		}
-	}
 }
 
 Instruction *BlotGL::takeInstruction(Instruction *inst)
@@ -907,7 +869,6 @@ void BlotGL::mouseMoveEvent(QMouseEvent *e)
 	}
 	else if (!_shiftPressed)
 	{
-//		_currInstruct->moveFractional(-frac_y, frac_x);
 		EditGroup group = editGroup();
 		group.moveFractional(-frac_y, frac_x);
 	}
@@ -1088,13 +1049,18 @@ void BlotGL::progressAnimations()
 	update();
 }
 
-void BlotGL::addSet()
+void BlotGL::makeSet()
+{
+	addSet();
+}
+
+void BlotGL::addSet(QList<QTreeWidgetItem *> list)
 {
 	Instruction *inst = currentInstruction();
 	
 	if (!inst) return;
 
-	inst->instructionParent()->Set::addSet();
+	inst->instructionParent()->Set::addSet(list);
 }
 
 void BlotGL::addInstruction(Instruction *inst, bool atRow)
@@ -1150,22 +1116,23 @@ void BlotGL::selectAll()
 {
 	deselectAll();
 
-	for (int i = 0; i < _list->topLevelItemCount(); i++)
+	Instruction *option = currentInstruction();
+	
+	while (option != NULL)
 	{
-		QTreeWidgetItem *item = _list->topLevelItem(i);
-		Instruction *inst = instructionForItem(item);
+		std::cout << option->text(0).toStdString() << std::endl;
+		if (option->getClassName() == "WipeSlate")
+		{
+			break;
+		}
 
-		if (inst->object() == NULL)
+		if (option->object() && option->object()->isDisabled())
 		{
-			continue;
+			break;
 		}
-		
-		if (inst->object()->isDisabled())
-		{
-			continue;
-		}
-		
-		selectInstruction(inst, false);
+
+		selectInstruction(option, false);
+		option = option->prevInstruction();
 	}
 }
 

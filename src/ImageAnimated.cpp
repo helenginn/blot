@@ -38,6 +38,17 @@ ImageAnimated::ImageAnimated(BlotGL *gl, Instruction *inst) : Instruction(gl)
 	}
 }
 
+ImageAnimated::ImageAnimated(ImageAnimated &other) : Instruction(other)
+{
+	_valid = other._valid;
+	_startTime = other._startTime;
+	_endTime = other._endTime;
+	_time = other._time;
+	_fade = other._fade;
+	_stepTime = other._stepTime;
+	_obj = new BlotObject(*other._obj);
+}
+
 void ImageAnimated::linkReference(BaseParser *child, std::string name)
 {
 	if (name == "blot_object")
@@ -94,4 +105,27 @@ bool ImageAnimated::incrementTime()
 void ImageAnimated::setTime(double time)
 {
 	_time = time;
+}
+
+void ImageAnimated::resize(double *left, double *right, double *top,
+                           double *bottom, double fx, double fy, 
+                                     bool aspect)
+{
+	double ratio = (*bottom - *top) / (*right - *left);
+
+	*left -= fx;
+	*right += fx;
+	*top += fy;
+	*bottom -= fy;
+	
+	if (aspect)
+	{
+		double new_ratio = (*bottom - *top) / (*right - *left);
+		double fix = ratio / new_ratio;
+		double diff = (*bottom - *top) * (fix - 1) / 2;
+		
+		*bottom += diff;
+		*top -= diff;
+	}
+
 }

@@ -22,17 +22,27 @@
 #include <QTreeWidget>
 #include <QAbstractItemView>
 
+class BlotGL;
+
 class Tree : public QTreeWidget
 {
 Q_OBJECT
 public:
-	Tree(QWidget *p);
+	Tree(QWidget *p, BlotGL *pres);
 
 protected:
 	virtual Qt::DropActions supportedDropActions() const;
 	virtual Qt::ItemFlags getTreeItemFlags() const;
 
+public slots:
+	void rightClickMenu(const QPoint &p);
+	void setDelay();
+	void makeMoves();
+	void makeHides();
+	void duplicate();
+
 private:
+	BlotGL *_pres;
 
 };
 

@@ -88,6 +88,19 @@ void BlotObject::setZCoord(float z)
 	}
 }
 
+void BlotObject::getVertices(double *t, double *b, double *l, double *r)
+{
+	if (_vertices.size() == 0)
+	{
+		return;
+	}
+	
+	*b = _vertices[0].pos[0];
+	*l = _vertices[0].pos[1];
+	*r = _vertices[1].pos[1]; 
+	*t = _vertices[2].pos[0];
+}
+
 void BlotObject::setVertices(float t, float b, float l, float r)
 {
 	if (_vertices.size() == 0)
@@ -153,6 +166,24 @@ void BlotObject::makeDummy()
 	_indices.push_back(2);
 	_indices.push_back(1);
 	_indices.push_back(3);
+}
+
+BlotObject::BlotObject(BlotObject &other) : SlipObject()
+{
+	_transform = other._transform;
+	_aspectFloat = other._aspectFloat;
+	_time = other._time;
+	_random = i_to_str(rand());
+	_image = other._image;
+	_ignoreAspectRatio = other._ignoreAspectRatio;
+	_vString = other._vString;
+	_fString = other._fString;
+
+	makeDummy();
+	setDisabled(true);
+	setNeedsExtra(true);
+	_textured = true;
+	_handleOwnTextures = true;
 }
 
 BlotObject::BlotObject(ImageProc *proc) : SlipObject()
