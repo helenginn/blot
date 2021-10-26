@@ -27,6 +27,7 @@
 #include <vector>
 #include "Parser.h"
 #include "mat3x3.h"
+#include "Set.h"
 
 class BlotObject;
 class EditGroup;
@@ -35,7 +36,7 @@ class Instruction;
 class Properties;
 class QPushButton;
 
-class BlotGL : public SlipGL, public Parser
+class BlotGL : public SlipGL, public Set
 {
 	Q_OBJECT
 	
@@ -45,8 +46,9 @@ public:
 	void makeList(QWidget *p);
 	void addObject(SlipObject *obj, bool top = false);
 	void addImage(ImageProc *proc);
-	void addInstruction(Instruction *inst, bool atRow = true);
-	void advancePresentation(bool clicked = false);
+	void advancePresentation();
+	void triggerSimultaneousInstructions(Instruction *first, bool pass);
+	bool addToAnimated(Instruction *next);
 	Instruction *instructionForItem(QTreeWidgetItem *item);
 	
 	void setEditMode(bool edit)
@@ -85,13 +87,18 @@ public:
 	{
 		return _buttons.size();
 	}
+
+	virtual Instruction *instruction(int i);
+	virtual int instructionCount();
+	virtual int indexOfInstruction(Instruction *inst);
+	virtual void addInstruction(Instruction *inst, bool atRow = true);
+	virtual Instruction *takeInstruction(Instruction *inst);
 	
 	void clearAll();
 	void setFullScreen();
 	void setSmallWindow();
 	
 	bool imageInUse(ImageProc *image);
-	void addSet();
 	void addHideCurrentImage();
 	void addMoveCurrentImage();
 	void addWiggleCurrentImage();
@@ -107,14 +114,21 @@ public:
 	virtual void addProperties();
 	
 	virtual void updateProjection(double side = 0.5);
+	virtual void insertInstruction(Instruction *inst, int idx);
+	void selectInstruction(Instruction *inst);
+	Instruction *currentInstruction();
+	
+	virtual void addSet();
+	virtual Set *instructionParent(); 
 public slots:
 	void selectInEditMode();
 	void moveInstructionUp();
 	void moveInstructionDown();
-	void deleteInstruction();
-	void changeInstruction();
+	void deleteInstructions();
 	void progressAnimations();
 	void toggleVKey();
+	void rightClickMenu(const QPoint &p);
+	void setDelay();
 	
 protected:
 	virtual void initializeGL();
@@ -127,6 +141,7 @@ protected:
 
 	virtual void addObject(Parser *child, std::string name);
 	virtual void postParseTidy();
+
 private:
 	EditGroup editGroup();
 	void selectInstruction();
@@ -155,12 +170,10 @@ private:
 	std::vector<Instruction *> _otherInstruct;
 
 	std::vector<Instruction *> _animating;
-	Properties *_prop;
 	QObject *_parent;
 	bool _editMode;
 	bool _fullScreen;
 	bool _altPressed;
-	int _currPos;
 	int _startX;
 	int _startY;
 	mat4x4 _aspect;

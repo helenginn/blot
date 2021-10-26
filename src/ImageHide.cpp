@@ -17,6 +17,7 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "ImageHide.h"
+#include "BlotGL.h"
 #include "BlotObject.h"
 
 ImageHide::ImageHide(BlotGL *pres, Instruction *inst) : ImageAnimated(pres)

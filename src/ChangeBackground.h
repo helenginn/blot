@@ -23,6 +23,7 @@
 
 class BlotGL;
 class BlotObject;
+class ImageProc;
 
 class ChangeBackground : public Instruction
 {

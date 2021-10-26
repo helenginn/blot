@@ -13,6 +13,7 @@
 #include "ImageProc.h"
 #include "BlotObject.h"
 #include "ImageAppear.h"
+#include "Set.h"
 #include "ImageHide.h"
 #include "ImageFade.h"
 #include "ImageMove.h"
@@ -1250,6 +1251,10 @@ Parser *BaseParser::objectOfType(char *className)
 	else if (strcmp(className, "ImageProc") == 0)
 	{
 		object = static_cast<Parser *>(new ImageProc());
+	}
+	else if (strcmp(className, "InstructionSet") == 0)
+	{
+		object = static_cast<Parser *>(new Set());
 	}
 	else if (strcmp(className, "Presentation") == 0)
 	{

@@ -17,6 +17,7 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "WipeSlate.h"
+#include "BlotGL.h"
 
 WipeSlate::WipeSlate(BlotGL *pres) : Instruction(pres)
 {

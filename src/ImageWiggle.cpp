@@ -78,10 +78,6 @@ bool ImageWiggle::animateStep()
 	double cycle = fmod(portion, 0.2);
 	double dir = cycle < 0.1 ? -1 : 1;
 	
-	std::cout << _startTime << " " << _endTime << " " << _stepTime << 
-	std::endl;
-	std::cout << _angle << " " << cycle << " " << " " << portion << " " << dir << std::endl;
-	
 	double diffa = _angle * step * dir;
 
 	_obj->rotateVertices(diffa);

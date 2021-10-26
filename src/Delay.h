@@ -1,5 +1,5 @@
-// Blot
-// Copyright (C) 2017-2019 Helen Ginn
+// blot
+// Copyright (C) 2019 Helen Ginn
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,32 +16,22 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#include "ImageFade.h"
+#ifndef __blot__Delay__
+#define __blot__Delay__
 
-ImageFade::ImageFade(BlotGL *pres) : ImageAppear(pres)
-{
-	_valid = true;
-	_stepTime = 0.01;
-	_startTime = 0.0;
-	_endTime = 1;
-}
+#include "ImageAnimated.h"
 
-std::string ImageFade::instText()
+class Delay : public ImageAnimated
 {
-	std::string start = "";
-	start += (waitForClick() ? "" : "+ ");
-	start += "Fade " + object()->getImage()->text();
-	return start;
-}
+public:
+	Delay(BlotGL *gl, Instruction *target);
 
-void ImageFade::setBlotObject(BlotObject *obj)
-{
-	_obj = obj;
-	_obj->preprocessImage();
-}
+	virtual void prepareEffect();
+	virtual bool animateStep();
+	virtual void instantEffect();
+private:
+	Instruction *_target;
 
-void ImageFade::postParseTidy()
-{
-	_obj->preprocessImage();
-	Instruction::postParseTidy();
-}
+};
+
+#endif

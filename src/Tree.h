@@ -1,5 +1,5 @@
-// Blot
-// Copyright (C) 2017-2019 Helen Ginn
+// blot
+// Copyright (C) 2019 Helen Ginn
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,32 +16,24 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#include "ImageFade.h"
+#ifndef __blot__Tree__
+#define __blot__Tree__
 
-ImageFade::ImageFade(BlotGL *pres) : ImageAppear(pres)
-{
-	_valid = true;
-	_stepTime = 0.01;
-	_startTime = 0.0;
-	_endTime = 1;
-}
+#include <QTreeWidget>
+#include <QAbstractItemView>
 
-std::string ImageFade::instText()
+class Tree : public QTreeWidget
 {
-	std::string start = "";
-	start += (waitForClick() ? "" : "+ ");
-	start += "Fade " + object()->getImage()->text();
-	return start;
-}
+Q_OBJECT
+public:
+	Tree(QWidget *p);
 
-void ImageFade::setBlotObject(BlotObject *obj)
-{
-	_obj = obj;
-	_obj->preprocessImage();
-}
+protected:
+	virtual Qt::DropActions supportedDropActions() const;
+	virtual Qt::ItemFlags getTreeItemFlags() const;
 
-void ImageFade::postParseTidy()
-{
-	_obj->preprocessImage();
-	Instruction::postParseTidy();
-}
+private:
+
+};
+
+#endif

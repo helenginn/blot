@@ -57,15 +57,14 @@ void ImageAnimated::addProperties()
 	addReference("blot_object", _obj);
 }
 
+void ImageAnimated::postParseTidy()
+{
+	_endTime += fmod(_endTime, _stepTime);
+	Instruction::postParseTidy();
+}
+
 bool ImageAnimated::animateEffect()
 {
-	if (!_fade)
-	{
-		instantEffect();
-		setTime(1);
-		return false;
-	}
-
 	prepareEffect();
 	setTime(_startTime);
 	return true;

@@ -19,8 +19,8 @@
 #ifndef __Blot__StartScreen__
 #define __Blot__StartScreen__
 
-#define INSTRUCTION_WIDTH 200
-#define DEFAULT_WIDTH 1000
+#define INSTRUCTION_WIDTH 300
+#define DEFAULT_WIDTH 1100
 #define DEFAULT_HEIGHT 600
 #define QUICK_BUTTON_HEIGHT 40
 
@@ -64,6 +64,7 @@ private slots:
 	void addHide();
 	void addMove();
 	void addWiggle();
+	void makeSet();
 	void aspect4t3();
 	void aspect16t9();
 	void changeClick();

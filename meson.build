@@ -29,6 +29,7 @@ moc_files = qt5.preprocess(moc_headers : [
 'src/BlotGL.h', 
 'src/Library.h', 
 'src/StartScreen.h',
+'src/Tree.h',
 'src/Properties.h', 
 ],
 		moc_extra_arguments: ['-DMAKES_MY_MOC_HEADER_COMPILE'])
@@ -42,6 +43,7 @@ executable('blot', gen_src, moc_files,
 'src/BlotGL.cpp', 
 'src/BlotObject.cpp', 
 'src/ChangeBackground.cpp', 
+'src/Delay.cpp', 
 'src/EditGroup.cpp', 
 'src/Library.cpp', 
 'src/ImageAnimated.cpp', 
@@ -56,6 +58,7 @@ executable('blot', gen_src, moc_files,
 'src/Set.cpp', 
 'src/StartScreen.cpp', 
 'src/StateValue.cpp', 
+'src/Tree.cpp', 
 'src/WipeSlate.cpp', 
 cpp_args: ['-std=c++11'], dependencies : [ qt5_dep, dep_gl, png_dep, helen3d_dep, helencore_dep ], install: true)
 

@@ -17,6 +17,7 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "Instruction.h"
+#include "Set.h"
 #include "BlotGL.h"
 #include "charmanip.h"
 
@@ -25,10 +26,15 @@ Instruction::Instruction(BlotGL *pres)
 	_onClick = true;
 	_presentation = pres;
 	_random = i_to_str(rand());
+	_delay = -1;
+
+	setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled | 
+	         Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 }
 
 void Instruction::addProperties()
 {
+	addDoubleProperty("delay", &_delay);
 	addBoolProperty("on_click", &_onClick);
 	addStringProperty("_random", &_random);
 	addReference("presentation", _presentation);
@@ -45,12 +51,109 @@ void Instruction::linkReference(BaseParser *child, std::string name)
 void Instruction::updateText()
 {
 	setText(0, qText());
-	treeWidget()->repaint();
+	QString d = "";
+	
+	if (hasDelay())
+	{
+		d = QString::number(delay());
+	}
+	
+	setText(1, d);
 
+	_presentation->list()->repaint();
 }
 
 bool Instruction::animateEffect()
 {
 	instantEffect();
 	return false;
+}
+
+void Instruction::postParseTidy()
+{
+	updateText();
+}
+
+Set *Instruction::instructionParent()
+{
+	if (isTopLevel())
+	{
+		return _presentation;
+	}
+	else
+	{
+		return dynamic_cast<Set *>(QTreeWidgetItem::parent());	
+	}
+}
+
+Instruction *Instruction::displayableInstruction()
+{
+	return this;
+}
+
+Instruction *Instruction::prevInstruction()
+{
+	return adjacentInstruction(-1);
+}
+
+Instruction *Instruction::nextInstruction()
+{
+	return adjacentInstruction(+1);
+}
+
+Instruction *Instruction::adjacentInstruction(int dir)
+{
+	Set *parent = instructionParent();
+	if (parent == NULL)
+	{
+		return NULL;
+	}
+	
+	int idx = parent->indexOfInstruction(this);
+	idx += (dir > 0) ? 1 : -1;
+
+	if (idx < 0 || parent->instructionCount() <= idx)
+	{
+		return parent->adjacentInstruction(dir);
+	}
+	else
+	{
+		Instruction *inst = parent->instruction(idx);
+		Set *set = dynamic_cast<Set *>(inst);
+
+		if (set == NULL || set->instructionCount() == 0)
+		{
+			return inst;
+		}
+		
+		if (dir > 0)
+		{
+			return set->instruction(0);
+		}
+		else
+		{
+			Instruction *candidate = set->lastInstruction();
+			if (candidate == NULL)
+			{
+				return set;
+			}
+
+			return candidate;
+		}
+	}
+}
+
+void Instruction::setData(int column, int role, const QVariant &value)
+{
+	if (role == Qt::EditRole && column == 0)
+	{
+		return;
+	}
+
+	if (role == Qt::EditRole)
+	{
+		_delay = value.toDouble();
+	}
+	
+	QTreeWidgetItem::setData(column, role, value);
 }

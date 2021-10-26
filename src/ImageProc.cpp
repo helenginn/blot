@@ -32,6 +32,7 @@ ImageProc::ImageProc(QImage *image)
 		QImage rgba = image->convertToFormat(QImage::Format_RGBA8888);
 		_image = new QImage(rgba);
 		base64();
+		postParseTidy();
 	}
 
 	_randomID = i_to_str(rand());
@@ -81,6 +82,8 @@ void ImageProc::setImage(QImage &im)
 	_image = new QImage(rgba);
 	process();
 	deletePreprocessing();
+	base64();
+	postParseTidy();
 	
 }
 

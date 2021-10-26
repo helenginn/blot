@@ -1,5 +1,5 @@
-// Blot
-// Copyright (C) 2017-2019 Helen Ginn
+// header
+// Copyright (C) 2019 Helen Ginn
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,32 +16,33 @@
 // 
 // Please email: vagabond @ hginn.co.uk for more details.
 
-#include "ImageFade.h"
+#include "Tree.h"
+#include "Instruction.h"
+#include <QHeaderView>
 
-ImageFade::ImageFade(BlotGL *pres) : ImageAppear(pres)
+Tree::Tree(QWidget *p) : QTreeWidget(p)
 {
-	_valid = true;
-	_stepTime = 0.01;
-	_startTime = 0.0;
-	_endTime = 1;
+	setDragEnabled(true);
+	setDropIndicatorShown(true);
+    setDragDropMode(QAbstractItemView::InternalMove);
+	setSelectionMode(QAbstractItemView::ContiguousSelection);
+	setColumnCount(2);
+	setContextMenuPolicy(Qt::CustomContextMenu);
+	
+	QStringList labels;
+	labels.push_back("Instruction");
+	labels.push_back("delay");
+	setHeaderLabels(labels);
+	
+	header()->resizeSection(0, 250);
 }
 
-std::string ImageFade::instText()
+Qt::DropActions Tree::supportedDropActions() const
 {
-	std::string start = "";
-	start += (waitForClick() ? "" : "+ ");
-	start += "Fade " + object()->getImage()->text();
-	return start;
+	return Qt::MoveAction;
 }
 
-void ImageFade::setBlotObject(BlotObject *obj)
+Qt::ItemFlags Tree::getTreeItemFlags() const
 {
-	_obj = obj;
-	_obj->preprocessImage();
-}
-
-void ImageFade::postParseTidy()
-{
-	_obj->preprocessImage();
-	Instruction::postParseTidy();
+    return (Qt::ItemIsDragEnabled | Qt::ItemIsSelectable);
 }

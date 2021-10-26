@@ -21,14 +21,23 @@
 
 #include "Instruction.h"
 
-class Instruction;
+class BlotGL;
 
-class Set : public Instruction
+class Set : public Instruction, virtual public QTreeWidgetItem
 {
 public:
-	Set(BlotGL *pres);
+	Set(BlotGL *pres = NULL, Set *parent = NULL);
 	
-	void setInstructions(std::vector<Instruction *> insts);
+	void setInstructions(QList<QTreeWidgetItem *> insts);
+
+	virtual Instruction *instruction(int i);
+	virtual int instructionCount();
+	virtual int indexOfInstruction(Instruction *inst);
+	virtual Instruction *takeInstruction(Instruction *inst);
+	virtual void insertInstruction(Instruction *inst, int idx);
+	virtual Instruction *displayableInstruction();
+	Instruction *deleteInstruction(Instruction *inst);
+	Instruction *lastInstruction();
 
 	virtual std::string getClassName()
 	{
@@ -40,8 +49,29 @@ public:
 		return "InstructionSet_" + _random;
 	}
 
-	virtual void instantEffect() {};
+	virtual void instantEffect();
+	
+	virtual std::string instText()
+	{
+		return _text;
+	}
+
+	virtual void addProperties();
+	virtual void addObject(Parser *child, std::string name);
+	virtual void updateText();
+
+	virtual void setData(int column, int role, const QVariant &value);
+
+	virtual void displayToInstruction(Instruction *inst);
+	virtual void addInstruction(Instruction *inst, bool atRow = true);
+	void addInstruction(Instruction *inst, int idx);
+	virtual void addSet();
+protected:
+	int _currPos;
+	Instruction *_currInstruct;
 private:
+
+	std::string _text;
 
 };
 

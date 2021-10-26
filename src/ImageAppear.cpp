@@ -17,6 +17,7 @@
 // Please email: vagabond @ hginn.co.uk for more details.
 
 #include "ImageAppear.h"
+#include "BlotGL.h"
 #include "maths.h"
 #include <float.h>
 

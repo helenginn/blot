@@ -41,6 +41,7 @@ public:
 	bool animateEffect();
 	virtual void prepareEffect() = 0;
 	virtual bool animateStep() = 0;
+	virtual void postParseTidy();
 protected:
 	virtual bool incrementTime();
 	virtual void addProperties();

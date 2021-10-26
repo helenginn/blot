@@ -78,6 +78,8 @@ StartScreen::StartScreen(QWidget *parent,
 	connect(action, &QAction::triggered, this, &StartScreen::addMove);
 	action = insert->addAction(tr("Wiggle image"));
 	connect(action, &QAction::triggered, this, &StartScreen::addWiggle);
+	action = insert->addAction(tr("Make set"));
+	connect(action, &QAction::triggered, this, &StartScreen::makeSet);
 
 	QMenu *instruction = menuBar()->addMenu(tr("&Instruction"));
 	_waitClick = instruction->addAction(tr("Wait for click"));
@@ -260,6 +262,11 @@ void StartScreen::addWipe()
 {
 	WipeSlate *wipe = new WipeSlate(_pres);
 	_pres->addInstruction(wipe);
+}
+
+void StartScreen::makeSet()
+{
+	_pres->addSet();
 }
 
 void StartScreen::addHide()
