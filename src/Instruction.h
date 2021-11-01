@@ -105,6 +105,16 @@ public:
 		return false; 
 	};
 	
+	void setSpeed(double s)
+	{
+		_speed = s;
+	}
+	
+	double speed()
+	{
+		return _speed;
+	}
+	
 	bool hasDelay()
 	{
 		return (_delay > 0);
@@ -144,6 +154,7 @@ protected:
 
 private:
 	bool _onClick;
+	double _speed;
 	double _delay;
 
 };

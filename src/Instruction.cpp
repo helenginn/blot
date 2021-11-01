@@ -27,6 +27,7 @@ Instruction::Instruction(BlotGL *pres)
 	_presentation = pres;
 	_random = i_to_str(rand());
 	_delay = -1;
+	_speed = 1;
 
 	setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled | 
 	         Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
@@ -38,6 +39,7 @@ Instruction::Instruction(Instruction &other)
 	_presentation = other._presentation;
 	_random = i_to_str(rand());
 	_delay = other._delay;
+	_speed = other._speed;
 
 	setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled | 
 	         Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
@@ -46,6 +48,7 @@ Instruction::Instruction(Instruction &other)
 void Instruction::addProperties()
 {
 	addDoubleProperty("delay", &_delay);
+	addDoubleProperty("speed", &_speed);
 	addBoolProperty("on_click", &_onClick);
 	addStringProperty("_random", &_random);
 	addReference("presentation", _presentation);
@@ -70,6 +73,7 @@ void Instruction::updateText()
 	}
 	
 	setText(1, d);
+	setText(2, QString::number(speed() * 100));
 
 	_presentation->list()->repaint();
 }
@@ -160,11 +164,20 @@ void Instruction::setData(int column, int role, const QVariant &value)
 	{
 		return;
 	}
+	
+	QVariant set = value;
 
-	if (role == Qt::EditRole)
+	if (role == Qt::EditRole && column == 1)
 	{
 		_delay = value.toDouble();
+		set = QString::number(_delay);
+	}
+
+	if (role == Qt::EditRole && column == 2)
+	{
+		_speed = value.toDouble() / 100.;
+		set = QString::number(_speed * 100);
 	}
 	
-	QTreeWidgetItem::setData(column, role, value);
+	QTreeWidgetItem::setData(column, role, set);
 }

@@ -40,6 +40,7 @@ public slots:
 	void makeMoves();
 	void makeHides();
 	void duplicate();
+	void select();
 
 private:
 	BlotGL *_pres;

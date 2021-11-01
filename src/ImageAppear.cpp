@@ -90,15 +90,15 @@ void ImageAppear::rotationalTranslate(float f, float mx, float my)
 	double x, y;
 	position(&x, &y);
 	
-	float dx = x - mx;
-	float dy = y - my;
+	float dx = mx - x;
+	float dy = my - y;
 	
 	float ndx = cos(f) * dx - sin(f) * dy;
 	float ndy = sin(f) * dx + cos(f) * dy;
 	ndx -= dx;
 	ndy -= dy;
 
-	moveFractional(-ndx, ndy);
+	moveFractional(-ndx, -ndy);
 }
 
 void ImageAppear::rotateFractional(float x0, float y0, float fx, float fy)
@@ -234,4 +234,3 @@ std::string ImageAppear::instText()
 	start += "Show " + object()->getImage()->text();
 	return start;
 }
-

@@ -266,7 +266,7 @@ void StartScreen::addWipe()
 
 void StartScreen::makeSet()
 {
-	_pres->addSet();
+	_pres->makeSet();
 }
 
 void StartScreen::addHide()

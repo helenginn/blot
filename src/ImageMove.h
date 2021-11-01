@@ -52,6 +52,8 @@ public:
 
 	virtual void select(bool sel);
 	virtual void moveFractional(double fx, double fy);
+	virtual void position(double *x, double *y);
+	virtual void rotationalTranslate(float f, float mx, float my);
 	virtual void rotateFractional(float x0, float y0, float fx, float fy);
 	virtual void resizeFractional(double fx, double fy, bool aspect);
 	virtual std::string instText();

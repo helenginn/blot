@@ -123,6 +123,7 @@ public:
 	                    QList<QTreeWidgetItem *>());
 	virtual Set *instructionParent(); 
 	void deselectAll();
+	void selectInstruction(Instruction *inst, bool primary);
 public slots:
 	void selectInEditMode();
 	void moveInstructionUp();
@@ -151,7 +152,6 @@ private:
 	std::vector<unsigned int> getSortedIndices();
 	Instruction *findSelectedInstruction(double x, double y);
 	void replaceSelectedInstruction(double x, double y);
-	void selectInstruction(Instruction *inst, bool primary);
 	
 	bool isFullScreen()
 	{

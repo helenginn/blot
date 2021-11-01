@@ -33,7 +33,7 @@ Tree::Tree(QWidget *p, BlotGL *pres) : QTreeWidget(p)
 	setDropIndicatorShown(true);
     setDragDropMode(QAbstractItemView::InternalMove);
 	setSelectionMode(QAbstractItemView::ContiguousSelection);
-	setColumnCount(2);
+	setColumnCount(3);
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this, &QTreeWidget::customContextMenuRequested,
 	        this, &Tree::rightClickMenu);
@@ -42,6 +42,7 @@ Tree::Tree(QWidget *p, BlotGL *pres) : QTreeWidget(p)
 	QStringList labels;
 	labels.push_back("Instruction");
 	labels.push_back("delay");
+	labels.push_back("speed");
 	setHeaderLabels(labels);
 	
 	header()->resizeSection(0, 250);
@@ -73,8 +74,23 @@ void Tree::rightClickMenu(const QPoint &p)
 	connect(a, &QAction::triggered, this, &Tree::duplicate);
 	a = m->addAction("Make set");
 	connect(a, &QAction::triggered, _pres, &BlotGL::makeSet);
+	a = m->addAction("Select");
+	connect(a, &QAction::triggered, this, &Tree::select);
 
 	m->exec(pos);
+}
+
+void Tree::select()
+{
+	QList<QTreeWidgetItem *> selected = selectedItems();
+	_pres->deselectAll();
+
+	for (size_t i = 0; i < selected.size(); i++)
+	{
+		Instruction *inst = dynamic_cast<Instruction *>(selected[i]);
+		_pres->selectInstruction(inst, false);
+	}
+
 }
 
 void Tree::setDelay()
@@ -127,11 +143,19 @@ void Tree::duplicate()
 void Tree::makeHides()
 {
 	QList<QTreeWidgetItem *> selected = selectedItems();
+	QList<QTreeWidgetItem *> replacement;
+
 	for (size_t i = 0; i < selected.size(); i++)
 	{
 		Instruction *inst = dynamic_cast<Instruction *>(selected[i]);
 		ImageHide *hide = new ImageHide(_pres, inst);
+		replacement.push_back(hide);
 		_pres->addInstruction(hide);
+	}
+
+	if (replacement.size() >= 5)
+	{
+		_pres->addSet(replacement);
 	}
 }
 
@@ -143,11 +167,18 @@ void Tree::makeMoves()
 	                            tr("Set value:"), 0, 0, 1, 2, &ok);
 
 	QList<QTreeWidgetItem *> selected = selectedItems();
+	QList<QTreeWidgetItem *> replacement;
+
 	for (size_t i = 0; i < selected.size(); i++)
 	{
 		Instruction *inst = dynamic_cast<Instruction *>(selected[i]);
 		ImageMove *move = new ImageMove(_pres, inst, d);
+		replacement.push_back(move);
 		_pres->addInstruction(move);
 	}
-
+	
+	if (replacement.size() >= 5)
+	{
+		_pres->addSet(replacement);
+	}
 }

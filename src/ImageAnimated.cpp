@@ -70,7 +70,12 @@ void ImageAnimated::addProperties()
 
 void ImageAnimated::postParseTidy()
 {
-	_endTime += fmod(_endTime, _stepTime);
+	if (_endTime - _startTime < _stepTime * speed())
+	{
+		_stepTime = (_endTime - _startTime) / speed();
+	}
+
+	_endTime += fmod(_endTime, speed() * _stepTime);
 	Instruction::postParseTidy();
 }
 
@@ -88,7 +93,7 @@ bool ImageAnimated::isCovered(double x, double y)
 
 bool ImageAnimated::incrementTime()
 {
-	double newTime = _time + _stepTime;
+	double newTime = _time + speed() * _stepTime;
 	bool keep_going = true;
 	
 	if (newTime > _endTime)

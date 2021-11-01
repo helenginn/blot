@@ -323,6 +323,7 @@ BlotGL::BlotGL(QWidget *p) : SlipGL(p), Set(this)
 	_fullScreen = false;
 	_altPressed = false;
 	_currInstruct = NULL;
+	setCursor(Qt::CrossCursor);
 	_aspectRatio = 1;
 	_aspect = make_mat4x4();
 	
@@ -393,6 +394,10 @@ void BlotGL::selectInstruction()
 
 	clearAll();
 	Instruction *curr = currentInstruction();
+	if (!curr)
+	{
+		return;
+	}
 	Set *parent = curr->instructionParent();
 	parent->displayToInstruction(curr);
 }
@@ -1051,7 +1056,7 @@ void BlotGL::progressAnimations()
 
 void BlotGL::makeSet()
 {
-	addSet();
+	BlotGL::addSet();
 }
 
 void BlotGL::addSet(QList<QTreeWidgetItem *> list)

@@ -51,6 +51,7 @@ public:
 	virtual bool animateStep();
 protected:
 	virtual void addProperties();
+	virtual void postParseTidy();
 	virtual void linkReference(BaseParser *child, std::string name);
 private:
 	bool _valid;

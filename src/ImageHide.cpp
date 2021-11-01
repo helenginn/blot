@@ -59,6 +59,21 @@ void ImageHide::prepareEffect()
 
 }
 
+void ImageHide::postParseTidy()
+{
+	if (_stepTime > 0)
+	{
+		_stepTime *= -1;
+	}
+	
+	_endTime = 0;
+	_startTime = 3;
+	
+	std::cout << _startTime << " " << _stepTime << " " << _endTime << std::endl;
+
+	Instruction::postParseTidy();
+}
+
 void ImageHide::addProperties()
 {
 	ImageAnimated::addProperties();

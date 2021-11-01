@@ -102,8 +102,8 @@ void EditGroup::rotateFractional(float x0, float y0, float fx, float fy)
 			continue;
 		}
 		
-		_instructions[i]->rotateFractional(x0, y0, fx, fy);
-		_instructions[i]->rotationalTranslate(fx, _lrMiddle, _tbMiddle);
+		_instructions[i]->rotateFractional(x0, y0, -fx, -fy);
+		_instructions[i]->rotationalTranslate(fy, _lrMiddle, _tbMiddle);
 	}
 
 }

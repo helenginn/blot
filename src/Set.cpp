@@ -255,7 +255,7 @@ void Set::addSet(QList<QTreeWidgetItem *> list)
 {
 	if (list.size() == 0)
 	{
-		_presentation->list()->selectedItems();
+		list = _presentation->list()->selectedItems();
 	}
 
 	if (list.size() == 0)

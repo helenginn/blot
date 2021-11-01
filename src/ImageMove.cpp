@@ -50,8 +50,8 @@ ImageMove::ImageMove(BlotGL *pres, Instruction *inst, double fraction)
 		_angle = -other->_angle;
 	}
 	
-	_oldx = _oldx + fraction * (_newx - _oldx);
-	_oldy = _oldy + fraction * (_newy - _oldy);
+	_newx = _oldx + fraction * (_newx - _oldx);
+	_newy = _oldy + fraction * (_newy - _oldy);
 	_angle *= fraction;
 }
 
@@ -59,7 +59,7 @@ bool ImageMove::animateStep()
 {
 	bool keep_going = incrementTime();
 	
-	double portion = _stepTime / (_endTime - _startTime);
+	double portion = speed() * _stepTime / (_endTime - _startTime);
 	
 	double diffx = (_newx - _oldx) * portion;
 	double diffy = (_newy - _oldy) * portion;
@@ -151,4 +151,24 @@ std::string ImageMove::instText()
 	start += (waitForClick() ? "" : "+ ");
 	start += "Move " + object()->getImage()->text();
 	return start;
+}
+
+void ImageMove::rotationalTranslate(float f, float mx, float my)
+{
+	float dx = _newx - mx;
+	float dy = _newy - my;
+	
+	float ndx = cos(f) * dx - sin(f) * dy;
+	float ndy = sin(f) * dx + cos(f) * dy;
+	ndx -= dx;
+	ndy -= dy;
+
+	moveFractional(-ndy, -ndx);
+}
+
+void ImageMove::position(double *x, double *y)
+{
+	*x = _newx;
+	*y = _newy;
+
 }
